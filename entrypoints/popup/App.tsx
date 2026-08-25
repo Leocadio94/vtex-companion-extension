@@ -1,97 +1,81 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { DetectionResult } from '@/lib/detect/signals';
 import {
   collectDetection,
   getActiveTabContext,
   type TabContext,
 } from '@/lib/collect';
+import type { DetectionResult } from '@/lib/detect/signals';
 import {
   isDevModeOn,
   readDevMode,
   writeDevMode,
   type FrameDevMode,
 } from '@/lib/preview/dev-mode';
+import { inspectAdminFrames, type FrameInspection } from '@/lib/preview/inspect';
 import { rewritePreviewUrl } from '@/lib/preview/rewrite';
-import {
-  inspectAdminFrames,
-  shortUrl,
-  summarizeInjection,
-  type FrameInspection,
-} from '@/lib/preview/inspect';
-import {
-  findPreviewForTab,
-  type CapturedPreview,
-} from '@/lib/preview/store';
-import { previewPort, previews, redirectPreview } from '@/lib/settings';
+import { findPreviewForTab } from '@/lib/preview/store';
+import { activeTab, previewPort, previews, redirectPreview } from '@/lib/settings';
+import { PageIcon, PreviewIcon, StoreIcon } from './components/icons';
+import { PageTab } from './tabs/PageTab';
+import { PreviewTab } from './tabs/PreviewTab';
+import { StoreTab } from './tabs/StoreTab';
 import './App.css';
 
 const PLATFORM_LABELS: Record<DetectionResult['platform'], string> = {
-  io: 'VTEX IO — Store Framework',
+  io: 'VTEX IO',
   faststore: 'FastStore',
-  'cms-legacy': 'CMS Legacy Portal',
-  headless: 'Headless (VTEX sem storefront conhecido)',
+  'cms-legacy': 'CMS Legacy',
+  headless: 'Headless',
   'not-vtex': 'Não é VTEX',
   unknown: 'Indeterminado',
 };
 
-const TEMPLATE_LABELS: Record<DetectionResult['template'], string> = {
-  home: 'Home',
-  pdp: 'PDP — página de produto',
-  plp: 'PLP — listagem',
-  search: 'Busca',
-  checkout: 'Checkout',
-  'order-placed': 'Order placed',
-  login: 'Login',
-  account: 'Minha conta',
-  custom: 'Página custom',
-  admin: 'Admin VTEX',
-  unknown: 'Indeterminado',
-};
+/**
+ * A aba API entra aqui quando o fetch runner existir. Registrar uma aba vazia
+ * só para completar a barra seria pior do que não tê-la.
+ */
+const TABS = [
+  { id: 'store', label: 'Loja', Icon: StoreIcon },
+  { id: 'page', label: 'Página', Icon: PageIcon },
+  { id: 'preview', label: 'Preview', Icon: PreviewIcon },
+] as const;
 
-function Row({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="row">
-      <span className="row-label">{label}</span>
-      <span className="row-value">{value}</span>
-    </div>
-  );
-}
-
-function authLabel(auth: DetectionResult['auth']): string {
-  if (auth.storefront === 'unknown') return 'desconhecido';
-  if (!auth.storefront) return 'anônimo';
-  return auth.storefrontEmail ?? 'autenticado';
-}
+type TabId = (typeof TABS)[number]['id'];
 
 export default function App() {
+  const [tab, setTab] = useState<TabId>('store');
   const [context, setContext] = useState<TabContext | null>(null);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [port, setPort] = useState(3000);
   const [redirect, setRedirect] = useState(false);
-  const [preview, setPreview] = useState<CapturedPreview | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [frames, setFrames] = useState<FrameDevMode[]>([]);
   const [injection, setInjection] = useState<FrameInspection[]>([]);
-  const [copied, setCopied] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
 
-    const [tabContext, storedPort, storedRedirect, storedPreviews] =
+    const [tabContext, storedPort, storedRedirect, storedPreviews, storedTab] =
       await Promise.all([
         getActiveTabContext(),
         previewPort.getValue(),
         redirectPreview.getValue(),
         previews.getValue(),
+        activeTab.getValue(),
       ]);
 
     setPort(storedPort);
     setRedirect(storedRedirect);
     setContext(tabContext);
+    if (TABS.some((entry) => entry.id === storedTab)) setTab(storedTab as TabId);
+
     // O preview só vale para a aba do admin que o abriu, ou para a aba do
     // próprio preview.
-    setPreview(
-      tabContext ? findPreviewForTab(storedPreviews, tabContext.tabId) : null,
+    setPreviewUrl(
+      tabContext
+        ? (findPreviewForTab(storedPreviews, tabContext.tabId)?.url ?? null)
+        : null,
     );
 
     if (tabContext) {
@@ -112,6 +96,11 @@ export default function App() {
     void load();
   }, [load]);
 
+  const selectTab = (next: TabId) => {
+    setTab(next);
+    void activeTab.setValue(next);
+  };
+
   const grantPermission = async () => {
     if (!context) return;
     const granted = await browser.permissions.request({
@@ -120,35 +109,25 @@ export default function App() {
     if (granted) await load();
   };
 
-  const savePort = async (value: number) => {
+  const savePort = (value: number) => {
     setPort(value);
-    await previewPort.setValue(value);
+    void previewPort.setValue(value);
   };
 
-  const toggleRedirect = async (value: boolean) => {
+  const toggleRedirect = (value: boolean) => {
     setRedirect(value);
-    await redirectPreview.setValue(value);
+    void redirectPreview.setValue(value);
   };
 
   const toggleDevMode = async () => {
     if (!context) return;
-    const next = !isDevModeOn(frames);
-    setFrames(await writeDevMode(context.tabId, next));
+    setFrames(await writeDevMode(context.tabId, !isDevModeOn(frames)));
     await browser.tabs.reload(context.tabId);
   };
 
-  const localPreviewUrl = preview
-    ? rewritePreviewUrl(preview.url, { port })
+  const localPreviewUrl = previewUrl
+    ? rewritePreviewUrl(previewUrl, { port })
     : null;
-
-  const copyPreview = async () => {
-    if (!localPreviewUrl) return;
-    await navigator.clipboard.writeText(localPreviewUrl);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1500);
-  };
-
-  const isAdmin = result?.environment === 'admin';
 
   return (
     <main>
@@ -161,155 +140,47 @@ export default function App() {
         )}
       </header>
 
-      {loading && <p className="muted">Lendo a página…</p>}
-
-      {!loading && !context && (
-        <p className="muted">
-          Esta aba não é uma página web comum. Abra uma loja ou o admin da VTEX.
-        </p>
-      )}
-
-      {!loading && context && !context.hasHostPermission && (
-        <section className="notice">
-          <p>
-            Sem permissão para ler <strong>{context.origin}</strong>. A detecção
-            fica incompleta: cookies e estado de login não são lidos.
-          </p>
-          <button type="button" onClick={grantPermission}>
-            Conceder acesso a este site
-          </button>
-        </section>
-      )}
-
-      {!loading && result && (
-        <section>
-          <Row
-            label="Detecção"
-            value={result.isVtex ? 'VTEX' : 'não é VTEX'}
+      <div className="content">
+        {loading ? (
+          <p className="muted">Lendo a página…</p>
+        ) : tab === 'store' ? (
+          <StoreTab
+            context={context}
+            result={result}
+            onGrantPermission={grantPermission}
           />
-          {result.account && <Row label="Account" value={result.account} />}
-          {result.workspace && (
-            <Row
-              label="Workspace"
-              value={`${result.workspace}${result.isWorkspace ? ' (na URL)' : ''}`}
-            />
-          )}
-          {result.binding && <Row label="Binding" value={result.binding} />}
-          <Row
-            label="Ambiente"
-            value={isAdmin ? 'Admin VTEX' : 'Loja final'}
-          />
-          <Row label="Template" value={TEMPLATE_LABELS[result.template]} />
-          {result.templateReason && (
-            <Row label="Por quê" value={<code>{result.templateReason}</code>} />
-          )}
-          <Row label="Login na loja" value={authLabel(result.auth)} />
-          <Row
-            label="Sessão de admin"
-            value={result.auth.admin ? 'cookie presente' : 'ausente'}
-          />
-          {result.reasons.length > 0 && (
-            <Row label="Sinais" value={result.reasons.join(' · ')} />
-          )}
-        </section>
-      )}
-
-      <section>
-        <h2>Preview no localhost</h2>
-
-        <label className="field">
-          <span>Porta do dev server</span>
-          <input
-            type="number"
-            min={1}
-            max={65535}
-            value={port}
-            onChange={(event) => void savePort(Number(event.target.value))}
-          />
-        </label>
-
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={redirect}
-            onChange={(event) => void toggleRedirect(event.target.checked)}
-          />
-          <span>
-            Redirecionar automaticamente a aba de preview para o localhost
-          </span>
-        </label>
-
-        {localPreviewUrl ? (
-          <div className="preview">
-            <code>{localPreviewUrl}</code>
-            <div className="actions">
-              <button
-                type="button"
-                onClick={() => void browser.tabs.create({ url: localPreviewUrl })}
-              >
-                Abrir
-              </button>
-              <button type="button" onClick={copyPreview}>
-                {copied ? 'Copiado' : 'Copiar'}
-              </button>
-            </div>
-          </div>
+        ) : tab === 'page' ? (
+          <PageTab context={context} result={result} />
         ) : (
-          <p className="muted">
-            Nenhum preview desta aba. Clique em{' '}
-            <strong>Pré-visualização</strong> no CMS e reabra este painel.
-          </p>
+          <PreviewTab
+            context={context}
+            result={result}
+            port={port}
+            redirect={redirect}
+            localPreviewUrl={localPreviewUrl}
+            frames={frames}
+            injection={injection}
+            onPortChange={savePort}
+            onRedirectChange={toggleRedirect}
+            onToggleDevMode={toggleDevMode}
+          />
         )}
-      </section>
+      </div>
 
-      {isAdmin && (
-        <section>
-          <h2>Development Mode do CMS</h2>
-          <Row
-            label="Status"
-            value={isDevModeOn(frames) ? 'ligado' : 'desligado'}
-          />
-          <Row
-            label="Frames lidos"
-            value={
-              frames.length === 0
-                ? 'nenhum (permissão ou página sem iframe)'
-                : `${frames.length} — ${frames.filter((f) => f.enabled === null).length} sem acesso a localStorage`
-            }
-          />
-          <Row label="Botão Localhost" value={summarizeInjection(injection)} />
-          {injection.length > 0 && (
-            <details className="frames">
-              <summary>Frames ({injection.length})</summary>
-              <ul>
-                {injection.map((frame) => (
-                  <li key={frame.frameId}>
-                    <code>{shortUrl(frame.url)}</code>
-                    <span>
-                      {frame.ready ? 'script ativo' : 'script ausente'} ·{' '}
-                      {frame.state}
-                    </span>
-                    {frame.candidates.map((candidate) => (
-                      <code key={candidate} className="candidate">
-                        {candidate}
-                      </code>
-                    ))}
-                  </li>
-                ))}
-              </ul>
-            </details>
-          )}
-          <button type="button" onClick={toggleDevMode}>
-            {isDevModeOn(frames)
-              ? 'Desligar cmsDevMode e recarregar'
-              : 'Ligar cmsDevMode e recarregar'}
+      <nav>
+        {TABS.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            type="button"
+            className={id === tab ? 'active' : undefined}
+            aria-current={id === tab}
+            onClick={() => selectTab(id)}
+          >
+            <Icon />
+            <span>{label}</span>
           </button>
-          <p className="muted">
-            O CMS novo (Storefront &gt; Content) pode não usar essa flag. O
-            redirecionamento e o link acima funcionam sem ela.
-          </p>
-        </section>
-      )}
+        ))}
+      </nav>
     </main>
   );
 }

@@ -42,3 +42,8 @@ export const oneShotUntil = storage.defineItem<number | null>(
 
 /** Quanto tempo a arma fica válida depois do clique. */
 export const ONE_SHOT_TTL_MS = 30_000;
+
+/** Aba do popup em que o usuário estava, para reabrir onde parou. */
+export const activeTab = storage.defineItem<string>('session:activeTab', {
+  fallback: 'store',
+});
