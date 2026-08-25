@@ -14,6 +14,8 @@ import {
 import { inspectAdminFrames, type FrameInspection } from '@/lib/preview/inspect';
 import { rewritePreviewUrl } from '@/lib/preview/rewrite';
 import { findPreviewForTab } from '@/lib/preview/store';
+import { collectSeoSignals } from '@/lib/seo/probe';
+import type { SeoSignals } from '@/lib/seo/signals';
 import { activeTab, previewPort, previews, redirectPreview } from '@/lib/settings';
 import { PageIcon, PreviewIcon, StoreIcon } from './components/icons';
 import { PageTab } from './tabs/PageTab';
@@ -52,6 +54,7 @@ export default function App() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [frames, setFrames] = useState<FrameDevMode[]>([]);
   const [injection, setInjection] = useState<FrameInspection[]>([]);
+  const [seo, setSeo] = useState<SeoSignals | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -81,6 +84,7 @@ export default function App() {
     if (tabContext) {
       const detection = await collectDetection(tabContext);
       setResult(detection);
+      setSeo(await collectSeoSignals(tabContext.tabId));
       setFrames(await readDevMode(tabContext.tabId));
       setInjection(
         detection.environment === 'admin'
@@ -150,7 +154,7 @@ export default function App() {
             onGrantPermission={grantPermission}
           />
         ) : tab === 'page' ? (
-          <PageTab context={context} result={result} />
+          <PageTab context={context} result={result} seo={seo} />
         ) : (
           <PreviewTab
             context={context}

@@ -17,6 +17,12 @@ Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
 - Tipo de página: home, PDP, PLP, busca, checkout, order placed, login, custom
 - Login do shopper na loja e presença de sessão de admin
 
+**SEO da página**
+
+- Indexação (`robots`, `googlebot`), title, description, canonical, lang
+- Open Graph, Twitter, hreflang, JSON-LD, headings e imagens sem alt
+- Regras por tipo de página: PDP sem `Product`, listagem sem `ItemList`
+
 **Preview no localhost** — quatro caminhos, nenhum deles dependente de `cmsDevMode`:
 
 1. Redirecionamento automático da aba de preview (toggle no popup)
@@ -86,6 +92,7 @@ entrypoints/
   popup/                   painel React
 lib/
   detect/                  funções puras de detecção + contrato de tipos
+  seo/                     leitura das tags da página + regras de SEO
   preview/                 reescrita de URL, seletores do admin, cmsDevMode
   browser/                 cookies e leitura de globais da página
   vtex/session.ts          probe da Session Manager
