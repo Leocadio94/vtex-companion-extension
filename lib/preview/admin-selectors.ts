@@ -56,9 +56,21 @@ export function findPreviewButton(root: ParentNode): HTMLElement | null {
 /**
  * O link "Open API URL" do painel Development Mode. Só existe com `cmsDevMode`
  * ligado; quando existe, entrega a URL de preview sem precisar de clique.
+ *
+ * O `:not()` importa: o bloco que injetamos é um clone deste, inserido antes
+ * dele. Sem a exclusão, a própria cópia venceria a busca por ordem de
+ * documento e o link passaria a se alimentar de si mesmo.
  */
 export function findDevModeApiLink(
   root: ParentNode,
 ): HTMLAnchorElement | null {
-  return root.querySelector<HTMLAnchorElement>('a[title="Open API URL"]');
+  return root.querySelector<HTMLAnchorElement>(
+    `a[title="Open API URL"]:not([${INJECTED_ATTRIBUTE}])`,
+  );
 }
+
+/**
+ * Container Tachyons de cada campo do painel Development Mode (rótulo + valor).
+ * Segue valendo neste admin — é o mesmo seletor que o userscript de origem usa.
+ */
+export const DEV_MODE_FIELD_SELECTOR = '.mt6.mb4.mh5.f6.c-on-base';

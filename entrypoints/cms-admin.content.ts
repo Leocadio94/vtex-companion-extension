@@ -1,5 +1,6 @@
 import type { CompanionMessage } from '@/lib/messaging';
 import {
+  DEV_MODE_FIELD_SELECTOR,
   findDevModeApiLink,
   findPreviewButton,
   INJECTED_ATTRIBUTE,
@@ -153,11 +154,7 @@ function describe(button: HTMLElement) {
 
 /**
  * Com `cmsDevMode` ligado, acrescenta um "Localhost URL" clicável ao painel
- * Development Mode, ao lado do "API URL" que o próprio CMS mostra.
- *
- * O bloco é construído do zero em vez de clonar o container do CMS: as classes
- * do admin mudaram de esquema (`admin-ui-c-*`) e clonar amarraria o recurso a
- * uma estrutura que não é contrato.
+ * Development Mode, logo acima do "API URL" que o próprio CMS mostra.
  */
 function ensureDevModeLink(): string {
   const apiLink = findDevModeApiLink(document);
@@ -179,11 +176,48 @@ function ensureDevModeLink(): string {
   // Reescrito a cada varredura: trocar de versão ou de documento muda a URL.
   anchor.href = target;
   anchor.textContent = target;
+  // O bloco trunca a URL, como o do "API URL" faz. O tooltip devolve o inteiro.
+  anchor.title = target;
 
   return 'link-devmode-ok';
 }
 
 function createDevModeLink(apiLink: HTMLAnchorElement): HTMLAnchorElement | null {
+  return cloneApiUrlField(apiLink) ?? buildPlainField(apiLink);
+}
+
+/**
+ * Clona o campo "API URL" inteiro e troca rótulo e link.
+ *
+ * Clonar é o que deixa o bloco visualmente idêntico ao vizinho — mesma
+ * tipografia, mesmo espaçamento, mesma truncagem — sem a extensão precisar
+ * saber nada sobre o design system do admin.
+ */
+function cloneApiUrlField(apiLink: HTMLAnchorElement): HTMLAnchorElement | null {
+  const field = apiLink.closest<HTMLElement>(DEV_MODE_FIELD_SELECTOR);
+  if (!field?.parentElement) return null;
+
+  const clone = field.cloneNode(true) as HTMLElement;
+  clone.setAttribute(INJECTED_ATTRIBUTE, 'devmode-block');
+
+  // O rótulo é o primeiro nó do campo, como no bloco original.
+  if (clone.firstChild) clone.firstChild.textContent = 'Localhost URL';
+
+  const anchor = clone.querySelector('a');
+  if (!anchor) return null;
+
+  // Precisa perder o title do original: `findDevModeApiLink` procura por ele.
+  anchor.setAttribute(INJECTED_ATTRIBUTE, 'devmode-link');
+  anchor.target = '_blank';
+  anchor.rel = 'noreferrer';
+
+  field.parentElement.insertBefore(clone, field);
+
+  return anchor;
+}
+
+/** Rede de segurança para quando as classes do painel mudarem. */
+function buildPlainField(apiLink: HTMLAnchorElement): HTMLAnchorElement | null {
   const container = apiLink.closest('div') ?? apiLink.parentElement;
   if (!container?.parentElement) return null;
 
@@ -200,7 +234,6 @@ function createDevModeLink(apiLink: HTMLAnchorElement): HTMLAnchorElement | null
   anchor.setAttribute(INJECTED_ATTRIBUTE, 'devmode-link');
   anchor.target = '_blank';
   anchor.rel = 'noreferrer';
-  anchor.title = 'Open Localhost URL';
   anchor.style.overflowWrap = 'anywhere';
 
   block.append(label, anchor);
