@@ -332,3 +332,33 @@ nav button.active {
   gap: 8px;
   align-items: start;
 }
+
+.vendors {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vendors li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.vendor-name {
+  font-weight: 600;
+}
+
+.vendor-evidence {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 11px;
+}

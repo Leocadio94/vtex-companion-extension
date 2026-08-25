@@ -73,7 +73,7 @@ closure over the module. Pass everything through `args`.
 Every decision is a pure function over a plain object, and only those are tested:
 `resolveCatalogTarget` (what to fetch), `detectPlatform` / `detectTemplate`,
 `rewritePreviewUrl` / `previewUrlFromCmsApiUrl`, `analyzeSeo`,
-`findPreviewForTab`. Probes only read; they never judge. When adding a feature,
+`classifyPixels`, `findPreviewForTab`. Probes only read; they never judge. When adding a feature,
 put the judgement in a pure function first and give it tests, then write the thin
 probe around it.
 

@@ -18,6 +18,9 @@ import {
 import { inspectAdminFrames, type FrameInspection } from '@/lib/preview/inspect';
 import { rewritePreviewUrl } from '@/lib/preview/rewrite';
 import { findPreviewForTab } from '@/lib/preview/store';
+import { collectPixelSignals } from '@/lib/pixels/probe';
+import type { PixelReport } from '@/lib/pixels/signals';
+import { classifyPixels } from '@/lib/pixels/vendors';
 import { collectSeoSignals } from '@/lib/seo/probe';
 import type { SeoSignals } from '@/lib/seo/signals';
 import { activeTab, previewPort, previews, redirectPreview } from '@/lib/settings';
@@ -52,6 +55,7 @@ export default function App() {
   const [injection, setInjection] = useState<FrameInspection[]>([]);
   const [seo, setSeo] = useState<SeoSignals | null>(null);
   const [catalog, setCatalog] = useState<CatalogSnapshot | null>(null);
+  const [pixels, setPixels] = useState<PixelReport | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -82,6 +86,12 @@ export default function App() {
       const detection = await collectDetection(tabContext);
       setResult(detection);
       setSeo(await collectSeoSignals(tabContext.tabId));
+
+      const pixelSignals = await collectPixelSignals(tabContext.tabId);
+      setPixels(
+        pixelSignals ? classifyPixels(pixelSignals, tabContext.origin) : null,
+      );
+
       setCatalog(
         await collectCatalog(
           tabContext.tabId,
@@ -174,6 +184,7 @@ export default function App() {
             seo={seo}
             catalog={catalog}
             adminProductUrl={adminProductUrl}
+            pixels={pixels}
           />
         ) : (
           <PreviewTab

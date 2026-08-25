@@ -23,6 +23,12 @@ Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
   refId, seller, disponibilidade e preço — mais atalho para o admin
 - Listagem e busca: categoria, caminho, termo, `map`, ordenação e página
 
+**Scripts de terceiros**
+
+- Vendors conhecidos com o id da conta quando existe: GTM, GA4, Google Ads,
+  Meta, TikTok, Clarity, Hotjar, Criteo, RD Station, Linx, e outros
+- Origens de terceiros não catalogadas, agrupadas por volume de requisições
+
 **SEO da página**
 
 - Indexação (`robots`, `googlebot`), title, description, canonical, lang
@@ -99,6 +105,7 @@ entrypoints/
 lib/
   catalog/                 alvo da busca + leitura do catálogo pela página
   detect/                  funções puras de detecção + contrato de tipos
+  pixels/                  catálogo de vendors + classificação dos recursos
   seo/                     leitura das tags da página + regras de SEO
   preview/                 reescrita de URL, seletores do admin, cmsDevMode
   browser/                 cookies e leitura de globais da página

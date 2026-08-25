@@ -1,9 +1,11 @@
 import type { TabContext } from '@/lib/collect';
 import type { DetectionResult, PageTemplate } from '@/lib/detect/signals';
 import type { CatalogSnapshot } from '@/lib/catalog/signals';
+import type { PixelReport } from '@/lib/pixels/signals';
 import { analyzeSeo, worstSeverity } from '@/lib/seo/analyze';
 import type { SeoSignals } from '@/lib/seo/signals';
 import { CatalogSection } from '../components/CatalogSection';
+import { PixelsSection } from '../components/PixelsSection';
 import { Empty, Row } from '../components/Row';
 
 const TEMPLATE_LABELS: Record<PageTemplate, string> = {
@@ -36,12 +38,14 @@ export function PageTab({
   seo,
   catalog,
   adminProductUrl,
+  pixels,
 }: {
   context: TabContext | null;
   result: DetectionResult | null;
   seo: SeoSignals | null;
   catalog: CatalogSnapshot | null;
   adminProductUrl: string | null;
+  pixels: PixelReport | null;
 }) {
   if (!context || !result) {
     return <Empty>Nada para ler nesta aba.</Empty>;
@@ -156,6 +160,8 @@ export function PageTab({
           </section>
         </>
       )}
+
+      {pixels && <PixelsSection report={pixels} />}
     </>
   );
 }
