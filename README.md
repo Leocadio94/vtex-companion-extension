@@ -1,0 +1,100 @@
+# VTEX Companion
+
+Extensão de navegador (Chrome e Firefox) que identifica a tecnologia VTEX por
+trás da página aberta e destrava o preview do FastStore no `localhost`.
+
+Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
+`background.scripts`; o Chrome, em MV3 com `service_worker`.
+
+## Escopo desta versão
+
+**Detecção**
+
+- É VTEX? Com que confiança e por quais sinais
+- Tecnologia: IO (Store Framework), FastStore, CMS Legacy Portal ou headless
+- Account, workspace, binding
+- Admin VTEX x loja final, e se a URL está num workspace de desenvolvimento
+- Tipo de página: home, PDP, PLP, busca, checkout, order placed, login, custom
+- Login do shopper na loja e presença de sessão de admin
+
+**Preview no localhost** — quatro caminhos, nenhum deles dependente de `cmsDevMode`:
+
+1. Redirecionamento automático da aba de preview (toggle no popup)
+2. Botão **Localhost** injetado ao lado de "Pré-visualização" no admin
+3. Última URL de preview capturada, com copiar/abrir no popup
+4. Liga/desliga do `cmsDevMode`, com status por frame
+
+## Como rodar
+
+```bash
+pnpm install
+pnpm dev              # Chrome
+pnpm dev:firefox      # Firefox
+pnpm test             # testes das funções puras
+pnpm compile          # typecheck
+pnpm build            # build de produção (Chrome)
+pnpm build:firefox    # build de produção (Firefox)
+```
+
+Lint da AMO antes de publicar:
+
+```bash
+pnpm build:firefox && pnpm dlx web-ext lint --source-dir .output/firefox-mv3
+```
+
+## Como o preview funciona
+
+O botão **Pré-visualização** do CMS abre uma aba para a Preview URL configurada
+na loja. O formato muda entre as duas versões do CMS:
+
+| CMS | URL que o botão abre |
+| --- | --- |
+| Headless CMS (legacy) | `https://{host}/?contentType=…&documentId=…&versionId=…` |
+| CMS (Storefront > Content) | `https://{account}.vtex.app/api/preview?…` |
+
+`lib/preview/rewrite.ts` troca só o origin e preserva a query inteira, forçando
+`/api/preview` quando o path vem na raiz. É por isso que o recurso funciona nas
+duas versões sem conhecer os parâmetros do CMS novo, que não são documentados.
+
+O botão injetado no admin **não lê a URL do DOM**. Ele arma um redirecionamento
+de uso único no background e clica no botão original — a URL real passa pelo
+`webNavigation` e é reescrita lá. É o que dispensa o `cmsDevMode`.
+
+## Permissões
+
+| Permissão | Para quê |
+| --- | --- |
+| `*://*.myvtex.com/*` | admin: content script e redirecionamento sem clique |
+| `http://localhost/*` | abrir o dev server |
+| `*://*/*` (opcional) | ler cookies e sessão da loja, concedida por site no popup |
+| `activeTab` | leitura pontual da página quando o popup é aberto |
+
+Não há content script em `<all_urls>`: a leitura dos globais da página é
+injetada sob demanda pelo popup, com `scripting.executeScript`. Isso evita o
+aviso de "ler dados em todos os sites" na instalação.
+
+## Estrutura
+
+```
+entrypoints/
+  background.ts            roteador de mensagens e redirecionamento do preview
+  cms-admin.content.ts     botão Localhost no admin (roda em todos os frames)
+  popup/                   painel React
+lib/
+  detect/                  funções puras de detecção + contrato de tipos
+  preview/                 reescrita de URL, seletores do admin, cmsDevMode
+  browser/                 cookies e leitura de globais da página
+  vtex/session.ts          probe da Session Manager
+  collect.ts               orquestra as três camadas para a aba ativa
+```
+
+`lib/detect/*` e `lib/preview/rewrite.ts` não tocam em `browser.*` nem no DOM —
+são funções puras sobre um objeto de sinais, e é o que os testes cobrem.
+
+## Notas sobre iframes
+
+No admin, o CMS do FastStore roda dentro de um iframe. `cms-admin.content.ts`
+usa `all_frames: true`, e o `cmsDevMode` é lido e escrito com
+`allFrames: true` porque `localStorage` pertence ao origin do frame — o do
+iframe, não o do topo. Frames com sandbox sem `allow-same-origin` são
+reportados como indisponíveis em vez de derrubar a leitura.
