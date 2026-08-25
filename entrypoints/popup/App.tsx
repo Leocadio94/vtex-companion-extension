@@ -2,8 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   collectDetection,
   getActiveTabContext,
+  toUrlSignals,
   type TabContext,
 } from '@/lib/collect';
+import { collectCatalog } from '@/lib/catalog/probe';
+import type { CatalogSnapshot } from '@/lib/catalog/signals';
+import { resolveCatalogTarget } from '@/lib/catalog/target';
 import type { DetectionResult } from '@/lib/detect/signals';
 import {
   isDevModeOn,
@@ -47,6 +51,7 @@ export default function App() {
   const [frames, setFrames] = useState<FrameDevMode[]>([]);
   const [injection, setInjection] = useState<FrameInspection[]>([]);
   const [seo, setSeo] = useState<SeoSignals | null>(null);
+  const [catalog, setCatalog] = useState<CatalogSnapshot | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -77,6 +82,16 @@ export default function App() {
       const detection = await collectDetection(tabContext);
       setResult(detection);
       setSeo(await collectSeoSignals(tabContext.tabId));
+      setCatalog(
+        await collectCatalog(
+          tabContext.tabId,
+          resolveCatalogTarget(
+            toUrlSignals(tabContext.url),
+            detection.template,
+            detection.entityId,
+          ),
+        ),
+      );
       setFrames(await readDevMode(tabContext.tabId));
       setInjection(
         detection.environment === 'admin'
@@ -125,6 +140,13 @@ export default function App() {
     ? rewritePreviewUrl(previewUrl, { port })
     : null;
 
+  // O formulário de produto do admin continua sendo a rota legacy, e é a mesma
+  // para loja em IO, FastStore ou portal.
+  const adminProductUrl =
+    result?.account && catalog?.product
+      ? `https://${result.account}.myvtex.com/admin/Site/ProdutoForm.aspx?id=${catalog.product.productId}`
+      : null;
+
   return (
     <main>
       <header>
@@ -146,7 +168,13 @@ export default function App() {
             onGrantPermission={grantPermission}
           />
         ) : tab === 'page' ? (
-          <PageTab context={context} result={result} seo={seo} />
+          <PageTab
+            context={context}
+            result={result}
+            seo={seo}
+            catalog={catalog}
+            adminProductUrl={adminProductUrl}
+          />
         ) : (
           <PreviewTab
             context={context}

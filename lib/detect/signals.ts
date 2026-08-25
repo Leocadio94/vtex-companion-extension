@@ -147,5 +147,10 @@ export interface DetectionResult {
   isWorkspace: boolean;
   template: PageTemplate;
   templateReason?: string;
+  /**
+   * Id da entidade que a página representa — productId numa PDP, categoryId
+   * numa listagem. Só existe quando a tecnologia expõe; a URL cobre o resto.
+   */
+  entityId?: string;
   auth: AuthState;
 }

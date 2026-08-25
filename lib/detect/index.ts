@@ -21,6 +21,25 @@ function resolveAuth(signals: DetectionSignals): AuthState {
   };
 }
 
+/**
+ * Id da entidade da página, quando a tecnologia entrega um.
+ * O IO publica no `pageContext`; o portal legacy, no payload de eventos.
+ */
+function resolveEntityId(signals: DetectionSignals): string | undefined {
+  const page = signals.page;
+
+  const fromRuntime = page?.runtime?.route?.pageContext?.id;
+  if (fromRuntime) return String(fromRuntime);
+
+  const legacy = page?.legacy;
+  const fromLegacy =
+    legacy?.productId ?? legacy?.['categoryId'] ?? legacy?.['departmentId'];
+
+  return fromLegacy != null && fromLegacy !== ''
+    ? String(fromLegacy)
+    : undefined;
+}
+
 export function detect(signals: DetectionSignals): DetectionResult {
   const { platform, confidence, reasons } = detectPlatform(signals);
   const identity = resolveIdentity(signals);
@@ -34,6 +53,7 @@ export function detect(signals: DetectionSignals): DetectionResult {
     ...identity,
     template,
     templateReason: reason,
+    entityId: resolveEntityId(signals),
     auth: resolveAuth(signals),
   };
 }

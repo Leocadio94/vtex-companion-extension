@@ -1,7 +1,9 @@
 import type { TabContext } from '@/lib/collect';
 import type { DetectionResult, PageTemplate } from '@/lib/detect/signals';
+import type { CatalogSnapshot } from '@/lib/catalog/signals';
 import { analyzeSeo, worstSeverity } from '@/lib/seo/analyze';
 import type { SeoSignals } from '@/lib/seo/signals';
+import { CatalogSection } from '../components/CatalogSection';
 import { Empty, Row } from '../components/Row';
 
 const TEMPLATE_LABELS: Record<PageTemplate, string> = {
@@ -32,10 +34,14 @@ export function PageTab({
   context,
   result,
   seo,
+  catalog,
+  adminProductUrl,
 }: {
   context: TabContext | null;
   result: DetectionResult | null;
   seo: SeoSignals | null;
+  catalog: CatalogSnapshot | null;
+  adminProductUrl: string | null;
 }) {
   if (!context || !result) {
     return <Empty>Nada para ler nesta aba.</Empty>;
@@ -53,6 +59,10 @@ export function PageTab({
           <Row label="Por quê" value={<code>{result.templateReason}</code>} />
         )}
       </section>
+
+      {catalog && (
+        <CatalogSection snapshot={catalog} adminUrl={adminProductUrl} />
+      )}
 
       {!seo ? (
         <Empty>Não foi possível ler o SEO desta página.</Empty>

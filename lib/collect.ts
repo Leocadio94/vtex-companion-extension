@@ -44,7 +44,7 @@ export async function getActiveTabContext(): Promise<TabContext | null> {
   };
 }
 
-function toUrlSignals(href: string): UrlSignals {
+export function toUrlSignals(href: string): UrlSignals {
   const url = new URL(href);
   return {
     href,

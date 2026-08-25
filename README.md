@@ -17,6 +17,12 @@ Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
 - Tipo de página: home, PDP, PLP, busca, checkout, order placed, login, custom
 - Login do shopper na loja e presença de sessão de admin
 
+**Catálogo da página**
+
+- PDP: produto, referência, marca, categoria e a lista de SKUs com EAN,
+  refId, seller, disponibilidade e preço — mais atalho para o admin
+- Listagem e busca: categoria, caminho, termo, `map`, ordenação e página
+
 **SEO da página**
 
 - Indexação (`robots`, `googlebot`), title, description, canonical, lang
@@ -91,6 +97,7 @@ entrypoints/
   cms-admin.content.ts     botão Localhost no admin (roda em todos os frames)
   popup/                   painel React
 lib/
+  catalog/                 alvo da busca + leitura do catálogo pela página
   detect/                  funções puras de detecção + contrato de tipos
   seo/                     leitura das tags da página + regras de SEO
   preview/                 reescrita de URL, seletores do admin, cmsDevMode

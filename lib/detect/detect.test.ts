@@ -282,6 +282,40 @@ describe('detect — ambiente e autenticação', () => {
   });
 });
 
+describe('detect — id da entidade da página', () => {
+  it('lê do pageContext do IO', () => {
+    const result = detect(
+      signals('https://www.acme.com.br/camiseta-preta/p', {
+        page: pageSignals({
+          runtime: {
+            route: { id: 'store.product', pageContext: { type: 'product', id: '42' } },
+          },
+        }),
+      }),
+    );
+
+    expect(result.entityId).toBe('42');
+  });
+
+  it('cai para o payload de eventos do portal legacy', () => {
+    const result = detect(
+      signals('https://www.acme.com.br/camiseta-preta/p', {
+        page: pageSignals({
+          legacy: { pageCategory: 'Product', productId: 99 },
+        }),
+      }),
+    );
+
+    expect(result.entityId).toBe('99');
+  });
+
+  it('fica indefinido quando a página não expõe nenhum', () => {
+    expect(
+      detect(signals('https://www.acme.com.br/camiseta/p')).entityId,
+    ).toBeUndefined();
+  });
+});
+
 describe('detect — site que não é VTEX', () => {
   it('não inventa plataforma sem nenhum sinal', () => {
     const result = detect(
