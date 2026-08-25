@@ -8,6 +8,7 @@
  */
 
 import { storage } from '#imports';
+import type { PreviewsByTab } from './preview/store';
 
 /** Porta do `pnpm dev` do FastStore. */
 export const previewPort = storage.defineItem<number>('sync:previewPort', {
@@ -20,18 +21,13 @@ export const redirectPreview = storage.defineItem<boolean>(
   { fallback: false },
 );
 
-export interface CapturedPreview {
-  url: string;
-  capturedAt: number;
-  /** Foi redirecionada automaticamente ou só observada. */
-  redirected: boolean;
-}
-
-/** Última URL de preview vista, para o popup poder oferecer a versão local. */
-export const lastPreview = storage.defineItem<CapturedPreview | null>(
-  'session:lastPreview',
-  { fallback: null },
-);
+/**
+ * URLs de preview capturadas, por aba. O popup só oferece o link local para a
+ * aba do admin que abriu o preview, ou para a própria aba do preview.
+ */
+export const previews = storage.defineItem<PreviewsByTab>('session:previews', {
+  fallback: {},
+});
 
 /**
  * Janela em que o próximo preview será redirecionado mesmo com o toggle

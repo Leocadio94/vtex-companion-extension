@@ -17,6 +17,17 @@ export interface TemplateVerdict {
   reason?: string;
 }
 
+/** Sufixo de `render-route-*` para `route.id`. */
+const IO_ROUTE_CLASSES: Record<string, string> = {
+  'store-home': 'store.home',
+  'store-product': 'store.product',
+  'store-search': 'store.search',
+  'store-login': 'store.login',
+  'store-account': 'store.account',
+  'store-orderplaced': 'store.orderplaced',
+  'store-checkout': 'store.checkout',
+};
+
 /** `route.id` do IO Store Framework. */
 const IO_ROUTES: Record<string, PageTemplate> = {
   'store.home': 'home',
@@ -66,21 +77,67 @@ function detectCheckout(signals: DetectionSignals): TemplateVerdict | null {
   return { template: 'checkout', reason: `rota de checkout${step ? ` (#/${step})` : ''}` };
 }
 
-function detectIo(signals: DetectionSignals): TemplateVerdict | null {
-  const route = signals.page?.runtime?.route;
-  if (!route?.id) return null;
+function fromIoRouteId(
+  routeId: string,
+  contextType: string | undefined,
+  signals: DetectionSignals,
+  source: string,
+): TemplateVerdict {
+  if (routeId === 'store.search') {
+    // `pageContext` vem do mesmo snapshot que `route`, então não serve quando a
+    // leitura veio da classe do container. A URL desempata: `map=` é navegação
+    // por categoria, `q`/`_q` é busca por termo.
+    const isSearch = contextType
+      ? contextType === 'search'
+      : /[?&]_?q=/.test(signals.url.search);
 
-  const contextType = route.pageContext?.type?.toLowerCase();
-
-  if (route.id === 'store.search') {
-    const template: PageTemplate = contextType === 'search' ? 'search' : 'plp';
-    return { template, reason: `route.id=store.search, pageContext.type=${contextType ?? 'desconhecido'}` };
+    return {
+      template: isSearch ? 'search' : 'plp',
+      reason: `${source}=store.search${contextType ? `, pageContext.type=${contextType}` : ''}`,
+    };
   }
 
-  const mapped = IO_ROUTES[route.id];
-  if (mapped) return { template: mapped, reason: `route.id=${route.id}` };
+  const mapped = IO_ROUTES[routeId];
+  return {
+    template: mapped ?? 'custom',
+    reason: `${source}=${routeId}`,
+  };
+}
 
-  return { template: 'custom', reason: `route.id=${route.id}` };
+function detectIo(signals: DetectionSignals): TemplateVerdict | null {
+  const page = signals.page;
+  const route = page?.runtime?.route;
+  const stale = page?.runtimeRouteStale === true;
+
+  if (route?.id && !stale) {
+    return fromIoRouteId(
+      route.id,
+      route.pageContext?.type?.toLowerCase(),
+      signals,
+      'route.id',
+    );
+  }
+
+  // Navegação SPA: `__RUNTIME__` ficou no snapshot do SSR, mas o
+  // render-runtime já trocou a classe do container.
+  const routeClass = page?.ioRouteClass;
+  if (routeClass) {
+    const routeId = IO_ROUTE_CLASSES[routeClass];
+    return routeId
+      ? fromIoRouteId(routeId, undefined, signals, 'render-route')
+      : { template: 'custom', reason: `render-route-${routeClass}` };
+  }
+
+  if (route?.id) {
+    return fromIoRouteId(
+      route.id,
+      route.pageContext?.type?.toLowerCase(),
+      signals,
+      'route.id (desatualizado)',
+    );
+  }
+
+  return null;
 }
 
 function detectFastStore(signals: DetectionSignals): TemplateVerdict | null {

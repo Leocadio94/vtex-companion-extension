@@ -77,6 +77,54 @@ describe('detect — IO Store Framework', () => {
     expect(detect(search).template).toBe('search');
   });
 
+  it('usa a classe render-route quando o runtime ficou para trás numa navegação SPA', () => {
+    const spa = signals('https://www.acme.com.br/camiseta-preta/p', {
+      page: pageSignals({
+        // O runtime ainda é o snapshot da home, renderizada no SSR.
+        runtime: { route: { id: 'store.home', path: '/' } },
+        runtimeRouteStale: true,
+        ioRouteClass: 'store-product',
+      }),
+    });
+
+    const result = detect(spa);
+    expect(result.template).toBe('pdp');
+    expect(result.templateReason).toContain('render-route');
+  });
+
+  it('desempata PLP e busca pela URL quando só existe a classe render-route', () => {
+    const plp = signals('https://www.acme.com.br/camisetas?map=c', {
+      page: pageSignals({
+        runtime: { route: { id: 'store.home', path: '/' } },
+        runtimeRouteStale: true,
+        ioRouteClass: 'store-search',
+      }),
+    });
+    expect(detect(plp).template).toBe('plp');
+
+    const search = signals('https://www.acme.com.br/camiseta?_q=camiseta&map=ft', {
+      page: pageSignals({
+        runtime: { route: { id: 'store.home', path: '/' } },
+        runtimeRouteStale: true,
+        ioRouteClass: 'store-search',
+      }),
+    });
+    expect(detect(search).template).toBe('search');
+  });
+
+  it('assume a rota desatualizada, sinalizando, quando não há classe render-route', () => {
+    const result = detect(
+      signals('https://www.acme.com.br/camiseta-preta/p', {
+        page: pageSignals({
+          runtime: { route: { id: 'store.home', path: '/' } },
+          runtimeRouteStale: true,
+        }),
+      }),
+    );
+
+    expect(result.templateReason).toContain('desatualizado');
+  });
+
   it('trata route.id desconhecido como página custom', () => {
     const custom = signals('https://www.acme.com.br/institucional', {
       page: pageSignals({

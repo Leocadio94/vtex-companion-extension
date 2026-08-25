@@ -8,6 +8,14 @@ import {
 const BUTTON_LABEL = 'Localhost';
 
 /**
+ * Tentativas escalonadas depois do carregamento. O MutationObserver cobre a
+ * maioria dos casos, mas o admin monta o CMS em etapas dentro de um iframe e
+ * houve caso do botão só existir bem depois do `document_idle` — sem nenhuma
+ * mutação observável no documento em que estamos.
+ */
+const RETRY_DELAYS_MS = [0, 300, 800, 1500, 3000, 5000, 8000, 13000, 21000];
+
+/**
  * Injeta um botão "Localhost" ao lado do "Pré-visualização" do CMS.
  *
  * O botão não tenta descobrir a URL do preview no DOM — isso é o que faz o
@@ -16,12 +24,13 @@ const BUTTON_LABEL = 'Localhost';
  * botão original: a URL real passa pelo `webNavigation` como sempre, e é lá que
  * ela é reescrita.
  *
- * Roda em todos os frames porque o CMS do FastStore é renderizado dentro de um
- * iframe no admin.
+ * Roda em todos os frames, incluindo os que nascem `about:blank` e só depois
+ * recebem conteúdo — que é como boa parte do admin da VTEX monta seus iframes.
  */
 export default defineContentScript({
   matches: ['*://*.myvtex.com/*'],
   allFrames: true,
+  matchAboutBlank: true,
   runAt: 'document_idle',
 
   main() {
@@ -43,11 +52,16 @@ export default defineContentScript({
       window.setTimeout(sync, 150);
     };
 
-    sync();
+    for (const delay of RETRY_DELAYS_MS) window.setTimeout(sync, delay);
+
     new MutationObserver(schedule).observe(document.documentElement, {
       childList: true,
       subtree: true,
     });
+
+    // Voltar de outra aba costuma coincidir com o CMS ter terminado de montar.
+    document.addEventListener('visibilitychange', schedule);
+    window.addEventListener('focus', schedule);
   },
 });
 

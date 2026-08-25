@@ -13,11 +13,15 @@ import {
 } from '@/lib/preview/dev-mode';
 import { rewritePreviewUrl } from '@/lib/preview/rewrite';
 import {
-  lastPreview,
-  previewPort,
-  redirectPreview,
+  inspectAdminFrames,
+  summarizeInjection,
+  type FrameInspection,
+} from '@/lib/preview/inspect';
+import {
+  findPreviewForTab,
   type CapturedPreview,
-} from '@/lib/settings';
+} from '@/lib/preview/store';
+import { previewPort, previews, redirectPreview } from '@/lib/settings';
 import './App.css';
 
 const PLATFORM_LABELS: Record<DetectionResult['platform'], string> = {
@@ -43,13 +47,6 @@ const TEMPLATE_LABELS: Record<DetectionResult['template'], string> = {
   unknown: 'Indeterminado',
 };
 
-const CONFIDENCE_LABELS: Record<DetectionResult['confidence'], string> = {
-  high: 'confiança alta',
-  medium: 'confiança média',
-  low: 'confiança baixa',
-  none: 'sem sinais',
-};
-
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="row">
@@ -73,27 +70,38 @@ export default function App() {
   const [redirect, setRedirect] = useState(false);
   const [preview, setPreview] = useState<CapturedPreview | null>(null);
   const [frames, setFrames] = useState<FrameDevMode[]>([]);
+  const [injection, setInjection] = useState<FrameInspection[]>([]);
   const [copied, setCopied] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
 
-    const [tabContext, storedPort, storedRedirect, storedPreview] =
+    const [tabContext, storedPort, storedRedirect, storedPreviews] =
       await Promise.all([
         getActiveTabContext(),
         previewPort.getValue(),
         redirectPreview.getValue(),
-        lastPreview.getValue(),
+        previews.getValue(),
       ]);
 
     setPort(storedPort);
     setRedirect(storedRedirect);
-    setPreview(storedPreview);
     setContext(tabContext);
+    // O preview só vale para a aba do admin que o abriu, ou para a aba do
+    // próprio preview.
+    setPreview(
+      tabContext ? findPreviewForTab(storedPreviews, tabContext.tabId) : null,
+    );
 
     if (tabContext) {
-      setResult(await collectDetection(tabContext));
+      const detection = await collectDetection(tabContext);
+      setResult(detection);
       setFrames(await readDevMode(tabContext.tabId));
+      setInjection(
+        detection.environment === 'admin'
+          ? await inspectAdminFrames(tabContext.tabId)
+          : [],
+      );
     }
 
     setLoading(false);
@@ -176,7 +184,7 @@ export default function App() {
         <section>
           <Row
             label="Detecção"
-            value={`${result.isVtex ? 'VTEX' : 'não é VTEX'} — ${CONFIDENCE_LABELS[result.confidence]}`}
+            value={result.isVtex ? 'VTEX' : 'não é VTEX'}
           />
           {result.account && <Row label="Account" value={result.account} />}
           {result.workspace && (
@@ -247,7 +255,7 @@ export default function App() {
           </div>
         ) : (
           <p className="muted">
-            Nenhum preview capturado ainda. Clique em{' '}
+            Nenhum preview desta aba. Clique em{' '}
             <strong>Pré-visualização</strong> no CMS e reabra este painel.
           </p>
         )}
@@ -268,6 +276,7 @@ export default function App() {
                 : `${frames.length} — ${frames.filter((f) => f.enabled === null).length} sem acesso a localStorage`
             }
           />
+          <Row label="Botão Localhost" value={summarizeInjection(injection)} />
           <button type="button" onClick={toggleDevMode}>
             {isDevModeOn(frames)
               ? 'Desligar cmsDevMode e recarregar'

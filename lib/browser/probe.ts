@@ -138,10 +138,29 @@ export function readPageGlobals(fastStoreSelectors: string[]): PageSignals {
     return [...types];
   })();
 
+  // O render-runtime marca o container com `render-route-{routeId}` e troca
+  // essa classe a cada navegação — é a única leitura de rota do IO que
+  // acompanha a SPA.
+  const ioRouteClass = (() => {
+    const container = document.querySelector('[class*="render-route-"]');
+    if (!container) return null;
+    const match = container.className.match(/render-route-([a-z0-9-]+)/i);
+    return match?.[1] ?? null;
+  })();
+
+  const runtimeRouteStale = (() => {
+    const routePath = runtime?.route?.path;
+    if (typeof routePath !== 'string' || !routePath) return false;
+    const strip = (value: string) => value.replace(/\/+$/, '').toLowerCase();
+    return strip(routePath) !== strip(window.location.pathname);
+  })();
+
   return {
     runtime,
     nextData,
     legacy,
+    ioRouteClass,
+    runtimeRouteStale,
     hasFastStoreMarkup,
     hasVtexJs: Boolean(w.vtexjs),
     assetAccounts,

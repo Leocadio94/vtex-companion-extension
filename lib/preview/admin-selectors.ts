@@ -9,7 +9,7 @@
 /** Marca os elementos que a extensão injeta, para não se auto-detectar. */
 export const INJECTED_ATTRIBUTE = 'data-vtex-companion';
 
-const PREVIEW_LABELS = [
+export const PREVIEW_LABELS = [
   'pre-visualizacao',
   'previsualizacao',
   'preview',

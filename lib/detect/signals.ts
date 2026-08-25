@@ -92,6 +92,18 @@ export interface PageSignals {
   assetAccounts: string[];
   /** Valores de `@type` dos blocos JSON-LD da página. */
   jsonLdTypes: string[];
+  /**
+   * Sufixo da classe `render-route-*` do container do render-runtime
+   * (`render-route-store-product` vira `store-product`). Ao contrário de
+   * `__RUNTIME__`, essa classe é trocada a cada navegação client-side.
+   */
+  ioRouteClass?: string | null;
+  /**
+   * `__RUNTIME__.route` não corresponde mais à URL da barra de endereço.
+   * Acontece em toda navegação SPA do IO: o runtime é o snapshot do SSR e não
+   * é reescrito pelo `navigate` do render-runtime.
+   */
+  runtimeRouteStale?: boolean;
   /** `window.location.href` do frame que fez a leitura. */
   href: string;
 }
