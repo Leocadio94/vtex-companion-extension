@@ -176,3 +176,40 @@ button:hover {
 .notice p {
   margin: 0 0 8px;
 }
+
+.frames {
+  margin: 8px 0 0;
+  font-size: 11px;
+}
+
+.frames summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.frames ul {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.frames li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.frames span {
+  color: var(--muted);
+}
+
+.candidate {
+  color: var(--accent);
+}

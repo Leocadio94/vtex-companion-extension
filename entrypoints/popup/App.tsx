@@ -14,6 +14,7 @@ import {
 import { rewritePreviewUrl } from '@/lib/preview/rewrite';
 import {
   inspectAdminFrames,
+  shortUrl,
   summarizeInjection,
   type FrameInspection,
 } from '@/lib/preview/inspect';
@@ -277,6 +278,27 @@ export default function App() {
             }
           />
           <Row label="Botão Localhost" value={summarizeInjection(injection)} />
+          {injection.length > 0 && (
+            <details className="frames">
+              <summary>Frames ({injection.length})</summary>
+              <ul>
+                {injection.map((frame) => (
+                  <li key={frame.frameId}>
+                    <code>{shortUrl(frame.url)}</code>
+                    <span>
+                      {frame.ready ? 'script ativo' : 'script ausente'} ·{' '}
+                      {frame.state}
+                    </span>
+                    {frame.candidates.map((candidate) => (
+                      <code key={candidate} className="candidate">
+                        {candidate}
+                      </code>
+                    ))}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
           <button type="button" onClick={toggleDevMode}>
             {isDevModeOn(frames)
               ? 'Desligar cmsDevMode e recarregar'

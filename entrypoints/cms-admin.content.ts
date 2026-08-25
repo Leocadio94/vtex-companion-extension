@@ -34,15 +34,21 @@ export default defineContentScript({
   runAt: 'document_idle',
 
   main() {
+    // Marca de vida, lida pelo diagnóstico do popup. O content script não pode
+    // logar no console do admin, então esta é a única forma de saber se ele
+    // chegou a rodar neste frame.
+    mark('ready', '1');
+
     let scheduled = false;
 
     const sync = () => {
       scheduled = false;
       try {
-        ensureButton();
-      } catch {
+        mark('state', ensureButton());
+      } catch (error) {
         // O admin é território alheio: nenhuma falha nossa pode aparecer no
         // console dele nem interromper a página.
+        mark('state', `erro: ${(error as Error)?.message ?? 'desconhecido'}`);
       }
     };
 
@@ -65,9 +71,23 @@ export default defineContentScript({
   },
 });
 
-function ensureButton() {
+/** Registra o estado da última tentativa num atributo do `<html>` do frame. */
+function mark(name: 'ready' | 'state', value: string) {
+  try {
+    document.documentElement.setAttribute(
+      `${INJECTED_ATTRIBUTE}-${name}`,
+      value,
+    );
+  } catch {
+    // Documento sem `documentElement` acessível: nada a registrar.
+  }
+}
+
+/** Devolve o resultado da tentativa, para virar diagnóstico. */
+function ensureButton(): string {
   const original = findPreviewButton(document);
-  if (!original?.parentElement) return;
+  if (!original) return 'botao-de-preview-nao-encontrado';
+  if (!original.parentElement) return 'botao-de-preview-sem-pai';
 
   const existing = document.querySelector<HTMLElement>(
     `[${INJECTED_ATTRIBUTE}="preview"]`,
@@ -75,7 +95,7 @@ function ensureButton() {
 
   if (existing?.isConnected) {
     describe(existing);
-    return;
+    return 'injetado';
   }
 
   const button = document.createElement('button');
@@ -98,6 +118,8 @@ function ensureButton() {
 
   describe(button);
   original.parentElement.insertBefore(button, original);
+
+  return button.isConnected ? 'injetado' : 'insercao-falhou';
 }
 
 /**
