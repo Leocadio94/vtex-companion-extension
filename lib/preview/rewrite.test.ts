@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { isPreviewUrl, rewritePreviewUrl } from './rewrite';
+import {
+  isPreviewUrl,
+  previewUrlFromCmsApiUrl,
+  rewritePreviewUrl,
+} from './rewrite';
 
 const opts = { port: 3000 };
 
@@ -118,5 +122,57 @@ describe('rewritePreviewUrl', () => {
     expect(
       rewritePreviewUrl('http://localhost:3000/api/preview?entryId=x', opts),
     ).toBeNull();
+  });
+});
+
+describe('previewUrlFromCmsApiUrl', () => {
+  it('monta a URL local a partir do link "Open API URL" do dev mode', () => {
+    expect(
+      previewUrlFromCmsApiUrl(
+        'https://acme.myvtex.com/_v/cms/api/faststore/landingPage/94605cb4-0b09-48be-90ce-cde69f2b1695?versionId=405118e9-7509-11ed-83ab',
+        opts,
+      ),
+    ).toBe(
+      'http://localhost:3000/api/preview?contentType=landingPage&documentId=94605cb4-0b09-48be-90ce-cde69f2b1695&versionId=405118e9-7509-11ed-83ab',
+    );
+  });
+
+  it('omite versionId quando o link não traz um', () => {
+    expect(
+      previewUrlFromCmsApiUrl(
+        'https://acme.myvtex.com/_v/cms/api/faststore/page/abc-123',
+        opts,
+      ),
+    ).toBe(
+      'http://localhost:3000/api/preview?contentType=page&documentId=abc-123',
+    );
+  });
+
+  it('respeita a porta configurada', () => {
+    expect(
+      previewUrlFromCmsApiUrl(
+        'https://acme.myvtex.com/api/faststore/page/abc-123?versionId=v1',
+        { port: 4000 },
+      ),
+    ).toBe(
+      'http://localhost:4000/api/preview?contentType=page&documentId=abc-123&versionId=v1',
+    );
+  });
+
+  it('tolera barra final', () => {
+    expect(
+      previewUrlFromCmsApiUrl(
+        'https://acme.myvtex.com/api/faststore/page/abc-123/?versionId=v1',
+        opts,
+      ),
+    ).toBe(
+      'http://localhost:3000/api/preview?contentType=page&documentId=abc-123&versionId=v1',
+    );
+  });
+
+  it('devolve null quando não há segmentos suficientes', () => {
+    expect(previewUrlFromCmsApiUrl('https://acme.myvtex.com/page', opts)).toBeNull();
+    expect(previewUrlFromCmsApiUrl('', opts)).toBeNull();
+    expect(previewUrlFromCmsApiUrl('não é url', opts)).toBeNull();
   });
 });

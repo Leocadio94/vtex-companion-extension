@@ -21,6 +21,8 @@ export interface FrameInspection {
   /** Resultado da última tentativa registrada pelo content script. */
   state: string;
   hasInjectedButton: boolean;
+  /** O link "Localhost URL" do painel Development Mode está no DOM. */
+  hasDevModeLink: boolean;
   /** Elementos cujo texto lembra "preview", achados sem o seletor oficial. */
   candidates: string[];
 }
@@ -73,6 +75,9 @@ function inspectFrame(injectedAttribute: string) {
     hasInjectedButton: Boolean(
       document.querySelector(`[${injectedAttribute}="preview"]`),
     ),
+    hasDevModeLink: Boolean(
+      document.querySelector(`[${injectedAttribute}="devmode-link"]`),
+    ),
     candidates,
   };
 }
@@ -96,6 +101,7 @@ export async function inspectAdminFrames(
         ready: Boolean(value?.ready),
         state: value?.state ?? 'sem registro',
         hasInjectedButton: Boolean(value?.hasInjectedButton),
+        hasDevModeLink: Boolean(value?.hasDevModeLink),
         candidates: value?.candidates ?? [],
       };
     });
@@ -109,7 +115,10 @@ export function summarizeInjection(frames: FrameInspection[]): string {
   if (frames.length === 0) return 'nenhum frame lido';
 
   const injected = frames.filter((frame) => frame.hasInjectedButton);
-  if (injected.length > 0) return `injetado em ${injected.length} frame(s)`;
+  if (injected.length > 0) {
+    const withLink = frames.filter((frame) => frame.hasDevModeLink).length;
+    return `injetado em ${injected.length} frame(s)${withLink ? ' · link do dev mode presente' : ''}`;
+  }
 
   const ready = frames.filter((frame) => frame.ready);
   if (ready.length === 0) {

@@ -81,3 +81,33 @@ export function rewritePreviewUrl(
 
   return local.toString();
 }
+
+/**
+ * Monta a URL local a partir do link "Open API URL" que o painel Development
+ * Mode do Headless CMS mostra.
+ *
+ * É o caminho do userscript: o link aponta para a API do CMS
+ * (`.../{contentType}/{documentId}?versionId=…`), e o preview local quer esses
+ * mesmos três valores como query. Só existe com `cmsDevMode` ligado — o botão
+ * injetado cobre o resto do tempo.
+ */
+export function previewUrlFromCmsApiUrl(
+  apiUrl: string,
+  { port }: RewriteOptions,
+): string | null {
+  const parsed = parse(apiUrl);
+  if (!parsed) return null;
+
+  const segments = parsed.pathname.split('/').filter(Boolean);
+  if (segments.length < 2) return null;
+
+  const [contentType, documentId] = segments.slice(-2) as [string, string];
+  const versionId = parsed.searchParams.get('versionId');
+
+  const local = new URL(`http://localhost:${port}${PREVIEW_PATH}`);
+  local.searchParams.set('contentType', contentType);
+  local.searchParams.set('documentId', documentId);
+  if (versionId) local.searchParams.set('versionId', versionId);
+
+  return local.toString();
+}

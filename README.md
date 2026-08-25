@@ -24,6 +24,10 @@ Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
 3. Última URL de preview capturada, com copiar/abrir no popup
 4. Liga/desliga do `cmsDevMode`, com status por frame
 
+Com o `cmsDevMode` ligado, o painel Development Mode também ganha um
+**Localhost URL** clicável ao lado do "API URL" do próprio CMS — o
+comportamento do userscript que originou o projeto.
+
 ## Como rodar
 
 ```bash
