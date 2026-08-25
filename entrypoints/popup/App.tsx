@@ -18,19 +18,11 @@ import { collectSeoSignals } from '@/lib/seo/probe';
 import type { SeoSignals } from '@/lib/seo/signals';
 import { activeTab, previewPort, previews, redirectPreview } from '@/lib/settings';
 import { PageIcon, PreviewIcon, StoreIcon } from './components/icons';
+import { PLATFORM_SHORT } from './labels';
 import { PageTab } from './tabs/PageTab';
 import { PreviewTab } from './tabs/PreviewTab';
 import { StoreTab } from './tabs/StoreTab';
 import './App.css';
-
-const PLATFORM_LABELS: Record<DetectionResult['platform'], string> = {
-  io: 'VTEX IO',
-  faststore: 'FastStore',
-  'cms-legacy': 'CMS Legacy',
-  headless: 'Headless',
-  'not-vtex': 'Não é VTEX',
-  unknown: 'Indeterminado',
-};
 
 /**
  * A aba API entra aqui quando o fetch runner existir. Registrar uma aba vazia
@@ -139,7 +131,7 @@ export default function App() {
         <h1>VTEX Companion</h1>
         {result && (
           <span className={`badge badge-${result.platform}`}>
-            {PLATFORM_LABELS[result.platform]}
+            {PLATFORM_SHORT[result.platform]}
           </span>
         )}
       </header>

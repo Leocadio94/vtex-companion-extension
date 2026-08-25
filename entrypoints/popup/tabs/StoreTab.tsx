@@ -1,6 +1,7 @@
 import type { DetectionResult } from '@/lib/detect/signals';
 import type { TabContext } from '@/lib/collect';
 import { Empty, Row } from '../components/Row';
+import { PLATFORM_FULL } from '../labels';
 
 function authLabel(auth: DetectionResult['auth']): string {
   if (auth.storefront === 'unknown') return 'desconhecido';
@@ -41,7 +42,9 @@ export function StoreTab({
 
       {result && (
         <section>
-          <Row label="Detecção" value={result.isVtex ? 'VTEX' : 'não é VTEX'} />
+          {/* Repete o badge do cabeçalho de propósito: por extenso, e ao lado
+              dos outros dados da loja, é onde se lê sem procurar. */}
+          <Row label="Tecnologia" value={PLATFORM_FULL[result.platform]} />
           {result.account && <Row label="Account" value={result.account} />}
           {result.workspace && (
             <Row
