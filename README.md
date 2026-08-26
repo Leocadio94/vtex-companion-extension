@@ -65,6 +65,9 @@ Com o `cmsDevMode` ligado, o painel Development Mode também ganha um
 **Localhost URL** clicável ao lado do "API URL" do próprio CMS — o
 comportamento do userscript que originou o projeto.
 
+Não é um produto oficial da VTEX. O ícone é original; a extensão não usa a
+identidade visual da VTEX.
+
 ## Como rodar
 
 ```bash
@@ -147,3 +150,13 @@ usa `all_frames: true`, e o `cmsDevMode` é lido e escrito com
 `allFrames: true` porque `localStorage` pertence ao origin do frame — o do
 iframe, não o do topo. Frames com sandbox sem `allow-same-origin` são
 reportados como indisponíveis em vez de derrubar a leitura.
+
+## Publicação
+
+Textos de listagem, justificativa de cada permissão e checklist de envio em
+[`docs/publicacao.md`](./docs/publicacao.md). Política de privacidade em
+[`PRIVACY.md`](./PRIVACY.md).
+
+## Licença
+
+MIT — veja [`LICENSE`](./LICENSE).

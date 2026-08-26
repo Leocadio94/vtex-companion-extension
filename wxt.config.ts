@@ -17,8 +17,10 @@ export default defineConfig({
   manifestVersion: 3,
   manifest: {
     name: 'VTEX Companion',
+    // As duas lojas cortam a descrição em 132 caracteres.
     description:
-      'Identifies the VTEX technology behind the current site and unlocks the FastStore localhost preview.',
+      'Identifica a tecnologia VTEX do site, abre o preview do FastStore no localhost e chama as APIs com a sessão da aba.',
+    homepage_url: 'https://github.com/Leocadio94/vtex-companion-extension',
     permissions: [
       'storage',
       'activeTab',
