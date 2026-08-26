@@ -89,18 +89,33 @@ Sem código remoto: nada é baixado ou avaliado em tempo de execução.
 - [ ] Testar num perfil limpo do navegador, sem outras extensões
 - [ ] Conferir que a versão em `package.json` subiu
 - [ ] Publicar `PRIVACY.md` numa URL pública e apontar o formulário para ela
-- [ ] Capturas de tela: 1280×800 ou 640×400 (Chrome), até 5 imagens
+- [ ] Capturas de tela em `brand/screenshots/` — **exatamente** 1280×800 ou
+      640×400; a Chrome Web Store recusa 1282×800, e a captura de janela do
+      Windows costuma sair alguns pixels maior
 - [ ] Ícone da listagem: `brand/icon-512.png`
 
 ## Capturas sugeridas
 
-Uma por recurso, cada uma numa loja real:
+Uma por recurso, cada uma numa loja real. Ficam em `brand/screenshots/`, junto
+do ícone da listagem.
 
 1. Aba Loja numa loja FastStore — tecnologia, account, workspace, sessão
 2. Aba Página numa PDP — template, produto com SKUs, achados de SEO
 3. Aba Página numa loja com muitos pixels — lista de terceiros
 4. Aba Preview no admin do CMS — botão Localhost e o toggle de redirecionamento
 5. Painel do DevTools com uma resposta formatada ao lado da requisição
+
+Duas armadilhas que já apareceram:
+
+- **Estado de erro na vitrine.** Um painel mostrando "Catálogo não respondeu:
+  HTTP 404" documenta a falha, não o recurso. Escolha uma loja onde a chamada
+  responde — na PDP, o que vende a aba é a lista de SKUs.
+- **Seção cortada pela borda.** O popup rola; enquadre com a seção inteira
+  visível, senão a captura sugere interface truncada.
+
+Antes de enviar, olhe cada captura procurando dado que não deveria estar lá:
+account de cliente, e-mail, id de pedido, token. Lojas de demonstração públicas
+(`storetheme.vtex.com`, `starter.vtex.app`) evitam o problema na origem.
 
 ## Marca
 
