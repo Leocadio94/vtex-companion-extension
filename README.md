@@ -6,6 +6,9 @@ trás da página aberta e destrava o preview do FastStore no `localhost`.
 Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
 `background.scripts`; o Chrome, em MV3 com `service_worker`.
 
+Página de apresentação: <https://leocadio.dev/vtex-companion/> · Política de
+privacidade: <https://leocadio.dev/vtex-companion/privacy/>
+
 ## Escopo desta versão
 
 **Detecção**
@@ -155,7 +158,10 @@ reportados como indisponíveis em vez de derrubar a leitura.
 
 Textos de listagem, justificativa de cada permissão e checklist de envio em
 [`docs/publicacao.md`](./docs/publicacao.md). Política de privacidade em
-[`PRIVACY.md`](./PRIVACY.md).
+[`PRIVACY.md`](./PRIVACY.md), que aponta para a versão publicada.
+
+A página de apresentação e a política moram no repositório do site
+(`portfolio-astro`), não aqui — o texto tem um dono só.
 
 ## Licença
 

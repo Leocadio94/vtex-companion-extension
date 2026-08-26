@@ -11,6 +11,9 @@ export default defineConfig({
   // livre sozinho, mas fixar deixa o endereço de HMR previsível.
   dev: { server: { port: 3010 } },
   srcDir: '.',
+  // O zip de fontes existe para o revisor da AMO conferir o build. Capturas de
+  // tela não entram nisso e respondem por quase todo o peso do pacote.
+  zip: { excludeSources: ['brand/screenshots/**'] },
   // Firefox também sai em MV3: o default do WXT ainda é MV2 para o Gecko, e o
   // MV2 não tem `optional_host_permissions`, que é a base da nossa estratégia
   // de permissões.
@@ -20,7 +23,10 @@ export default defineConfig({
     // As duas lojas cortam a descrição em 132 caracteres.
     description:
       'Identifica a tecnologia VTEX do site, abre o preview do FastStore no localhost e chama as APIs com a sessão da aba.',
-    homepage_url: 'https://github.com/Leocadio94/vtex-companion-extension',
+    // O gerenciador de extensões dos dois navegadores mostra isto como
+    // "site"/"homepage". A página de apresentação explica o que a extensão faz
+    // para quem chegou pelo aviso de permissão; o repositório fica linkado lá.
+    homepage_url: 'https://leocadio.dev/vtex-companion/',
     permissions: [
       'storage',
       'activeTab',

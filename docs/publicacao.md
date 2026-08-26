@@ -12,6 +12,14 @@ que os revisores costumam pedir.
 | Categoria | Ferramentas para desenvolvedores |
 | Idioma principal | Português (Brasil) |
 | Política de privacidade | <https://leocadio.dev/vtex-companion/privacy/> (EN: `/en/vtex-companion/privacy/`) |
+| Site / homepage | <https://leocadio.dev/vtex-companion/> (EN: `/en/vtex-companion/`) |
+| Código-fonte | <https://github.com/Leocadio94/vtex-companion-extension> |
+| Suporte | <https://github.com/Leocadio94/vtex-companion-extension/issues> |
+
+O `homepage_url` do manifesto aponta para a página de apresentação, não para o
+repositório: é o link que o gerenciador de extensões mostra ao usuário, e quem
+chega ali pelo aviso de permissão quer saber o que a extensão faz, não ler
+código. O repositório fica linkado na própria página.
 
 ## Propósito único (Chrome Web Store)
 
@@ -90,10 +98,76 @@ Sem código remoto: nada é baixado ou avaliado em tempo de execução.
 - [ ] Conferir que a versão em `package.json` subiu
 - [ ] Conferir que <https://leocadio.dev/vtex-companion/privacy/> responde 200 e
       apontar o formulário para ela (o texto é mantido no repo do site, não aqui)
+- [ ] Conferir que <https://leocadio.dev/vtex-companion/> responde 200 — é o
+      `homepage_url` do manifesto, e um link quebrado ali aparece no navegador
+      de todo mundo que instalar
 - [ ] Capturas de tela em `brand/screenshots/` — **exatamente** 1280×800 ou
       640×400; a Chrome Web Store recusa 1282×800, e a captura de janela do
       Windows costuma sair alguns pixels maior
 - [ ] Ícone da listagem: `brand/icon-512.png`
+
+## Passo a passo do envio
+
+A conta da Chrome Web Store é a que trava primeiro: são US$ 5 e uma verificação
+de identidade que pode levar dias. Abrir a conta antes de tudo, e enviar às duas
+lojas no mesmo dia — a AMO responde mais rápido e o que ela apontar quase sempre
+também vale para a Chrome.
+
+### Antes das duas
+
+```bash
+pnpm test && pnpm compile
+pnpm zip           # .output/vtex-companion-extension-<versão>-chrome.zip
+pnpm zip:firefox   # o mesmo, sufixos -firefox.zip e -sources.zip
+pnpm dlx web-ext lint --source-dir .output/firefox-mv3
+```
+
+Nenhuma das duas lojas aceita reenviar um número de versão já usado. Se um envio
+for rejeitado, suba a versão em `package.json` antes de tentar de novo.
+
+### Chrome Web Store
+
+1. Criar a conta em <https://chrome.google.com/webstore/devconsole> — taxa única
+   de US$ 5, e-mail de contato verificado e verificação de identidade.
+2. Em **Account settings**, declarar a condição de *trader* ou *non-trader*. É
+   exigência da UE e bloqueia a publicação enquanto estiver em branco; quem
+   publica sem fim comercial marca *non-trader*.
+3. **Add new item** → subir `vtex-companion-extension-<versão>-chrome.zip`.
+4. **Store listing**: descrição curta (o campo corta em 132 caracteres),
+   descrição longa, categoria *Developer Tools*, idioma Português (Brasil),
+   ícone `brand/icon-512.png`, as cinco capturas de `brand/screenshots/` na
+   ordem numerada, e os campos de site e suporte da tabela de metadados.
+5. **Privacy**: propósito único, a justificativa de cada permissão e de host
+   (os textos deste arquivo), a URL da política e as declarações de uso de
+   dados.
+6. **Distribution**: público, todas as regiões.
+7. **Submit for review**. A primeira submissão de uma conta nova costuma demorar
+   mais que as seguintes.
+
+### AMO (Firefox)
+
+1. Criar a conta em <https://addons.mozilla.org/developers/> — gratuita, exige
+   uma conta Mozilla e um nome de exibição.
+2. **Submit a New Add-on** → *On this site* (listada) → subir
+   `vtex-companion-extension-<versão>-firefox.zip`. A validação roda sozinha e
+   repete o que o `web-ext lint` já mostrou.
+3. Responder **sim** à pergunta sobre código minificado ou compilado, subir
+   `vtex-companion-extension-<versão>-sources.zip` e colar as instruções de
+   build da seção anterior.
+4. Listagem: nome, resumo, descrição, categoria, licença MIT, URL da política,
+   site, suporte e capturas. A AMO não exige dimensão fixa nas capturas — as
+   mesmas do envio da Chrome servem.
+5. Confirmar a declaração de coleta de dados como *nenhuma*, igual ao
+   `data_collection_permissions` do manifesto.
+6. Enviar. A extensão é assinada e publicada em minutos; a revisão humana pode
+   vir depois e pedir esclarecimento pelo painel.
+
+### Depois de publicar
+
+- Guardar as duas URLs de listagem e colocá-las na página de apresentação e no
+  README.
+- Marcar a tag da versão no repositório, para que o `sources.zip` enviado tenha
+  um commit correspondente.
 
 ## Capturas
 
