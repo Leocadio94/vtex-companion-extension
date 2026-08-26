@@ -99,7 +99,7 @@ export function ApiPanel({
 
   return (
     <>
-      <section>
+      <section className="panel-request">
         <h2>Requisição</h2>
 
         <label className="field">
@@ -196,7 +196,7 @@ export function ApiPanel({
       </section>
 
       {response && (
-        <section>
+        <section className="panel-response">
           <h2>
             Resposta{' '}
             <span className={`pill pill-${statusTone(response)}`}>
@@ -255,7 +255,7 @@ export function ApiPanel({
       )}
 
       {history.length > 0 && (
-        <section>
+        <section className="panel-history">
           <h2>Histórico</h2>
           <ul className="history">
             {history.map((entry) => (

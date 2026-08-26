@@ -5,11 +5,42 @@ main.devtools-shell {
   height: 100vh;
 }
 
-.devtools-shell .content {
-  max-width: 720px;
-}
-
 .header-context {
   color: var(--muted);
   font-size: 11px;
+}
+
+/*
+ * Com largura sobrando, requisição e resposta ficam lado a lado — é a razão de
+ * existir do painel. Abaixo disso, o DevTools está acoplado embaixo ou numa
+ * janela estreita, e a coluna única do popup continua sendo a melhor leitura.
+ */
+@media (min-width: 900px) {
+  .devtools-shell .content {
+    display: grid;
+    grid-template-columns: minmax(340px, 460px) 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'request response'
+      'history response';
+    align-items: start;
+  }
+
+  .devtools-shell .panel-request {
+    grid-area: request;
+  }
+
+  .devtools-shell .panel-history {
+    grid-area: history;
+  }
+
+  .devtools-shell .panel-response {
+    grid-area: response;
+    align-self: stretch;
+  }
+
+  /* A resposta é o motivo de ter espaço: usa a altura toda que sobrar. */
+  .devtools-shell .panel-response .response {
+    max-height: calc(100vh - 230px);
+  }
 }
