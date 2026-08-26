@@ -177,6 +177,10 @@ export default function App() {
             context={context}
             result={result}
             onGrantPermission={grantPermission}
+            onSessionChanged={() => {
+              if (context) void browser.tabs.reload(context.tabId);
+              void load();
+            }}
           />
         ) : tab === 'page' ? (
           <PageTab

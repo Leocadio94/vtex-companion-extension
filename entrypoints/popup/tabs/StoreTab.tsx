@@ -1,6 +1,7 @@
 import type { DetectionResult } from '@/lib/detect/signals';
 import type { TabContext } from '@/lib/collect';
 import { Empty, Row } from '@/ui/components/Row';
+import { SessionSection } from '@/ui/components/SessionSection';
 import { PLATFORM_FULL } from '@/ui/labels';
 
 function authLabel(auth: DetectionResult['auth']): string {
@@ -13,10 +14,12 @@ export function StoreTab({
   context,
   result,
   onGrantPermission,
+  onSessionChanged,
 }: {
   context: TabContext | null;
   result: DetectionResult | null;
   onGrantPermission: () => void;
+  onSessionChanged: () => void;
 }) {
   if (!context) {
     return (
@@ -66,6 +69,14 @@ export function StoreTab({
             <Row label="Sinais" value={result.reasons.join(' · ')} />
           )}
         </section>
+      )}
+
+      {result && (
+        <SessionSection
+          context={context}
+          result={result}
+          onChanged={onSessionChanged}
+        />
       )}
     </>
   );

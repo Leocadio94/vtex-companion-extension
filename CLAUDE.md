@@ -116,6 +116,16 @@ Chrome's service worker dies at will. Nothing lives in module state — use
 `lib/settings.ts`, where `sync:` holds preferences and `session:` holds what only
 matters while the browser is open.
 
+## Session cookies
+
+`lib/auth/cookie.ts` is the only code that writes a credential. Two rules hold
+throughout: the token is never persisted to `storage` and never leaves the
+machine, and the controls render only on a domain detection recognises as VTEX —
+offering a paste field for an admin token on an arbitrary page would be an
+invitation, not a feature. Cloning from `{account}.myvtex.com` exists so the
+common case never puts the token on the clipboard. The cookie is written
+`httpOnly` and `SameSite=Lax`, mirroring the real one rather than loosening it.
+
 ## Permissions
 
 There is deliberately no `<all_urls>` content script. Page reads are injected on

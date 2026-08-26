@@ -29,6 +29,16 @@ Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
   Meta, TikTok, Clarity, Hotjar, Criteo, RD Station, Linx, e outros
 - Origens de terceiros não catalogadas, agrupadas por volume de requisições
 
+**Sessão**
+
+- Entrar numa origem colando um `VtexIdclientAutCookie`
+- Clonar a sessão de `{account}.myvtex.com` para o domínio da loja, sem o
+  token passar pela área de transferência
+- Limpar o cookie da origem atual
+
+O token nunca é gravado pela extensão nem sai da máquina, e os controles só
+aparecem em domínio reconhecido como VTEX.
+
 **Fetch runner**
 
 - Todos os métodos, com o cookie da sessão da aba atual
@@ -115,6 +125,7 @@ entrypoints/
   devtools-panel/          o runner com a janela inteira
 ui/                        componentes e estado usados pelos dois painéis
 lib/
+  auth/                    escrita e clonagem do cookie de sessão
   catalog/                 alvo da busca + leitura do catálogo pela página
   detect/                  funções puras de detecção + contrato de tipos
   pixels/                  catálogo de vendors + classificação dos recursos
