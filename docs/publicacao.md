@@ -11,7 +11,7 @@ que os revisores costumam pedir.
 | Descrição curta | Identifica a tecnologia VTEX do site, abre o preview do FastStore no localhost e chama as APIs com a sessão da aba. |
 | Categoria | Ferramentas para desenvolvedores |
 | Idioma principal | Português (Brasil) |
-| Política de privacidade | `PRIVACY.md` deste repositório, publicado numa URL acessível |
+| Política de privacidade | <https://leocadio.dev/vtex-companion/privacy/> (EN: `/en/vtex-companion/privacy/`) |
 
 ## Propósito único (Chrome Web Store)
 
@@ -88,7 +88,8 @@ Sem código remoto: nada é baixado ou avaliado em tempo de execução.
 - [ ] `pnpm test`, `pnpm compile` e `pnpm dlx web-ext lint --source-dir .output/firefox-mv3` sem erros
 - [ ] Testar num perfil limpo do navegador, sem outras extensões
 - [ ] Conferir que a versão em `package.json` subiu
-- [ ] Publicar `PRIVACY.md` numa URL pública e apontar o formulário para ela
+- [ ] Conferir que <https://leocadio.dev/vtex-companion/privacy/> responde 200 e
+      apontar o formulário para ela (o texto é mantido no repo do site, não aqui)
 - [ ] Capturas de tela em `brand/screenshots/` — **exatamente** 1280×800 ou
       640×400; a Chrome Web Store recusa 1282×800, e a captura de janela do
       Windows costuma sair alguns pixels maior
