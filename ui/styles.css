@@ -137,11 +137,19 @@ section .muted {
 }
 
 .field span {
+  flex: none;
   color: var(--muted);
 }
 
-.field input {
+/* Só a porta é estreita. Os demais campos ocupam a linha. */
+.field input[type='number'] {
   width: 80px;
+}
+
+.field input[type='text'],
+.field select {
+  flex: 1;
+  min-width: 0;
 }
 
 input[type='number'] {
