@@ -77,7 +77,7 @@ when a probe returns nothing, so the next one is visible.
 Every decision is a pure function over a plain object, and only those are tested:
 `resolveCatalogTarget` (what to fetch), `detectPlatform` / `detectTemplate`,
 `rewritePreviewUrl` / `previewUrlFromCmsApiUrl`, `analyzeSeo`,
-`classifyPixels`, `findPreviewForTab`. Probes only read; they never judge. When adding a feature,
+`classifyPixels`, `findPreviewForTab`, `buildRequest` / `toCsv` / `remember`. Probes only read; they never judge. When adding a feature,
 put the judgement in a pure function first and give it tests, then write the thin
 probe around it.
 
@@ -135,5 +135,7 @@ which lacks `optional_host_permissions`). `data_collection_permissions` forces
   English.
 - Commit messages are prose, not bullet lists, and explain why a change was made,
   including decisions taken and rejected. No `Co-Authored-By` trailer.
-- The popup's API tab is intentionally absent until the fetch runner exists. A
-  tab that opens onto nothing is worse than one that has not arrived.
+- The fetch runner sends from the active tab, which is what makes "the current
+  session cookie" true: same origin, that tab's cookies, no host permission. The
+  cost is that only the tab's own origin works, and `buildRequest` flags the
+  rest so the UI can say so before sending rather than after failing.

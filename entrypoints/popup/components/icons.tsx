@@ -39,3 +39,13 @@ export function PreviewIcon() {
     </svg>
   );
 }
+
+export function ApiIcon() {
+  return (
+    <svg {...base} aria-hidden="true">
+      <path d="M9.5 8.5 6 12l3.5 3.5" />
+      <path d="M14.5 8.5 18 12l-3.5 3.5" />
+      <path d="M3.5 5.5h17v13h-17z" />
+    </svg>
+  );
+}

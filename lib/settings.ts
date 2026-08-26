@@ -9,6 +9,8 @@
 
 import { storage } from '#imports';
 import type { PreviewsByTab } from './preview/store';
+import type { HistoryEntry } from './runner/history';
+import type { RunnerInput } from './runner/request';
 
 /** Porta do `pnpm dev` do FastStore. */
 export const previewPort = storage.defineItem<number>('sync:previewPort', {
@@ -47,3 +49,15 @@ export const ONE_SHOT_TTL_MS = 30_000;
 export const activeTab = storage.defineItem<string>('session:activeTab', {
   fallback: 'store',
 });
+
+/** Formulário do fetch runner, para o popup não perder o que foi digitado. */
+export const runnerInput = storage.defineItem<RunnerInput | null>(
+  'session:runnerInput',
+  { fallback: null },
+);
+
+/** Histórico do fetch runner. */
+export const runnerHistory = storage.defineItem<HistoryEntry[]>(
+  'session:runnerHistory',
+  { fallback: [] },
+);

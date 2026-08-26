@@ -29,6 +29,13 @@ Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
   Meta, TikTok, Clarity, Hotjar, Criteo, RD Station, Linx, e outros
 - Origens de terceiros não catalogadas, agrupadas por volume de requisições
 
+**Fetch runner**
+
+- Todos os métodos, com o cookie da sessão da aba atual
+- Presets de Sessão, Checkout, Catálogo, Intelligent Search, OMS, Master Data
+- Confirmação explícita antes de qualquer método que altera dados
+- Histórico da sessão e cópia da resposta como JSON ou CSV
+
 **SEO da página**
 
 - Indexação (`robots`, `googlebot`), title, description, canonical, lang
@@ -106,6 +113,7 @@ lib/
   catalog/                 alvo da busca + leitura do catálogo pela página
   detect/                  funções puras de detecção + contrato de tipos
   pixels/                  catálogo de vendors + classificação dos recursos
+  runner/                  montagem, presets, execução e histórico do fetch
   seo/                     leitura das tags da página + regras de SEO
   preview/                 reescrita de URL, seletores do admin, cmsDevMode
   browser/                 cookies e leitura de globais da página
