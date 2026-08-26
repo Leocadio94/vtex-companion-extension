@@ -35,6 +35,8 @@ Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
 - Presets de Sessão, Checkout, Catálogo, Intelligent Search, OMS, Master Data
 - Confirmação explícita antes de qualquer método que altera dados
 - Histórico da sessão e cópia da resposta como JSON ou CSV
+- Resposta em duas leituras: formatada com realce, ou o corpo cru
+- Disponível no popup e num painel **VTEX** dentro do DevTools
 
 **SEO da página**
 
@@ -109,6 +111,9 @@ entrypoints/
   background.ts            roteador de mensagens e redirecionamento do preview
   cms-admin.content.ts     botão Localhost no admin (roda em todos os frames)
   popup/                   painel React
+  devtools/                registra o painel no DevTools
+  devtools-panel/          o runner com a janela inteira
+ui/                        componentes e estado usados pelos dois painéis
 lib/
   catalog/                 alvo da busca + leitura do catálogo pela página
   detect/                  funções puras de detecção + contrato de tipos

@@ -34,8 +34,6 @@ body {
 }
 
 main {
-  width: 380px;
-  height: 540px;
   display: flex;
   flex-direction: column;
 }

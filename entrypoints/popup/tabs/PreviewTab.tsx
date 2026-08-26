@@ -10,7 +10,7 @@ import {
   summarizeInjection,
   type FrameInspection,
 } from '@/lib/preview/inspect';
-import { Empty, Row } from '../components/Row';
+import { Empty, Row } from '@/ui/components/Row';
 
 export function PreviewTab({
   result,

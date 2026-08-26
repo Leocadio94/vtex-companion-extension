@@ -1,5 +1,5 @@
 import type { CatalogSnapshot } from '@/lib/catalog/signals';
-import { Empty, Row } from './Row';
+import { Empty, Row } from '@/ui/components/Row';
 
 function money(value: number | null): string {
   return value == null ? '—' : (value / 100).toFixed(2);

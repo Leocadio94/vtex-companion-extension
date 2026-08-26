@@ -135,6 +135,13 @@ which lacks `optional_host_permissions`). `data_collection_permissions` forces
   English.
 - Commit messages are prose, not bullet lists, and explain why a change was made,
   including decisions taken and rejected. No `Co-Authored-By` trailer.
+- Anything both panels show lives in `ui/`, rendered by the popup and by the
+  DevTools panel from the same component and the same `useRunner` state. The
+  only difference between the hosts is where the `TabContext` comes from: the
+  active tab, or `devtools.inspectedWindow.tabId`.
+- The DevTools panel gets no `activeTab` grant — that comes from clicking the
+  extension's action, which the panel never does. It needs an explicit host
+  permission, and says so instead of failing silently.
 - The fetch runner sends from the active tab, which is what makes "the current
   session cookie" true: same origin, that tab's cookies, no host permission. The
   cost is that only the tab's own origin works, and `buildRequest` flags the

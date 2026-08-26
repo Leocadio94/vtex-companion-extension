@@ -21,9 +21,21 @@ export interface TabContext {
   hasHostPermission: boolean;
 }
 
-export async function getActiveTabContext(): Promise<TabContext | null> {
-  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-  if (!tab?.id || !tab.url) return null;
+/**
+ * Contexto de uma aba específica. O popup usa a aba ativa; o painel de DevTools
+ * usa a aba que está sendo inspecionada.
+ */
+export async function getTabContext(
+  tabId: number,
+): Promise<TabContext | null> {
+  let tab;
+  try {
+    tab = await browser.tabs.get(tabId);
+  } catch {
+    return null;
+  }
+
+  if (!tab.id || !tab.url) return null;
 
   let origin: string;
   try {
@@ -42,6 +54,11 @@ export async function getActiveTabContext(): Promise<TabContext | null> {
       origins: [`${origin}/*`],
     }),
   };
+}
+
+export async function getActiveTabContext(): Promise<TabContext | null> {
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  return tab?.id ? getTabContext(tab.id) : null;
 }
 
 export function toUrlSignals(href: string): UrlSignals {

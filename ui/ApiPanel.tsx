@@ -12,8 +12,8 @@ import {
   METHODS,
   type RunnerInput,
 } from '@/lib/runner/request';
-import { JsonView } from '../components/JsonView';
-import { Empty } from '../components/Row';
+import { JsonView } from './components/JsonView';
+import { Empty } from './components/Row';
 
 const GROUPS = [...new Set(PRESETS.map((preset) => preset.group))];
 
@@ -24,7 +24,7 @@ function statusTone(response: RunnerResponse): string {
   return 'ok';
 }
 
-export function ApiTab({
+export function ApiPanel({
   context,
   input,
   response,

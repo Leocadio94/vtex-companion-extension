@@ -1,0 +1,15 @@
+/* O painel ocupa a janela inteira do DevTools, ao contrário do popup. */
+
+main.devtools-shell {
+  width: 100%;
+  height: 100vh;
+}
+
+.devtools-shell .content {
+  max-width: 720px;
+}
+
+.header-context {
+  color: var(--muted);
+  font-size: 11px;
+}

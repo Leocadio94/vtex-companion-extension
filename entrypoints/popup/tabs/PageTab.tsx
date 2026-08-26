@@ -6,7 +6,7 @@ import { analyzeSeo, worstSeverity } from '@/lib/seo/analyze';
 import type { SeoSignals } from '@/lib/seo/signals';
 import { CatalogSection } from '../components/CatalogSection';
 import { PixelsSection } from '../components/PixelsSection';
-import { Empty, Row } from '../components/Row';
+import { Empty, Row } from '@/ui/components/Row';
 
 const TEMPLATE_LABELS: Record<PageTemplate, string> = {
   home: 'Home',

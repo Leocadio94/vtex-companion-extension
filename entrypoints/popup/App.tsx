@@ -21,26 +21,18 @@ import { findPreviewForTab } from '@/lib/preview/store';
 import { collectPixelSignals } from '@/lib/pixels/probe';
 import type { PixelReport } from '@/lib/pixels/signals';
 import { classifyPixels } from '@/lib/pixels/vendors';
-import { remember, type HistoryEntry } from '@/lib/runner/history';
-import { runRequest, type RunnerResponse } from '@/lib/runner/probe';
-import { buildRequest, type RunnerInput } from '@/lib/runner/request';
 import { collectSeoSignals } from '@/lib/seo/probe';
 import type { SeoSignals } from '@/lib/seo/signals';
-import {
-  activeTab,
-  previewPort,
-  previews,
-  redirectPreview,
-  runnerHistory,
-  runnerInput,
-} from '@/lib/settings';
+import { activeTab, previewPort, previews, redirectPreview } from '@/lib/settings';
 import { ApiIcon, PageIcon, PreviewIcon, StoreIcon } from './components/icons';
-import { PLATFORM_SHORT } from './labels';
-import { ApiTab } from './tabs/ApiTab';
+import { PLATFORM_SHORT } from '@/ui/labels';
 import { PageTab } from './tabs/PageTab';
 import { PreviewTab } from './tabs/PreviewTab';
 import { StoreTab } from './tabs/StoreTab';
-import './App.css';
+import { ApiPanel } from '@/ui/ApiPanel';
+import { useRunner } from '@/ui/useRunner';
+import '@/ui/styles.css';
+import './popup.css';
 
 const TABS = [
   { id: 'store', label: 'Loja', Icon: StoreIcon },
@@ -49,13 +41,6 @@ const TABS = [
   { id: 'api', label: 'API', Icon: ApiIcon },
 ] as const;
 
-const EMPTY_REQUEST: RunnerInput = {
-  method: 'GET',
-  url: '/api/sessions?items=*',
-  headers: '',
-  body: '',
-};
-
 type TabId = (typeof TABS)[number]['id'];
 
 export default function App() {
@@ -63,6 +48,7 @@ export default function App() {
   const [context, setContext] = useState<TabContext | null>(null);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const runner = useRunner(context);
   const [port, setPort] = useState(3000);
   const [redirect, setRedirect] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -71,38 +57,23 @@ export default function App() {
   const [seo, setSeo] = useState<SeoSignals | null>(null);
   const [catalog, setCatalog] = useState<CatalogSnapshot | null>(null);
   const [pixels, setPixels] = useState<PixelReport | null>(null);
-  const [request, setRequest] = useState<RunnerInput>(EMPTY_REQUEST);
-  const [response, setResponse] = useState<RunnerResponse | null>(null);
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [running, setRunning] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
 
-    const [
-      tabContext,
-      storedPort,
-      storedRedirect,
-      storedPreviews,
-      storedTab,
-      storedRequest,
-      storedHistory,
-    ] = await Promise.all([
-      getActiveTabContext(),
-      previewPort.getValue(),
-      redirectPreview.getValue(),
-      previews.getValue(),
-      activeTab.getValue(),
-      runnerInput.getValue(),
-      runnerHistory.getValue(),
-    ]);
+    const [tabContext, storedPort, storedRedirect, storedPreviews, storedTab] =
+      await Promise.all([
+        getActiveTabContext(),
+        previewPort.getValue(),
+        redirectPreview.getValue(),
+        previews.getValue(),
+        activeTab.getValue(),
+      ]);
 
     setPort(storedPort);
     setRedirect(storedRedirect);
     setContext(tabContext);
     if (TABS.some((entry) => entry.id === storedTab)) setTab(storedTab as TabId);
-    if (storedRequest) setRequest(storedRequest);
-    setHistory(storedHistory);
 
     // O preview só vale para a aba do admin que o abriu, ou para a aba do
     // próprio preview.
@@ -146,32 +117,6 @@ export default function App() {
   useEffect(() => {
     void load();
   }, [load]);
-
-  const changeRequest = (next: RunnerInput) => {
-    setRequest(next);
-    void runnerInput.setValue(next);
-  };
-
-  const sendRequest = async () => {
-    if (!context) return;
-
-    const built = buildRequest(request, context.origin);
-    if (!built.ok) return;
-
-    setRunning(true);
-    const result = await runRequest(context.tabId, built.request);
-    setResponse(result);
-    setRunning(false);
-
-    const next = remember(history, {
-      at: Date.now(),
-      status: result.status,
-      durationMs: result.durationMs,
-      input: request,
-    });
-    setHistory(next);
-    void runnerHistory.setValue(next);
-  };
 
   const selectTab = (next: TabId) => {
     setTab(next);
@@ -243,15 +188,15 @@ export default function App() {
             pixels={pixels}
           />
         ) : tab === 'api' ? (
-          <ApiTab
+          <ApiPanel
             context={context}
-            input={request}
-            response={response}
-            history={history}
-            running={running}
-            onChange={changeRequest}
-            onSend={() => void sendRequest()}
-            onReplay={(entry) => changeRequest(entry.input)}
+            input={runner.input}
+            response={runner.response}
+            history={runner.history}
+            running={runner.running}
+            onChange={runner.change}
+            onSend={() => void runner.send()}
+            onReplay={(entry) => runner.change(entry.input)}
           />
         ) : (
           <PreviewTab

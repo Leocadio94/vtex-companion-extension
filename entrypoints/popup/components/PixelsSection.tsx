@@ -1,5 +1,5 @@
 import type { PixelReport } from '@/lib/pixels/signals';
-import { Empty } from './Row';
+import { Empty } from '@/ui/components/Row';
 
 export function PixelsSection({ report }: { report: PixelReport | null }) {
   // A seção aparece mesmo sem resultado. Escondê-la fazia uma falha de leitura

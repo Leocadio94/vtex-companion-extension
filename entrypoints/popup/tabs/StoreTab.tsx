@@ -1,7 +1,7 @@
 import type { DetectionResult } from '@/lib/detect/signals';
 import type { TabContext } from '@/lib/collect';
-import { Empty, Row } from '../components/Row';
-import { PLATFORM_FULL } from '../labels';
+import { Empty, Row } from '@/ui/components/Row';
+import { PLATFORM_FULL } from '@/ui/labels';
 
 function authLabel(auth: DetectionResult['auth']): string {
   if (auth.storefront === 'unknown') return 'desconhecido';
