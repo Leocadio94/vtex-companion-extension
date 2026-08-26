@@ -94,16 +94,22 @@ Sem código remoto: nada é baixado ou avaliado em tempo de execução.
       Windows costuma sair alguns pixels maior
 - [ ] Ícone da listagem: `brand/icon-512.png`
 
-## Capturas sugeridas
+## Capturas
 
-Uma por recurso, cada uma numa loja real. Ficam em `brand/screenshots/`, junto
-do ícone da listagem.
+Ficam em `brand/screenshots/`, junto do ícone da listagem. **O número do arquivo
+é a ordem de envio**, e a ordem importa: a Chrome Web Store exibe na sequência
+enviada, e a primeira é a que quase todo mundo vê.
 
-1. Aba Loja numa loja FastStore — tecnologia, account, workspace, sessão
-2. Aba Página numa PDP — template, produto com SKUs, achados de SEO
-3. Aba Página numa loja com muitos pixels — lista de terceiros
-4. Aba Preview no admin do CMS — botão Localhost e o toggle de redirecionamento
-5. Painel do DevTools com uma resposta formatada ao lado da requisição
+1. Aba Página numa PDP — produto, com a lista de SKUs aberta
+2. Painel do DevTools — requisição e resposta formatada lado a lado
+3. Admin do CMS — botão Localhost e o Localhost URL no painel de dev mode
+4. Aba Página — achados de SEO e scripts de terceiros
+5. Aba Loja — tecnologia, account, workspace e o bloco de sessão
+
+O critério da ordem: começa pelo que qualquer pessoa que trabalha com VTEX
+reconhece de imediato, depois a ferramenta com mais espaço de tela, depois o
+recurso que nenhuma outra extensão tem. A sessão fica por último — é o recurso
+mais sensível e o menos indicado para servir de cartão de visita.
 
 Duas armadilhas que já apareceram:
 
