@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { TabContext } from '@/lib/collect';
 import { toCsv } from '@/lib/runner/csv';
+import { prettyJson } from '@/lib/runner/format';
 import type { HistoryEntry } from '@/lib/runner/history';
 import { PRESETS } from '@/lib/runner/presets';
 import type { RunnerResponse } from '@/lib/runner/probe';
@@ -11,6 +12,7 @@ import {
   METHODS,
   type RunnerInput,
 } from '@/lib/runner/request';
+import { JsonView } from '../components/JsonView';
 import { Empty } from '../components/Row';
 
 const GROUPS = [...new Set(PRESETS.map((preset) => preset.group))];
@@ -43,6 +45,7 @@ export function ApiTab({
 }) {
   const [confirming, setConfirming] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+  const [raw, setRaw] = useState(false);
 
   if (!context) {
     return <Empty>Abra uma aba de loja ou do admin para usar o runner.</Empty>;
@@ -50,6 +53,9 @@ export function ApiTab({
 
   const built = buildRequest(input, context.origin);
   const unsafe = isUnsafeMethod(input.method);
+  // `null` quando a resposta não é JSON: aí só existe o cru, e o alternador
+  // some em vez de oferecer uma leitura que não pode entregar.
+  const pretty = response?.body ? prettyJson(response.body) : null;
 
   const patch = (part: Partial<RunnerInput>) => {
     onChange({ ...input, ...part });
@@ -207,11 +213,35 @@ export function ApiTab({
                 {response.truncated ? ' (truncado)' : ''}
                 {response.contentType ? ` · ${response.contentType.split(';')[0]}` : ''}
               </p>
-              <pre className="response">{response.body || '(vazio)'}</pre>
+              {pretty && (
+                <div className="segmented">
+                  <button
+                    type="button"
+                    className={raw ? undefined : 'active'}
+                    onClick={() => setRaw(false)}
+                  >
+                    Formatado
+                  </button>
+                  <button
+                    type="button"
+                    className={raw ? 'active' : undefined}
+                    onClick={() => setRaw(true)}
+                  >
+                    Raw
+                  </button>
+                </div>
+              )}
+
+              {pretty && !raw ? (
+                <JsonView text={pretty} />
+              ) : (
+                <pre className="response">{response.body || '(vazio)'}</pre>
+              )}
+
               <div className="actions">
                 <button
                   type="button"
-                  onClick={() => void copy('json', response.body)}
+                  onClick={() => void copy('json', pretty ?? response.body)}
                 >
                   {copied === 'json' ? 'Copiado' : 'Copiar JSON'}
                 </button>

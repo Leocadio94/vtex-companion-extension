@@ -435,3 +435,69 @@ textarea {
   color: var(--muted);
   font-size: 11px;
 }
+
+.segmented {
+  display: inline-flex;
+  margin-top: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.segmented button {
+  padding: 3px 10px;
+  border-radius: 0;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.segmented button.active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 600;
+}
+
+.segmented button:hover {
+  filter: none;
+  color: var(--fg);
+}
+
+.segmented button.active:hover {
+  color: var(--accent-fg);
+}
+
+.json-key {
+  color: #7a3ea3;
+}
+
+.json-string {
+  color: #1a6b3c;
+}
+
+.json-number {
+  color: #23508f;
+}
+
+.json-literal {
+  color: #b0143c;
+}
+
+@media (prefers-color-scheme: dark) {
+  .json-key {
+    color: #cf9ff0;
+  }
+
+  .json-string {
+    color: #7fd3a1;
+  }
+
+  .json-number {
+    color: #8fb6f0;
+  }
+
+  .json-literal {
+    color: #ff8fa9;
+  }
+}
