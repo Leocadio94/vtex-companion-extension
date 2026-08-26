@@ -66,7 +66,11 @@ reasons, all load-bearing:
 - It keeps the popup free of store-specific request logic.
 
 Injected functions are serialized, so they must be self-contained: no imports, no
-closure over the module. Pass everything through `args`.
+closure over the module. Pass everything through `args`, or declare it inside the
+function — a module-scope constant read from an injected function becomes a
+`ReferenceError` in the page, and the surrounding `catch` turns that into a
+silent `null`. Prefer rendering an explicit failure state over hiding the section
+when a probe returns nothing, so the next one is visible.
 
 ### Deciding what to do is separate from doing it
 

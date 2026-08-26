@@ -161,7 +161,7 @@ export function PageTab({
         </>
       )}
 
-      {pixels && <PixelsSection report={pixels} />}
+      <PixelsSection report={pixels} />
     </>
   );
 }

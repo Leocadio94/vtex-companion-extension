@@ -25,19 +25,21 @@ const KNOWN_GLOBALS = [
 const INLINE_ID_PATTERN =
   /\b(GTM-[A-Z0-9]{4,}|G-[A-Z0-9]{6,}|AW-[A-Z0-9]{6,}|UA-\d{4,}-\d+)\b/g;
 
-/** Teto de recursos lidos: página de ecommerce passa fácil de mil. */
-const MAX_RESOURCES = 800;
-
 export function readPixels(
   knownGlobals: string[],
   inlinePattern: string,
 ): PixelSignals {
+  // Declarada aqui dentro de propósito: a função é serializada para dentro da
+  // página, então qualquer identificador de escopo de módulo vira
+  // `ReferenceError` no destino.
+  const maxResources = 800;
+
   const win = window as unknown as Record<string, unknown>;
 
   const urls = new Set<string>();
 
   const entries = performance.getEntriesByType('resource');
-  for (let i = 0; i < Math.min(entries.length, MAX_RESOURCES); i += 1) {
+  for (let i = 0; i < Math.min(entries.length, maxResources); i += 1) {
     const name = entries[i]?.name;
     if (name) urls.add(name);
   }

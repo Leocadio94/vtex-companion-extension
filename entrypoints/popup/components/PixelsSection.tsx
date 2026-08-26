@@ -1,7 +1,19 @@
 import type { PixelReport } from '@/lib/pixels/signals';
 import { Empty } from './Row';
 
-export function PixelsSection({ report }: { report: PixelReport }) {
+export function PixelsSection({ report }: { report: PixelReport | null }) {
+  // A seção aparece mesmo sem resultado. Escondê-la fazia uma falha de leitura
+  // ficar indistinguível de uma página sem scripts — foi assim que um
+  // ReferenceError na sonda passou despercebido.
+  if (!report) {
+    return (
+      <section>
+        <h2>Scripts de terceiros</h2>
+        <Empty>Não foi possível ler os scripts desta página.</Empty>
+      </section>
+    );
+  }
+
   const { vendors, others } = report;
 
   return (
