@@ -40,7 +40,10 @@ as permissões mudam — ver a regra abaixo.
 [o repositório irmão](#o-repositório-irmão).
 
 **Capturas** — `pnpm screenshots`. Elas envelhecem a cada mudança de interface e
-são exigidas em **1280×800 exatos**; a Chrome Web Store recusa 1282×800.
+são exigidas em **1280×800 exatos**; a Chrome Web Store recusa 1282×800. O
+painel sai no tema escuro por padrão, para combinar com as duas capturas
+manuais; `--theme=light` ou `--theme=auto` mudam isso, e um número como
+argumento refaz só aquela.
 
 **Versão** — subir em `package.json`, que é de onde o WXT tira a do manifesto:
 

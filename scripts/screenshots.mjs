@@ -6,7 +6,8 @@
  * duas peças em 1280x800. As outras duas continuam manuais e entram por
  * `brand/screenshots/manual/` — ver `docs/release.md`.
  *
- * Uso: `pnpm screenshots` (todas) ou `pnpm screenshots 1 4` (só essas).
+ * Uso: `pnpm screenshots` (todas), `pnpm screenshots 1 4` (só essas),
+ * `pnpm screenshots --theme=light` (o painel em claro).
  */
 
 import { execFileSync } from 'node:child_process';
@@ -37,6 +38,17 @@ const HEIGHT = 800;
 /** Onde o popup encosta na composição. */
 const POPUP = { width: 400, height: 600, top: 56, right: 56 };
 
+/**
+ * Tema do painel. O padrão é escuro porque é assim que as capturas manuais
+ * saem — o DevTools de quem trabalha nisto está no escuro — e um conjunto meio
+ * claro, meio escuro denuncia que foi montado aos pedaços.
+ *
+ * Só o painel é emulado, nunca a página da loja: quase nenhuma loja VTEX tem
+ * modo escuro, e forçar `dark` nelas produziria uma renderização que ninguém
+ * vê na vida real.
+ */
+const THEMES = ['dark', 'light', 'auto'];
+
 const name = (n) => `vtex-companion-extension-${n}.png`;
 
 /**
@@ -50,10 +62,13 @@ const SHOTS = [
     store: 'https://storetheme.vtex.com/tank-top/p',
     tab: 'Página',
     async prepare(popup) {
-      await popup.getByRole('group').filter({ hasText: 'SKUs' }).first().click();
+      const skus = popup.getByRole('group').filter({ hasText: 'SKUs' }).first();
+      await skus.click();
       // A lista inteira precisa caber: seção cortada pela borda sugere
-      // interface truncada, que é o que `docs/publicacao.md` manda evitar.
-      await popup.locator('details li').last().scrollIntoViewIfNeeded();
+      // interface truncada, que é o que `docs/publicacao.md` manda evitar. O
+      // alvo é o último SKU, não o último `li` do painel — este último mora em
+      // "Outras origens de terceiros", lá no fim da aba.
+      await skus.locator('li').last().scrollIntoViewIfNeeded();
     },
   },
   {
@@ -139,12 +154,13 @@ async function waitProbes(popup) {
   );
 }
 
-async function capture(context, id, shot) {
+async function capture(context, id, shot, theme) {
   const store = await context.newPage();
   await store.goto(shot.store, { waitUntil: 'load', timeout: 60_000 });
 
   const popup = await context.newPage();
   await popup.setViewportSize({ width: POPUP.width, height: POPUP.height });
+  if (theme !== 'auto') await popup.emulateMedia({ colorScheme: theme });
   await popup.goto(`chrome-extension://${id}/popup.html`);
 
   // O popup lê a aba ativa da janela. Com ele em primeiro plano, a aba ativa é
@@ -240,8 +256,25 @@ async function ingestManual({ n, what }) {
   return write(n, await sharp(current).toBuffer());
 }
 
+function parseArgs(argv) {
+  const flag = argv.find((arg) => arg.startsWith('--theme='));
+  const theme = flag ? flag.slice('--theme='.length) : 'dark';
+
+  if (!THEMES.includes(theme)) {
+    throw new Error(`tema inválido: ${theme}. Use ${THEMES.join(', ')}.`);
+  }
+
+  return {
+    theme,
+    only: argv
+      .filter((arg) => !arg.startsWith('--'))
+      .map(Number)
+      .filter(Boolean),
+  };
+}
+
 async function main() {
-  const only = process.argv.slice(2).map(Number).filter(Boolean);
+  const { theme, only } = parseArgs(process.argv.slice(2));
   const wanted = (n) => only.length === 0 || only.includes(n);
 
   mkdirSync(OUT_DIR, { recursive: true });
@@ -255,8 +288,9 @@ async function main() {
     try {
       const id = await extensionId(context);
       for (const shot of shots) {
-        console.log(`· ${shot.n} automática — ${shot.store}`);
-        console.log(`  ${await write(shot.n, await capture(context, id, shot))}`);
+        console.log(`· ${shot.n} automática (${theme}) — ${shot.store}`);
+        const buffer = await capture(context, id, shot, theme);
+        console.log(`  ${await write(shot.n, buffer)}`);
       }
     } finally {
       await context.close();
