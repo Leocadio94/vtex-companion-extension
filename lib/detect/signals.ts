@@ -6,6 +6,8 @@
  * `DetectionResult`. Nada aqui depende de `browser.*` nem do DOM.
  */
 
+import type { AuthCookieInfo } from '../auth/names';
+
 export type VtexPlatform =
   | 'io'
   | 'faststore'
@@ -131,6 +133,8 @@ export interface AuthState {
   storefrontEmail?: string;
   /** Cookie de admin presente no domínio. */
   admin: boolean;
+  /** Cookies de sessão VTEX na origem, já classificados por escopo. */
+  cookies: AuthCookieInfo[];
 }
 
 export interface DetectionResult {

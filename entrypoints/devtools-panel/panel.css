@@ -10,37 +10,67 @@ main.devtools-shell {
   font-size: 11px;
 }
 
+/* Avisos moram entre o cabeçalho e o conteúdo, então carregam a própria
+   margem — o padding é do `.content`. */
+.banner {
+  flex: none;
+  margin: 12px 14px 0;
+}
+
 /*
  * Com largura sobrando, requisição e resposta ficam lado a lado — é a razão de
  * existir do painel. Abaixo disso, o DevTools está acoplado embaixo ou numa
  * janela estreita, e a coluna única do popup continua sendo a melhor leitura.
  */
 @media (min-width: 900px) {
+  /*
+   * `overflow: hidden` aqui e uma rolagem por área: no popup a coluna única
+   * rola inteira, mas com as três lado a lado isso fazia descer o histórico
+   * levar o formulário da requisição para fora da tela.
+   *
+   * As linhas são `minmax(0, …)` para poderem encolher abaixo do conteúdo. Com
+   * `auto` puro, uma requisição alta comeria a linha do histórico inteira em
+   * vez de ganhar a própria barra de rolagem.
+   */
   .devtools-shell .content {
     display: grid;
     grid-template-columns: minmax(340px, 460px) 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: minmax(0, auto) minmax(0, 1fr);
     grid-template-areas:
       'request response'
       'history response';
-    align-items: start;
+    min-height: 0;
+    overflow: hidden;
+    background: none;
   }
 
   .devtools-shell .panel-request {
     grid-area: request;
+    min-height: 0;
+    overflow-y: auto;
   }
 
   .devtools-shell .panel-history {
     grid-area: history;
+    min-height: 0;
+    overflow-y: auto;
   }
 
+  /*
+   * A resposta é o motivo de ter espaço. Ela vira uma coluna flex para o corpo
+   * crescer até o fim da janela e os botões de copiar ficarem ancorados
+   * embaixo — antes era um `calc()` sobre `100vh` que errava a conta assim que
+   * o cabeçalho ou o aviso de permissão mudavam de altura.
+   */
   .devtools-shell .panel-response {
     grid-area: response;
-    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
   }
 
-  /* A resposta é o motivo de ter espaço: usa a altura toda que sobrar. */
   .devtools-shell .panel-response .response {
-    max-height: calc(100vh - 230px);
+    flex: 1;
+    max-height: none;
   }
 }

@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { AUTH_COOKIE, cookieAttributes, pickSourceCookie } from './cookie';
+import {
+  AUTH_COOKIE,
+  cookieAttributes,
+  isAdminDomain,
+  listAuthCookies,
+  pickSourceCookie,
+} from './cookie';
 
 describe('cookieAttributes', () => {
   it('grava na origem, sem caminho da página', () => {
@@ -23,6 +29,58 @@ describe('cookieAttributes', () => {
   it('recusa URL que não aceita cookie', () => {
     expect(cookieAttributes('chrome://extensions', AUTH_COOKIE)).toBeNull();
     expect(cookieAttributes('não é url', AUTH_COOKIE)).toBeNull();
+  });
+});
+
+describe('listAuthCookies', () => {
+  const names = [
+    'VtexIdclientAutCookie',
+    'VtexIdclientAutCookie_acme',
+    'VtexWorkspace',
+    'checkout.vtex.com',
+  ];
+
+  it('ignora o que não é cookie de sessão', () => {
+    expect(listAuthCookies(names, false).map((entry) => entry.name)).toEqual([
+      'VtexIdclientAutCookie',
+      'VtexIdclientAutCookie_acme',
+    ]);
+  });
+
+  it('na loja, o sufixado é o login do shopper', () => {
+    expect(listAuthCookies(names, false)).toEqual([
+      { name: 'VtexIdclientAutCookie', scope: 'admin' },
+      { name: 'VtexIdclientAutCookie_acme', scope: 'store', account: 'acme' },
+    ]);
+  });
+
+  it('no myvtex, o sufixado também é do admin', () => {
+    expect(listAuthCookies(names, true).map((entry) => entry.scope)).toEqual([
+      'admin',
+      'admin',
+    ]);
+  });
+
+  it('não inventa account quando o sufixo é vazio', () => {
+    expect(listAuthCookies(['VtexIdclientAutCookie_'], false)).toEqual([
+      { name: 'VtexIdclientAutCookie_', scope: 'store' },
+    ]);
+  });
+
+  it('devolve lista vazia sem nenhum cookie de sessão', () => {
+    expect(listAuthCookies(['VtexWorkspace'], false)).toEqual([]);
+  });
+});
+
+describe('isAdminDomain', () => {
+  it('reconhece o domínio do admin', () => {
+    expect(isAdminDomain('acme.myvtex.com')).toBe(true);
+    expect(isAdminDomain('dev--acme.myvtex.com')).toBe(true);
+  });
+
+  it('recusa a loja', () => {
+    expect(isAdminDomain('www.acme.com.br')).toBe(false);
+    expect(isAdminDomain('acme.myvtex.com.br')).toBe(false);
   });
 });
 

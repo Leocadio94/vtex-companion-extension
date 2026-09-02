@@ -5,8 +5,10 @@
  * o painel nasce.
  */
 
+// O nome da extensão, não o da plataforma: uma aba "VTEX" ao lado das nativas
+// se apresenta como painel oficial, e não é.
 browser.devtools.panels.create(
-  'VTEX',
+  'VTEX Companion',
   'icon/48.png',
   'devtools-panel.html',
 );

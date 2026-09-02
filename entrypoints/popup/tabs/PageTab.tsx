@@ -39,6 +39,7 @@ export function PageTab({
   catalog,
   adminProductUrl,
   pixels,
+  probing,
 }: {
   context: TabContext | null;
   result: DetectionResult | null;
@@ -46,9 +47,11 @@ export function PageTab({
   catalog: CatalogSnapshot | null;
   adminProductUrl: string | null;
   pixels: PixelReport | null;
+  /** As sondas de catálogo, SEO e scripts ainda estão rodando. */
+  probing: boolean;
 }) {
   if (!context || !result) {
-    return <Empty>Nada para ler nesta aba.</Empty>;
+    return <Empty tone="empty">Nada para ler nesta aba.</Empty>;
   }
 
   const findings = seo ? analyzeSeo(seo, result.template) : [];
@@ -64,104 +67,118 @@ export function PageTab({
         )}
       </section>
 
-      {catalog && (
-        <CatalogSection snapshot={catalog} adminUrl={adminProductUrl} />
-      )}
-
-      {!seo ? (
-        <Empty>Não foi possível ler o SEO desta página.</Empty>
+      {probing ? (
+        <Empty>Lendo catálogo, SEO e scripts…</Empty>
       ) : (
         <>
-          <section>
-            <h2>
-              SEO{' '}
-              {worst ? (
-                <span className={`pill pill-${worst}`}>
-                  {findings.length}{' '}
-                  {findings.length === 1 ? 'achado' : 'achados'}
-                </span>
-              ) : (
-                <span className="pill pill-ok">sem achados</span>
-              )}
-            </h2>
+          {catalog && (
+            <CatalogSection snapshot={catalog} adminUrl={adminProductUrl} />
+          )}
 
-            {findings.length === 0 ? (
-              <Empty>Nenhuma regra disparou nesta página.</Empty>
-            ) : (
-              <ul className="findings">
-                {findings.map((finding) => (
-                  <li key={finding.id}>
-                    <span className={`pill pill-${finding.severity}`}>
-                      {SEVERITY_LABELS[finding.severity]}
+          {!seo ? (
+            <Empty tone="error">Não foi possível ler o SEO desta página.</Empty>
+          ) : (
+            <>
+              <section>
+                <h2>
+                  SEO{' '}
+                  {worst ? (
+                    <span className={`pill pill-${worst}`}>
+                      {findings.length}{' '}
+                      {findings.length === 1 ? 'achado' : 'achados'}
                     </span>
-                    <span>{finding.message}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+                  ) : (
+                    <span className="pill pill-ok">sem achados</span>
+                  )}
+                </h2>
 
-          <section>
-            <h2>Tags</h2>
-            <Row
-              label="Title"
-              value={seo.title ? `${seo.title} (${length(seo.title)})` : '—'}
-            />
-            <Row
-              label="Description"
-              value={
-                seo.description
-                  ? `${seo.description} (${length(seo.description)})`
-                  : '—'
-              }
-            />
-            <Row
-              label="Canonical"
-              value={seo.canonical ? <code>{seo.canonical}</code> : '—'}
-            />
-            <Row label="Robots" value={seo.robots ?? 'padrão (index, follow)'} />
-            <Row label="Lang" value={seo.lang ?? '—'} />
-            <Row
-              label="H1"
-              value={
-                seo.headings.h1.length > 0
-                  ? seo.headings.h1.join(' · ')
-                  : 'nenhum'
-              }
-            />
-            <Row
-              label="Headings"
-              value={`${seo.headings.h1.length} H1 · ${seo.headings.h2} H2 · ${seo.headings.h3} H3`}
-            />
-            <Row
-              label="Imagens"
-              value={`${seo.images.total} (${seo.images.withoutAlt} sem alt)`}
-            />
-            <Row
-              label="JSON-LD"
-              value={
-                seo.jsonLdTypes.length > 0 ? seo.jsonLdTypes.join(', ') : 'nenhum'
-              }
-            />
-            <Row
-              label="Open Graph"
-              value={
-                Object.keys(seo.openGraph).length > 0
-                  ? Object.keys(seo.openGraph).join(', ')
-                  : 'nenhum'
-              }
-            />
-            {seo.hreflang.length > 0 && (
-              <Row
-                label="hreflang"
-                value={seo.hreflang.map((entry) => entry.lang).join(', ')}
-              />
-            )}
-          </section>
+                {findings.length === 0 ? (
+                  <Empty tone="empty">
+                    Nenhuma regra disparou nesta página.
+                  </Empty>
+                ) : (
+                  <ul className="findings">
+                    {findings.map((finding) => (
+                      <li key={finding.id}>
+                        <span className={`pill pill-${finding.severity}`}>
+                          {SEVERITY_LABELS[finding.severity]}
+                        </span>
+                        <span>{finding.message}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+
+              <section>
+                <h2>Tags</h2>
+                <Row
+                  label="Title"
+                  value={seo.title ? `${seo.title} (${length(seo.title)})` : '—'}
+                />
+                <Row
+                  label="Description"
+                  value={
+                    seo.description
+                      ? `${seo.description} (${length(seo.description)})`
+                      : '—'
+                  }
+                />
+                <Row
+                  label="Canonical"
+                  value={seo.canonical ? <code>{seo.canonical}</code> : '—'}
+                  copy={seo.canonical ?? undefined}
+                />
+                <Row
+                  label="Robots"
+                  value={seo.robots ?? 'padrão (index, follow)'}
+                />
+                <Row label="Lang" value={seo.lang ?? '—'} />
+                <Row
+                  label="H1"
+                  value={
+                    seo.headings.h1.length > 0
+                      ? seo.headings.h1.join(' · ')
+                      : 'nenhum'
+                  }
+                />
+                <Row
+                  label="Headings"
+                  value={`${seo.headings.h1.length} H1 · ${seo.headings.h2} H2 · ${seo.headings.h3} H3`}
+                />
+                <Row
+                  label="Imagens"
+                  value={`${seo.images.total} (${seo.images.withoutAlt} sem alt)`}
+                />
+                <Row
+                  label="JSON-LD"
+                  value={
+                    seo.jsonLdTypes.length > 0
+                      ? seo.jsonLdTypes.join(', ')
+                      : 'nenhum'
+                  }
+                />
+                <Row
+                  label="Open Graph"
+                  value={
+                    Object.keys(seo.openGraph).length > 0
+                      ? Object.keys(seo.openGraph).join(', ')
+                      : 'nenhum'
+                  }
+                />
+                {seo.hreflang.length > 0 && (
+                  <Row
+                    label="hreflang"
+                    value={seo.hreflang.map((entry) => entry.lang).join(', ')}
+                  />
+                )}
+              </section>
+            </>
+          )}
+
+          <PixelsSection report={pixels} />
         </>
       )}
-
-      <PixelsSection report={pixels} />
     </>
   );
 }

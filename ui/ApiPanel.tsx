@@ -3,7 +3,7 @@ import type { TabContext } from '@/lib/collect';
 import { toCsv } from '@/lib/runner/csv';
 import { prettyJson } from '@/lib/runner/format';
 import type { HistoryEntry } from '@/lib/runner/history';
-import { PRESETS } from '@/lib/runner/presets';
+import { groupPresets, PRESETS } from '@/lib/runner/presets';
 import type { RunnerResponse } from '@/lib/runner/probe';
 import {
   acceptsBody,
@@ -14,8 +14,9 @@ import {
 } from '@/lib/runner/request';
 import { JsonView } from './components/JsonView';
 import { Empty } from './components/Row';
+import { useCopy } from './useCopy';
 
-const GROUPS = [...new Set(PRESETS.map((preset) => preset.group))];
+const GROUPS = groupPresets(PRESETS);
 
 function statusTone(response: RunnerResponse): string {
   if (response.error || response.status === 0) return 'error';
@@ -26,6 +27,7 @@ function statusTone(response: RunnerResponse): string {
 
 export function ApiPanel({
   context,
+  isVtex,
   input,
   response,
   history,
@@ -35,6 +37,8 @@ export function ApiPanel({
   onReplay,
 }: {
   context: TabContext | null;
+  /** Fora de um domínio VTEX os presets não têm onde bater. */
+  isVtex: boolean;
   input: RunnerInput;
   response: RunnerResponse | null;
   history: HistoryEntry[];
@@ -44,11 +48,15 @@ export function ApiPanel({
   onReplay: (entry: HistoryEntry) => void;
 }) {
   const [confirming, setConfirming] = useState(false);
-  const [copied, setCopied] = useState<string | null>(null);
   const [raw, setRaw] = useState(false);
+  const clipboard = useCopy();
 
   if (!context) {
-    return <Empty>Abra uma aba de loja ou do admin para usar o runner.</Empty>;
+    return (
+      <Empty tone="empty">
+        Abra uma aba de loja ou do admin para usar o runner.
+      </Empty>
+    );
   }
 
   const built = buildRequest(input, context.origin);
@@ -83,17 +91,11 @@ export function ApiPanel({
     onSend();
   };
 
-  const copy = async (label: string, text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(label);
-    window.setTimeout(() => setCopied(null), 1500);
-  };
-
   const copyCsv = async () => {
     try {
-      await copy('csv', toCsv(JSON.parse(response?.body ?? '')));
+      await clipboard.copy(toCsv(JSON.parse(response?.body ?? '')), 'csv');
     } catch {
-      await copy('csv', 'resposta não é JSON');
+      await clipboard.copy('resposta não é JSON', 'csv');
     }
   };
 
@@ -102,25 +104,31 @@ export function ApiPanel({
       <section className="panel-request">
         <h2>Requisição</h2>
 
-        <label className="field">
-          <span>Preset</span>
-          <select
-            value=""
-            onChange={(event) => applyPreset(event.target.value)}
-          >
-            <option value="">escolher…</option>
-            {GROUPS.map((group) => (
-              <option key={group} disabled>
-                — {group} —
-              </option>
-            ))}
-            {PRESETS.map((preset) => (
-              <option key={preset.id} value={preset.id}>
-                {preset.group} · {preset.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        {isVtex ? (
+          <label className="field">
+            <span>Preset</span>
+            <select
+              value=""
+              onChange={(event) => applyPreset(event.target.value)}
+            >
+              <option value="">escolher…</option>
+              {GROUPS.map(({ group, presets }) => (
+                <optgroup key={group} label={group}>
+                  {presets.map((preset) => (
+                    <option key={preset.id} value={preset.id}>
+                      {preset.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </label>
+        ) : (
+          <Empty tone="empty">
+            Os presets são caminhos da VTEX e esta página não foi reconhecida
+            como uma. O runner continua valendo para qualquer URL da origem.
+          </Empty>
+        )}
 
         <div className="request-line">
           <select
@@ -163,7 +171,10 @@ export function ApiPanel({
           />
         )}
 
-        {!built.ok && <p className="muted">{built.error}</p>}
+        {/* Campo vazio é o estado inicial, não um erro do usuário. */}
+        {!built.ok && input.url.trim() !== '' && (
+          <Empty tone="error">{built.error}</Empty>
+        )}
 
         {built.ok && !built.request.sameOrigin && (
           <p className="muted">
@@ -173,7 +184,12 @@ export function ApiPanel({
         )}
 
         <div className="actions">
-          <button type="button" disabled={!built.ok || running} onClick={send}>
+          <button
+            type="button"
+            className={confirming ? 'btn-danger' : undefined}
+            disabled={!built.ok || running}
+            onClick={send}
+          >
             {running
               ? 'Enviando…'
               : confirming
@@ -181,7 +197,11 @@ export function ApiPanel({
                 : 'Enviar'}
           </button>
           {confirming && (
-            <button type="button" onClick={() => setConfirming(false)}>
+            <button
+              type="button"
+              className="btn-ghost"
+              onClick={() => setConfirming(false)}
+            >
               Cancelar
             </button>
           )}
@@ -205,7 +225,7 @@ export function ApiPanel({
           </h2>
 
           {response.error ? (
-            <Empty>{response.error}</Empty>
+            <Empty tone="error">{response.error}</Empty>
           ) : (
             <>
               <p className="muted">
@@ -241,12 +261,19 @@ export function ApiPanel({
               <div className="actions">
                 <button
                   type="button"
-                  onClick={() => void copy('json', pretty ?? response.body)}
+                  className="btn-secondary"
+                  onClick={() =>
+                    void clipboard.copy(pretty ?? response.body, 'json')
+                  }
                 >
-                  {copied === 'json' ? 'Copiado' : 'Copiar JSON'}
+                  {clipboard.isCopied('json') ? 'Copiado' : 'Copiar JSON'}
                 </button>
-                <button type="button" onClick={copyCsv}>
-                  {copied === 'csv' ? 'Copiado' : 'Copiar CSV'}
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={copyCsv}
+                >
+                  {clipboard.isCopied('csv') ? 'Copiado' : 'Copiar CSV'}
                 </button>
               </div>
             </>

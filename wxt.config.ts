@@ -1,5 +1,22 @@
 import { defineConfig } from 'wxt';
 
+/**
+ * Lojas de demonstração usadas pelo `pnpm screenshots`.
+ *
+ * Só entram em `host_permissions` no build de capturas. O Playwright não
+ * consegue fechar o diálogo nativo de `permissions.request()`, e sem a
+ * permissão as sondas falham — a captura sairia mostrando estado de erro em vez
+ * do recurso. O que a foto mostra é o mesmo estado que o usuário alcança
+ * clicando em "Conceder acesso a este site"; o build publicado não muda.
+ */
+const SCREENSHOT_ORIGINS = [
+  '*://storetheme.vtex.com/*',
+  '*://fast.store/*',
+  '*://*.fast.store/*',
+];
+
+const forScreenshots = process.env.WXT_SCREENSHOTS === '1';
+
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
@@ -11,6 +28,8 @@ export default defineConfig({
   // livre sozinho, mas fixar deixa o endereço de HMR previsível.
   dev: { server: { port: 3010 } },
   srcDir: '.',
+  // O build de capturas sai noutra pasta para não haver como empacotá-lo por engano.
+  outDir: forScreenshots ? '.output-screenshots' : '.output',
   // O zip de fontes existe para o revisor da AMO conferir o build. Capturas de
   // tela não entram nisso e respondem por quase todo o peso do pacote.
   zip: { excludeSources: ['brand/screenshots/**'] },
@@ -35,7 +54,11 @@ export default defineConfig({
       'webNavigation',
       'cookies',
     ],
-    host_permissions: ['*://*.myvtex.com/*', 'http://localhost/*'],
+    host_permissions: [
+      '*://*.myvtex.com/*',
+      'http://localhost/*',
+      ...(forScreenshots ? SCREENSHOT_ORIGINS : []),
+    ],
     optional_host_permissions: ['*://*/*'],
     browser_specific_settings: {
       gecko: {

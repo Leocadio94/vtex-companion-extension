@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { acceptsBody, buildRequest, isUnsafeMethod } from './request';
+import {
+  acceptsBody,
+  buildRequest,
+  defaultRequest,
+  isUnsafeMethod,
+} from './request';
 
 const ORIGIN = 'https://acme.com.br';
 
@@ -22,6 +27,25 @@ function failure(overrides = {}) {
   if (result.ok) throw new Error('esperava falha');
   return result.error;
 }
+
+describe('defaultRequest', () => {
+  it('sugere a sessão em domínio VTEX', () => {
+    expect(defaultRequest(true).url).toBe('/api/sessions?items=*');
+  });
+
+  it('vem vazio fora da VTEX', () => {
+    expect(defaultRequest(false).url).toBe('');
+  });
+
+  it('não muda o resto do formulário', () => {
+    expect(defaultRequest(false)).toEqual({
+      method: 'GET',
+      url: '',
+      headers: '',
+      body: '',
+    });
+  });
+});
 
 describe('buildRequest', () => {
   it('resolve caminho contra a origem da aba', () => {

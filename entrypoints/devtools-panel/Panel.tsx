@@ -12,7 +12,10 @@ export default function Panel() {
   const [context, setContext] = useState<TabContext | null>(null);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [loading, setLoading] = useState(true);
-  const runner = useRunner(context);
+  const runner = useRunner(
+    context,
+    loading ? undefined : Boolean(result?.isVtex),
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -58,34 +61,38 @@ export default function Panel() {
         </span>
       </header>
 
+      {/* Fora do `.content` porque lá as colunas do grid são posições
+          nomeadas: um aviso solto cairia numa linha implícita e sumiria
+          debaixo do `overflow: hidden`. */}
+      {!loading && context && !context.hasHostPermission && (
+        <section className="notice banner">
+          <p>
+            O painel de DevTools não tem o acesso temporário que o popup recebe
+            ao ser aberto, então precisa de permissão para{' '}
+            <strong>{context.origin}</strong>.
+          </p>
+          <button type="button" onClick={grantPermission}>
+            Conceder acesso a este site
+          </button>
+          <p className="muted">
+            Se o navegador recusar o pedido aqui, abra o popup da extensão nesta
+            aba e conceda por lá — depois recarregue o DevTools.
+          </p>
+        </section>
+      )}
+
       <div className="content">
         {!loading && !context && (
-          <Empty>
+          <Empty tone="empty">
             Esta aba não é uma página web comum. Inspecione uma loja ou o admin
             da VTEX.
           </Empty>
         )}
 
-        {!loading && context && !context.hasHostPermission && (
-          <section className="notice">
-            <p>
-              O painel de DevTools não tem o acesso temporário que o popup
-              recebe ao ser aberto, então precisa de permissão para{' '}
-              <strong>{context.origin}</strong>.
-            </p>
-            <button type="button" onClick={grantPermission}>
-              Conceder acesso a este site
-            </button>
-            <p className="muted">
-              Se o navegador recusar o pedido aqui, abra o popup da extensão
-              nesta aba e conceda por lá — depois recarregue o DevTools.
-            </p>
-          </section>
-        )}
-
         {!loading && context && (
           <ApiPanel
             context={context}
+            isVtex={Boolean(result?.isVtex)}
             input={runner.input}
             response={runner.response}
             history={runner.history}

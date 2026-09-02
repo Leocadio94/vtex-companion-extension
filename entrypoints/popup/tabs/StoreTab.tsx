@@ -23,7 +23,7 @@ export function StoreTab({
 }) {
   if (!context) {
     return (
-      <Empty>
+      <Empty tone="empty">
         Esta aba não é uma página web comum. Abra uma loja ou o admin da VTEX.
       </Empty>
     );
@@ -48,14 +48,19 @@ export function StoreTab({
           {/* Repete o badge do cabeçalho de propósito: por extenso, e ao lado
               dos outros dados da loja, é onde se lê sem procurar. */}
           <Row label="Tecnologia" value={PLATFORM_FULL[result.platform]} />
-          {result.account && <Row label="Account" value={result.account} />}
+          {result.account && (
+            <Row label="Account" value={result.account} copy={result.account} />
+          )}
           {result.workspace && (
             <Row
               label="Workspace"
               value={`${result.workspace}${result.isWorkspace ? ' (na URL)' : ''}`}
+              copy={result.workspace}
             />
           )}
-          {result.binding && <Row label="Binding" value={result.binding} />}
+          {result.binding && (
+            <Row label="Binding" value={result.binding} copy={result.binding} />
+          )}
           <Row
             label="Ambiente"
             value={result.environment === 'admin' ? 'Admin VTEX' : 'Loja final'}

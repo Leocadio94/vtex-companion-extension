@@ -28,6 +28,29 @@ const preset = (
   ...extra,
 });
 
+export interface PresetGroup {
+  group: string;
+  presets: Preset[];
+}
+
+/**
+ * Presets na ordem em que os grupos aparecem, prontos para virar `<optgroup>`.
+ *
+ * O `<select>` renderizava os títulos e as opções em dois `map` seguidos, então
+ * os grupos saíam todos empilhados no topo, longe do que rotulavam.
+ */
+export function groupPresets(presets: Preset[]): PresetGroup[] {
+  const groups: PresetGroup[] = [];
+
+  for (const preset of presets) {
+    const found = groups.find((entry) => entry.group === preset.group);
+    if (found) found.presets.push(preset);
+    else groups.push({ group: preset.group, presets: [preset] });
+  }
+
+  return groups;
+}
+
 export const PRESETS: Preset[] = [
   preset('sessions', 'Sessão', 'Sessão atual', 'GET', '/api/sessions?items=*'),
   preset('segments', 'Sessão', 'Segmento', 'GET', '/api/segments'),

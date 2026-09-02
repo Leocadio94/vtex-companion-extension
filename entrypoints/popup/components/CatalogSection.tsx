@@ -19,7 +19,9 @@ export function CatalogSection({
       return (
         <section>
           <h2>Produto</h2>
-          <Empty>{snapshot.note ?? 'Nada retornado pelo catálogo.'}</Empty>
+          <Empty tone="error">
+            {snapshot.note ?? 'Nada retornado pelo catálogo.'}
+          </Empty>
         </section>
       );
     }
@@ -28,9 +30,17 @@ export function CatalogSection({
       <section>
         <h2>Produto</h2>
         <Row label="Nome" value={product.productName} />
-        <Row label="productId" value={<code>{product.productId}</code>} />
+        <Row
+          label="productId"
+          value={<code>{product.productId}</code>}
+          copy={String(product.productId)}
+        />
         {product.productReference && (
-          <Row label="Referência" value={<code>{product.productReference}</code>} />
+          <Row
+            label="Referência"
+            value={<code>{product.productReference}</code>}
+            copy={product.productReference}
+          />
         )}
         {product.brand && (
           <Row
@@ -39,7 +49,11 @@ export function CatalogSection({
           />
         )}
         {product.categoryId && (
-          <Row label="categoryId" value={<code>{product.categoryId}</code>} />
+          <Row
+            label="categoryId"
+            value={<code>{product.categoryId}</code>}
+            copy={String(product.categoryId)}
+          />
         )}
         {product.categories.length > 0 && (
           <Row label="Categoria" value={product.categories[0]} />
@@ -104,7 +118,13 @@ export function CatalogSection({
       <section>
         <h2>Listagem</h2>
         {category?.name && <Row label="Categoria" value={category.name} />}
-        {category?.id && <Row label="categoryId" value={<code>{category.id}</code>} />}
+        {category?.id && (
+          <Row
+            label="categoryId"
+            value={<code>{category.id}</code>}
+            copy={String(category.id)}
+          />
+        )}
         {category && category.path.length > 0 && (
           <Row label="Caminho" value={category.path.join(' › ')} />
         )}

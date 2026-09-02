@@ -2,13 +2,18 @@ import { useState } from 'react';
 import type { TabContext } from '@/lib/collect';
 import {
   AUTH_COOKIE,
-  clearAuthCookie,
+  clearSession,
   cloneAuthCookie,
   writeAuthCookie,
   type CookieResult,
 } from '@/lib/auth/cookie';
 import type { DetectionResult } from '@/lib/detect/signals';
 import { Empty, Row } from './Row';
+
+const SCOPE_LABEL = {
+  admin: 'admin',
+  store: 'loja',
+} as const;
 
 export function SessionSection({
   context,
@@ -31,6 +36,8 @@ export function SessionSection({
     return null;
   }
 
+  const cookies = result.auth.cookies;
+
   const run = async (action: () => Promise<CookieResult>) => {
     setBusy(true);
     const outcome = await action();
@@ -47,46 +54,33 @@ export function SessionSection({
       <h2>Sessão</h2>
 
       <Row
-        label="Cookie de admin"
-        value={result.auth.admin ? 'presente nesta origem' : 'ausente'}
+        label="Origem"
+        value={<code>{context.origin}</code>}
+        copy={context.origin}
       />
-      <Row label="Origem" value={<code>{context.origin}</code>} />
 
-      <label className="field">
-        <span>Nome</span>
-        <input
-          type="text"
-          value={name}
-          spellCheck={false}
-          onChange={(event) => setName(event.target.value)}
-        />
-      </label>
-
-      <textarea
-        rows={3}
-        spellCheck={false}
-        placeholder="cole aqui o VtexIdclientAutCookie"
-        value={token}
-        onChange={(event) => setToken(event.target.value)}
-      />
+      {cookies.length === 0 ? (
+        <Empty tone="empty">Nenhuma sessão VTEX nesta origem.</Empty>
+      ) : (
+        <ul className="vendors">
+          {cookies.map((cookie) => (
+            <li key={cookie.name}>
+              <code>{cookie.name}</code>
+              <span className="vendor-evidence">
+                {SCOPE_LABEL[cookie.scope]}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <div className="actions">
         <button
           type="button"
-          disabled={busy || !token.trim() || !name.trim()}
-          onClick={() =>
-            void run(() => writeAuthCookie(context.url, name.trim(), token.trim()))
-          }
-        >
-          Entrar com o token
-        </button>
-
-        <button
-          type="button"
-          disabled={busy || !result.account || !name.trim()}
+          disabled={busy || !result.account}
           onClick={() =>
             void run(() =>
-              cloneAuthCookie(result.account!, context.url, name.trim()),
+              cloneAuthCookie(result.account!, context.url, AUTH_COOKIE),
             )
           }
         >
@@ -95,20 +89,24 @@ export function SessionSection({
 
         <button
           type="button"
-          disabled={busy || !name.trim()}
-          onClick={() => void run(() => clearAuthCookie(context.url, name.trim()))}
+          className="btn-danger"
+          disabled={busy || cookies.length === 0}
+          onClick={() => void run(() => clearSession(context.url))}
         >
-          Limpar
+          Limpar sessão
         </button>
       </div>
 
-      {status && <Empty>{status.message}</Empty>}
+      {status && (
+        <Empty tone={status.ok ? 'hint' : 'error'}>{status.message}</Empty>
+      )}
 
       {result.account ? (
         <Empty>
           <strong>Clonar do admin</strong> copia a sessão de{' '}
           <code>{result.account}.myvtex.com</code> para esta origem, sem o token
-          passar pela área de transferência.
+          passar pela área de transferência. <strong>Limpar sessão</strong>{' '}
+          apaga todos os cookies acima — a sessão de admin e a da loja.
         </Empty>
       ) : (
         <Empty>
@@ -117,10 +115,46 @@ export function SessionSection({
         </Empty>
       )}
 
-      <Empty>
-        O token dá acesso completo à sessão nesta origem. Ele não é guardado
-        pela extensão — some quando o painel fecha.
-      </Empty>
+      <details className="advanced">
+        <summary>Colar um token</summary>
+
+        <label className="field">
+          <span>Nome</span>
+          <input
+            type="text"
+            value={name}
+            spellCheck={false}
+            onChange={(event) => setName(event.target.value)}
+          />
+        </label>
+
+        <textarea
+          rows={3}
+          spellCheck={false}
+          placeholder="cole aqui o VtexIdclientAutCookie"
+          value={token}
+          onChange={(event) => setToken(event.target.value)}
+        />
+
+        <div className="actions">
+          <button
+            type="button"
+            disabled={busy || !token.trim() || !name.trim()}
+            onClick={() =>
+              void run(() =>
+                writeAuthCookie(context.url, name.trim(), token.trim()),
+              )
+            }
+          >
+            Entrar com o token
+          </button>
+        </div>
+
+        <Empty>
+          O token dá acesso completo à sessão nesta origem. Ele não é guardado
+          pela extensão — some quando o painel fecha.
+        </Empty>
+      </details>
     </section>
   );
 }

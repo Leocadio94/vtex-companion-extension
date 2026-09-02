@@ -39,6 +39,25 @@ export interface RunnerInput {
   body: string;
 }
 
+const BLANK_REQUEST: RunnerInput = {
+  method: 'GET',
+  url: '',
+  headers: '',
+  body: '',
+};
+
+/**
+ * O que o formulário mostra quando não há nada guardado.
+ *
+ * Fora de um domínio VTEX o caminho vem vazio: sugerir `/api/sessions` num site
+ * qualquer promete uma resposta que não existe ali.
+ */
+export function defaultRequest(isVtex: boolean): RunnerInput {
+  return isVtex
+    ? { ...BLANK_REQUEST, url: '/api/sessions?items=*' }
+    : BLANK_REQUEST;
+}
+
 export interface BuiltRequest {
   url: string;
   method: Method;

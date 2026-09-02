@@ -34,10 +34,14 @@ privacidade: <https://leocadio.dev/vtex-companion/privacy/>
 
 **Sessão**
 
-- Entrar numa origem colando um `VtexIdclientAutCookie`
+- Os cookies de sessão presentes na origem, com o escopo de cada um: o
+  `VtexIdclientAutCookie` é a sessão de admin, e o sufixado pela account é o
+  login do shopper na loja — no domínio do admin, os dois são do admin
 - Clonar a sessão de `{account}.myvtex.com` para o domínio da loja, sem o
   token passar pela área de transferência
-- Limpar o cookie da origem atual
+- Limpar a sessão apaga todos eles de uma vez, e confere o resultado relendo
+  os cookies
+- Entrar numa origem colando um token, para o caso em que não há admin a clonar
 
 O token nunca é gravado pela extensão nem sai da máquina, e os controles só
 aparecem em domínio reconhecido como VTEX.
@@ -49,7 +53,7 @@ aparecem em domínio reconhecido como VTEX.
 - Confirmação explícita antes de qualquer método que altera dados
 - Histórico da sessão e cópia da resposta como JSON ou CSV
 - Resposta em duas leituras: formatada com realce, ou o corpo cru
-- Disponível no popup e num painel **VTEX** dentro do DevTools
+- Disponível no popup e num painel **VTEX Companion** dentro do DevTools
 
 **SEO da página**
 
@@ -57,7 +61,14 @@ aparecem em domínio reconhecido como VTEX.
 - Open Graph, Twitter, hreflang, JSON-LD, headings e imagens sem alt
 - Regras por tipo de página: PDP sem `Product`, listagem sem `ItemList`
 
-**Preview no localhost** — quatro caminhos, nenhum deles dependente de `cmsDevMode`:
+**Preview no localhost — CMS do FastStore**
+
+O recurso é do CMS do FastStore, nas duas versões: o Headless CMS (legacy) e o
+Storefront > Content. VTEX IO e o portal legacy têm pré-visualização própria,
+por workspace, e não passam por aqui — a aba Preview diz isso quando a loja
+aberta é de uma dessas plataformas, em vez de oferecer controles inertes.
+
+São quatro caminhos, nenhum deles dependente de `cmsDevMode`:
 
 1. Redirecionamento automático da aba de preview (toggle no popup)
 2. Botão **Localhost** injetado ao lado de "Pré-visualização" no admin
@@ -91,8 +102,8 @@ pnpm build:firefox && pnpm dlx web-ext lint --source-dir .output/firefox-mv3
 
 ## Como o preview funciona
 
-O botão **Pré-visualização** do CMS abre uma aba para a Preview URL configurada
-na loja. O formato muda entre as duas versões do CMS:
+O botão **Pré-visualização** do CMS do FastStore abre uma aba para a Preview URL
+configurada na loja. O formato muda entre as duas versões do CMS:
 
 | CMS | URL que o botão abre |
 | --- | --- |
@@ -153,6 +164,11 @@ usa `all_frames: true`, e o `cmsDevMode` é lido e escrito com
 `allFrames: true` porque `localStorage` pertence ao origin do frame — o do
 iframe, não o do topo. Frames com sandbox sem `allow-same-origin` são
 reportados como indisponíveis em vez de derrubar a leitura.
+
+## Roadmap
+
+Ideias levantadas e ainda não feitas, com o motivo de cada uma, em
+[`docs/roadmap.md`](./docs/roadmap.md).
 
 ## Publicação
 

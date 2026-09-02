@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { TabContext } from '@/lib/collect';
 import type { DetectionResult } from '@/lib/detect/signals';
 import {
@@ -10,7 +9,10 @@ import {
   summarizeInjection,
   type FrameInspection,
 } from '@/lib/preview/inspect';
+import { previewFit } from '@/lib/preview/scope';
 import { Empty, Row } from '@/ui/components/Row';
+import { PLATFORM_SHORT } from '@/ui/labels';
+import { useCopy } from '@/ui/useCopy';
 
 export function PreviewTab({
   result,
@@ -19,6 +21,7 @@ export function PreviewTab({
   localPreviewUrl,
   frames,
   injection,
+  probing,
   onPortChange,
   onRedirectChange,
   onToggleDevMode,
@@ -30,24 +33,35 @@ export function PreviewTab({
   localPreviewUrl: string | null;
   frames: FrameDevMode[];
   injection: FrameInspection[];
+  /** A leitura do `cmsDevMode` e dos frames do admin ainda está rodando. */
+  probing: boolean;
   onPortChange: (value: number) => void;
   onRedirectChange: (value: boolean) => void;
   onToggleDevMode: () => void;
 }) {
-  const [copied, setCopied] = useState(false);
+  const clipboard = useCopy();
   const isAdmin = result?.environment === 'admin';
-
-  const copy = async () => {
-    if (!localPreviewUrl) return;
-    await navigator.clipboard.writeText(localPreviewUrl);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1500);
-  };
+  const fit = previewFit(result);
 
   return (
     <>
+      {fit === 'other-platform' && result ? (
+        <Empty tone="error">
+          Esta loja é {PLATFORM_SHORT[result.platform]}, e a pré-visualização
+          dela é por workspace. Nada nesta aba se aplica aqui — os campos
+          continuam valendo para quando você abrir o admin de uma loja em
+          FastStore.
+        </Empty>
+      ) : (
+        <Empty>
+          O preview no <code>localhost</code> é o do CMS do FastStore: o botão{' '}
+          <strong>Pré-visualização</strong> do Headless CMS e do Storefront
+          &gt; Content.
+        </Empty>
+      )}
+
       <section>
-        <h2>Dev server</h2>
+        <h2>Dev server do FastStore</h2>
 
         <label className="field">
           <span>Porta</span>
@@ -79,60 +93,78 @@ export function PreviewTab({
               >
                 Abrir
               </button>
-              <button type="button" onClick={copy}>
-                {copied ? 'Copiado' : 'Copiar'}
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => void clipboard.copy(localPreviewUrl)}
+              >
+                {clipboard.isCopied() ? 'Copiado' : 'Copiar'}
               </button>
             </div>
           </div>
         ) : (
-          <Empty>
+          <Empty tone="empty">
             Nenhum preview desta aba. Clique em{' '}
-            <strong>Pré-visualização</strong> no CMS e reabra este painel.
+            <strong>Pré-visualização</strong> no CMS do FastStore e reabra este
+            painel.
           </Empty>
         )}
       </section>
 
       {isAdmin ? (
         <section>
-          <h2>Development Mode do CMS</h2>
-          <Row
-            label="Status"
-            value={isDevModeOn(frames) ? 'ligado' : 'desligado'}
-          />
-          <Row label="Botão Localhost" value={summarizeInjection(injection)} />
-          {injection.length > 0 && (
-            <details className="frames">
-              <summary>Frames ({injection.length})</summary>
-              <ul>
-                {injection.map((frame) => (
-                  <li key={frame.frameId}>
-                    <code>{shortUrl(frame.url)}</code>
-                    <span>
-                      {frame.ready ? 'script ativo' : 'script ausente'} ·{' '}
-                      {frame.state}
-                    </span>
-                    {frame.candidates.map((candidate) => (
-                      <code key={candidate} className="candidate">
-                        {candidate}
-                      </code>
+          <h2>Development Mode do CMS do FastStore</h2>
+          {probing ? (
+            <Empty>Lendo os frames do admin…</Empty>
+          ) : (
+            <>
+              <Row
+                label="Status"
+                value={isDevModeOn(frames) ? 'ligado' : 'desligado'}
+              />
+              <Row
+                label="Botão Localhost"
+                value={summarizeInjection(injection)}
+              />
+              {injection.length > 0 && (
+                <details className="frames">
+                  <summary>Frames ({injection.length})</summary>
+                  <ul>
+                    {injection.map((frame) => (
+                      <li key={frame.frameId}>
+                        <code>{shortUrl(frame.url)}</code>
+                        <span>
+                          {frame.ready ? 'script ativo' : 'script ausente'} ·{' '}
+                          {frame.state}
+                        </span>
+                        {frame.candidates.map((candidate) => (
+                          <code key={candidate} className="candidate">
+                            {candidate}
+                          </code>
+                        ))}
+                      </li>
                     ))}
-                  </li>
-                ))}
-              </ul>
-            </details>
+                  </ul>
+                </details>
+              )}
+              <button
+                type="button"
+                className={isDevModeOn(frames) ? 'btn-danger' : undefined}
+                onClick={onToggleDevMode}
+              >
+                {isDevModeOn(frames)
+                  ? 'Desligar cmsDevMode e recarregar'
+                  : 'Ligar cmsDevMode e recarregar'}
+              </button>
+              <Empty>
+                O CMS novo (Storefront &gt; Content) pode não usar essa flag. O
+                redirecionamento e o link acima funcionam sem ela.
+              </Empty>
+            </>
           )}
-          <button type="button" onClick={onToggleDevMode}>
-            {isDevModeOn(frames)
-              ? 'Desligar cmsDevMode e recarregar'
-              : 'Ligar cmsDevMode e recarregar'}
-          </button>
-          <Empty>
-            O CMS novo (Storefront &gt; Content) pode não usar essa flag. O
-            redirecionamento e o link acima funcionam sem ela.
-          </Empty>
         </section>
       ) : (
-        <Empty>
+        <Empty tone="empty">
           O controle do <code>cmsDevMode</code> aparece quando a aba está no
           admin da VTEX.
         </Empty>
