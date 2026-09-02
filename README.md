@@ -165,6 +165,11 @@ usa `all_frames: true`, e o `cmsDevMode` é lido e escrito com
 iframe, não o do topo. Frames com sandbox sem `allow-same-origin` são
 reportados como indisponíveis em vez de derrubar a leitura.
 
+## Roadmap
+
+Ideias levantadas e ainda não feitas, com o motivo de cada uma, em
+[`docs/roadmap.md`](./docs/roadmap.md).
+
 ## Publicação
 
 Textos de listagem, justificativa de cada permissão e checklist de envio em

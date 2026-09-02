@@ -2,7 +2,7 @@
   "name": "vtex-companion-extension",
   "description": "VTEX companion extension for Chrome and Firefox",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",
