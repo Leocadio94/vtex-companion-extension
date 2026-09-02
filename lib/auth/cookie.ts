@@ -7,7 +7,16 @@
  * admin numa página qualquer não teria utilidade e teria risco.
  */
 
-export const AUTH_COOKIE = 'VtexIdclientAutCookie';
+import { AUTH_COOKIE, authCookieNames, pickSourceCookie } from './names';
+
+export {
+  AUTH_COOKIE,
+  authCookieNames,
+  isAdminDomain,
+  listAuthCookies,
+  pickSourceCookie,
+} from './names';
+export type { AuthCookieInfo, AuthScope } from './names';
 
 export interface CookieTarget {
   url: string;
@@ -38,25 +47,6 @@ export function cookieAttributes(url: string, name: string): CookieTarget | null
   } catch {
     return null;
   }
-}
-
-/**
- * Qual cookie do admin usar como origem da cópia.
- *
- * O VTEX ID grava o token do admin com o nome sufixado pela account, e às vezes
- * também o nome puro. O sufixado é o do admin daquela conta, então vence.
- */
-export function pickSourceCookie<T extends { name: string; value: string }>(
-  cookies: T[],
-  account: string,
-): T | null {
-  const suffixed = cookies.find(
-    (cookie) => cookie.name === `${AUTH_COOKIE}_${account}`,
-  );
-  if (suffixed?.value) return suffixed;
-
-  const plain = cookies.find((cookie) => cookie.name === AUTH_COOKIE);
-  return plain?.value ? plain : null;
 }
 
 export interface CookieResult {
@@ -109,6 +99,57 @@ export async function clearAuthCookie(
       message: `Não foi possível remover: ${(error as Error)?.message ?? error}`,
     };
   }
+}
+
+/**
+ * Apaga toda a sessão VTEX da origem — a do admin e a do shopper.
+ *
+ * Relê os cookies no fim em vez de confiar no `remove`: um cookie gravado no
+ * domínio pai, ou num path que não seja `/`, sobrevive à remoção pela URL da
+ * aba, e a mensagem precisa dizer isso em vez de anunciar um sucesso que não
+ * aconteceu.
+ */
+export async function clearSession(url: string): Promise<CookieResult> {
+  const target = cookieAttributes(url, AUTH_COOKIE);
+  if (!target) return { ok: false, message: 'URL da aba não aceita cookie.' };
+
+  let present: string[];
+  try {
+    const cookies = await browser.cookies.getAll({ url: target.url });
+    present = authCookieNames(cookies.map((cookie) => cookie.name));
+  } catch {
+    return { ok: false, message: `Sem permissão para ler ${target.url}.` };
+  }
+
+  if (present.length === 0) {
+    return { ok: true, message: 'Nenhuma sessão VTEX nesta origem.' };
+  }
+
+  try {
+    await Promise.all(
+      present.map((name) => browser.cookies.remove({ url: target.url, name })),
+    );
+  } catch (error) {
+    return {
+      ok: false,
+      message: `Não foi possível remover: ${(error as Error)?.message ?? error}`,
+    };
+  }
+
+  const after = await browser.cookies.getAll({ url: target.url });
+  const left = authCookieNames(after.map((cookie) => cookie.name));
+
+  if (left.length > 0) {
+    return {
+      ok: false,
+      message: `Sobrou ${left.join(', ')} — provavelmente gravado no domínio pai.`,
+    };
+  }
+
+  return {
+    ok: true,
+    message: `${present.length} cookie${present.length > 1 ? 's' : ''} de sessão removido${present.length > 1 ? 's' : ''} de ${target.url}.`,
+  };
 }
 
 /**

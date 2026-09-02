@@ -1,6 +1,8 @@
 /* Só o que é do formato do popup. O resto vem de `ui/styles.css`. */
 
+/* O Chrome aceita até 800x600 no popup; 540 de altura deixava a última linha de
+   cada seção encostada na barra de abas. */
 main {
-  width: 380px;
-  height: 540px;
+  width: 400px;
+  height: 600px;
 }

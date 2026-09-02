@@ -2,6 +2,7 @@
  * Ponto de entrada da detecção: junta as três camadas num `DetectionResult`.
  */
 
+import { isAdminDomain, listAuthCookies } from '../auth/names';
 import { resolveIdentity } from './account';
 import { detectPlatform } from './platform';
 import { detectTemplate } from './template';
@@ -12,12 +13,13 @@ export { parseVtexHost, accountFromAssetUrl } from './account';
 export { isPreviewUrl, rewritePreviewUrl } from '../preview/rewrite';
 
 function resolveAuth(signals: DetectionSignals): AuthState {
-  const { session, cookies } = signals;
+  const { session, cookies, url } = signals;
 
   return {
     storefront: session?.ok ? Boolean(session.isAuthenticated) : 'unknown',
     storefrontEmail: session?.email,
     admin: cookies.hasAdminAuthCookie,
+    cookies: listAuthCookies(cookies.names, isAdminDomain(url.hostname)),
   };
 }
 

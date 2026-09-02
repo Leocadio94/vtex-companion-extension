@@ -34,10 +34,14 @@ privacidade: <https://leocadio.dev/vtex-companion/privacy/>
 
 **Sessão**
 
-- Entrar numa origem colando um `VtexIdclientAutCookie`
+- Os cookies de sessão presentes na origem, com o escopo de cada um: o
+  `VtexIdclientAutCookie` é a sessão de admin, e o sufixado pela account é o
+  login do shopper na loja — no domínio do admin, os dois são do admin
 - Clonar a sessão de `{account}.myvtex.com` para o domínio da loja, sem o
   token passar pela área de transferência
-- Limpar o cookie da origem atual
+- Limpar a sessão apaga todos eles de uma vez, e confere o resultado relendo
+  os cookies
+- Entrar numa origem colando um token, para o caso em que não há admin a clonar
 
 O token nunca é gravado pela extensão nem sai da máquina, e os controles só
 aparecem em domínio reconhecido como VTEX.

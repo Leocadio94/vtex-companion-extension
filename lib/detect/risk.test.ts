@@ -12,7 +12,7 @@ function result(overrides: Partial<DetectionResult> = {}): DetectionResult {
     environment: 'storefront',
     isWorkspace: false,
     template: 'home',
-    auth: { storefront: false, admin: true },
+    auth: { storefront: false, admin: true, cookies: [] },
     ...overrides,
   };
 }
@@ -32,7 +32,9 @@ describe('sessionRisk', () => {
   });
 
   it('não avisa sem cookie de admin', () => {
-    const quiet = result({ auth: { storefront: false, admin: false } });
+    const quiet = result({
+      auth: { storefront: false, admin: false, cookies: [] },
+    });
 
     expect(sessionRisk(quiet, 'storetheme.vtex.com')).toEqual({ level: 'none' });
   });
