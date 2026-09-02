@@ -26,8 +26,8 @@ código. O repositório fica linkado na própria página.
 > Ferramenta de diagnóstico para desenvolvedores que trabalham com lojas VTEX:
 > identifica qual tecnologia VTEX a página usa, mostra dados de SEO, catálogo e
 > scripts de terceiros daquela página, permite chamar as APIs da própria loja
-> com a sessão da aba, e abre o preview do CMS no servidor de desenvolvimento
-> local.
+> com a sessão da aba, e abre o preview do CMS do FastStore no servidor de
+> desenvolvimento local.
 
 ## Justificativa de cada permissão
 
@@ -47,7 +47,7 @@ cookie é armazenado pela extensão.
 
 **`tabs`** — Saber a URL da aba ativa e abrir o preview local numa aba nova.
 
-**`webNavigation`** — Detectar quando o CMS da VTEX abre uma aba de preview,
+**`webNavigation`** — Detectar quando o CMS do FastStore abre uma aba de preview,
 para redirecioná-la ao servidor de desenvolvimento local quando o usuário liga
 essa opção.
 
