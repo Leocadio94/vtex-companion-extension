@@ -88,6 +88,9 @@ const SHOTS = [
     // Loja em IO: é a que traz account, workspace e binding preenchidos, que
     // é o que esta captura tem de mostrar.
     store: 'https://storetheme.vtex.com/',
+    // Sem rolar, a dobra de 800px cai na quebra entre a faixa de benefícios e
+    // a primeira prateleira, e a captura termina numa faixa branca.
+    scroll: 400,
     tab: 'Loja',
     async prepare(popup) {
       await popup
@@ -145,6 +148,49 @@ async function extensionId(context) {
   return new URL(worker.url()).host;
 }
 
+/**
+ * Força a loja a renderizar o que está abaixo da dobra.
+ *
+ * O render-runtime da IO monta prateleira por prateleira num
+ * `IntersectionObserver`, então uma página que nunca rolou fica com uma faixa
+ * branca no fim da captura. Rolar até o fim e voltar dispara os observadores;
+ * depois disso ainda é preciso esperar as imagens, que entram por `loading`
+ * preguiçoso e chegariam meio pintadas.
+ */
+async function settle(page) {
+  await page.evaluate(async () => {
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const step = Math.round(window.innerHeight * 0.8);
+
+    // O `scrollHeight` cresce enquanto o conteúdo entra; o teto evita ficar
+    // preso numa loja com rolagem infinita.
+    for (let i = 0; i < 20; i += 1) {
+      const y = Math.min(step * (i + 1), document.body.scrollHeight);
+      window.scrollTo(0, y);
+      await wait(150);
+      if (y >= document.body.scrollHeight - window.innerHeight) break;
+    }
+
+    window.scrollTo(0, 0);
+    await wait(400);
+
+    await Promise.all(
+      [...document.images]
+        .filter((image) => !image.complete)
+        .map(
+          (image) =>
+            new Promise((resolve) => {
+              image.addEventListener('load', resolve, { once: true });
+              image.addEventListener('error', resolve, { once: true });
+            }),
+        ),
+    );
+  });
+
+  // Uma loja com polling nunca fica ociosa: isto é um bônus, não um requisito.
+  await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {});
+}
+
 /** Espera as sondas: enquanto elas rodam, o painel diz "Lendo …". */
 async function waitProbes(popup) {
   await popup.waitForFunction(
@@ -157,6 +203,12 @@ async function waitProbes(popup) {
 async function capture(context, id, shot, theme) {
   const store = await context.newPage();
   await store.goto(shot.store, { waitUntil: 'load', timeout: 60_000 });
+  await settle(store);
+
+  if (shot.scroll) {
+    await store.evaluate((y) => window.scrollTo(0, y), shot.scroll);
+    await store.waitForTimeout(600);
+  }
 
   const popup = await context.newPage();
   await popup.setViewportSize({ width: POPUP.width, height: POPUP.height });
