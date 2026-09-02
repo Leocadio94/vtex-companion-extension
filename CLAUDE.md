@@ -156,3 +156,27 @@ which lacks `optional_host_permissions`). `data_collection_permissions` forces
   session cookie" true: same origin, that tab's cookies, no host permission. The
   cost is that only the tab's own origin works, and `buildRequest` flags the
   rest so the UI can say so before sending rather than after failing.
+
+## The sibling repo
+
+The landing page and the privacy policy live in `../portfolio-astro`, not here —
+the text has a single owner. Editing that repo's `vtex-companion` surfaces is
+part of this project's work and needs no separate approval: the page data
+(`src/data/vtex-companion.ts`), the pages under `src/pages/{,en/}vtex-companion/`,
+the listing screenshots in `src/assets/vtex-companion/` and the OG images in
+`public/vtex-companion/`. Commit and push there in the same task, with the same
+prose-and-no-trailer rule. Anything outside those paths is someone else's page:
+ask first.
+
+Two things that repo will bite you with. Its `<style>` blocks are scoped by
+Astro, so a standalone page — the temporary OG route, for one — needs
+`is:global` or its reset silently does nothing. And an expression inside
+`<title>` leaks its closing parenthesis into the body as a text node, which
+shifts the whole layout down; keep those titles static.
+
+## Releases
+
+`docs/release.md` is the order of operations, and the order is the point: the
+version bump happens on the branch, the tag only after the merge. `docs/roadmap.md`
+holds what was decided against doing yet, with the reason. Neither file is a
+changelog — release notes come from the commit messages.
