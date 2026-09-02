@@ -6,36 +6,41 @@
  * histórico, que é o mesmo armazenamento nos dois.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { TabContext } from '@/lib/collect';
 import { remember, type HistoryEntry } from '@/lib/runner/history';
 import { runRequest, type RunnerResponse } from '@/lib/runner/probe';
-import { buildRequest, type RunnerInput } from '@/lib/runner/request';
+import {
+  buildRequest,
+  defaultRequest,
+  type RunnerInput,
+} from '@/lib/runner/request';
 import { runnerHistory, runnerInput } from '@/lib/settings';
 
-export const EMPTY_REQUEST: RunnerInput = {
-  method: 'GET',
-  url: '/api/sessions?items=*',
-  headers: '',
-  body: '',
-};
-
-export function useRunner(context: TabContext | null) {
-  const [input, setInput] = useState<RunnerInput>(EMPTY_REQUEST);
+/**
+ * @param isVtex `undefined` enquanto a detecção não respondeu. O formulário só
+ * é preenchido depois disso, porque o caminho padrão depende da resposta.
+ */
+export function useRunner(context: TabContext | null, isVtex?: boolean) {
+  const [input, setInput] = useState<RunnerInput>(defaultRequest(false));
   const [response, setResponse] = useState<RunnerResponse | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [running, setRunning] = useState(false);
+  const restored = useRef(false);
 
   useEffect(() => {
+    if (isVtex === undefined || restored.current) return;
+    restored.current = true;
+
     void (async () => {
       const [stored, storedHistory] = await Promise.all([
         runnerInput.getValue(),
         runnerHistory.getValue(),
       ]);
-      if (stored) setInput(stored);
+      setInput(stored ?? defaultRequest(isVtex));
       setHistory(storedHistory);
     })();
-  }, []);
+  }, [isVtex]);
 
   const change = useCallback((next: RunnerInput) => {
     setInput(next);

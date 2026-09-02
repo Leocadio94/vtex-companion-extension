@@ -53,7 +53,7 @@ aparecem em domínio reconhecido como VTEX.
 - Confirmação explícita antes de qualquer método que altera dados
 - Histórico da sessão e cópia da resposta como JSON ou CSV
 - Resposta em duas leituras: formatada com realce, ou o corpo cru
-- Disponível no popup e num painel **VTEX** dentro do DevTools
+- Disponível no popup e num painel **VTEX Companion** dentro do DevTools
 
 **SEO da página**
 

@@ -3,7 +3,7 @@ import type { TabContext } from '@/lib/collect';
 import { toCsv } from '@/lib/runner/csv';
 import { prettyJson } from '@/lib/runner/format';
 import type { HistoryEntry } from '@/lib/runner/history';
-import { PRESETS } from '@/lib/runner/presets';
+import { groupPresets, PRESETS } from '@/lib/runner/presets';
 import type { RunnerResponse } from '@/lib/runner/probe';
 import {
   acceptsBody,
@@ -16,7 +16,7 @@ import { JsonView } from './components/JsonView';
 import { Empty } from './components/Row';
 import { useCopy } from './useCopy';
 
-const GROUPS = [...new Set(PRESETS.map((preset) => preset.group))];
+const GROUPS = groupPresets(PRESETS);
 
 function statusTone(response: RunnerResponse): string {
   if (response.error || response.status === 0) return 'error';
@@ -27,6 +27,7 @@ function statusTone(response: RunnerResponse): string {
 
 export function ApiPanel({
   context,
+  isVtex,
   input,
   response,
   history,
@@ -36,6 +37,8 @@ export function ApiPanel({
   onReplay,
 }: {
   context: TabContext | null;
+  /** Fora de um domínio VTEX os presets não têm onde bater. */
+  isVtex: boolean;
   input: RunnerInput;
   response: RunnerResponse | null;
   history: HistoryEntry[];
@@ -101,25 +104,31 @@ export function ApiPanel({
       <section className="panel-request">
         <h2>Requisição</h2>
 
-        <label className="field">
-          <span>Preset</span>
-          <select
-            value=""
-            onChange={(event) => applyPreset(event.target.value)}
-          >
-            <option value="">escolher…</option>
-            {GROUPS.map((group) => (
-              <option key={group} disabled>
-                — {group} —
-              </option>
-            ))}
-            {PRESETS.map((preset) => (
-              <option key={preset.id} value={preset.id}>
-                {preset.group} · {preset.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        {isVtex ? (
+          <label className="field">
+            <span>Preset</span>
+            <select
+              value=""
+              onChange={(event) => applyPreset(event.target.value)}
+            >
+              <option value="">escolher…</option>
+              {GROUPS.map(({ group, presets }) => (
+                <optgroup key={group} label={group}>
+                  {presets.map((preset) => (
+                    <option key={preset.id} value={preset.id}>
+                      {preset.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </label>
+        ) : (
+          <Empty tone="empty">
+            Os presets são caminhos da VTEX e esta página não foi reconhecida
+            como uma. O runner continua valendo para qualquer URL da origem.
+          </Empty>
+        )}
 
         <div className="request-line">
           <select
@@ -162,7 +171,10 @@ export function ApiPanel({
           />
         )}
 
-        {!built.ok && <Empty tone="error">{built.error}</Empty>}
+        {/* Campo vazio é o estado inicial, não um erro do usuário. */}
+        {!built.ok && input.url.trim() !== '' && (
+          <Empty tone="error">{built.error}</Empty>
+        )}
 
         {built.ok && !built.request.sameOrigin && (
           <p className="muted">

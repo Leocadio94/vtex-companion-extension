@@ -12,7 +12,10 @@ export default function Panel() {
   const [context, setContext] = useState<TabContext | null>(null);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [loading, setLoading] = useState(true);
-  const runner = useRunner(context);
+  const runner = useRunner(
+    context,
+    loading ? undefined : Boolean(result?.isVtex),
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -89,6 +92,7 @@ export default function Panel() {
         {!loading && context && (
           <ApiPanel
             context={context}
+            isVtex={Boolean(result?.isVtex)}
             input={runner.input}
             response={runner.response}
             history={runner.history}

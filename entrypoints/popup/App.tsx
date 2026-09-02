@@ -52,7 +52,10 @@ export default function App() {
   const [context, setContext] = useState<TabContext | null>(null);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [loading, setLoading] = useState(true);
-  const runner = useRunner(context);
+  const runner = useRunner(
+    context,
+    loading ? undefined : Boolean(result?.isVtex),
+  );
   const [port, setPort] = useState(3000);
   const [redirect, setRedirect] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -240,6 +243,7 @@ export default function App() {
         ) : tab === 'api' ? (
           <ApiPanel
             context={context}
+            isVtex={Boolean(result?.isVtex)}
             input={runner.input}
             response={runner.response}
             history={runner.history}
