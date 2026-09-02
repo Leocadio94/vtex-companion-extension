@@ -170,6 +170,9 @@ section {
   position: relative;
   padding: 0;
   border: 0;
+  /* O `nowrap` do botão vale para rótulo de ação, não para valor de linha:
+     sem isto um canonical longo sai cortado na borda do painel. */
+  white-space: normal;
   border-radius: 4px;
   background: transparent;
   color: inherit;

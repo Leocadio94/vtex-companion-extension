@@ -12,6 +12,7 @@ pnpm build:firefox       # .output/firefox-mv3
 pnpm compile             # tsc --noEmit
 pnpm test                # vitest run
 pnpm test:watch
+pnpm screenshots         # regera as capturas da listagem (ver docs/release.md)
 
 pnpm vitest run lib/preview/rewrite.test.ts       # one file
 pnpm vitest run -t "não gerar loop"               # one test by name

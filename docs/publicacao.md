@@ -171,8 +171,11 @@ for rejeitado, suba a versão em `package.json` antes de tentar de novo.
 
 ## Capturas
 
-Ficam em `brand/screenshots/`, junto do ícone da listagem. **O número do arquivo
-é a ordem de envio**, e a ordem importa: a Chrome Web Store exibe na sequência
+Ficam em `brand/screenshots/`, junto do ícone da listagem, e são geradas por
+`pnpm screenshots`: as de número 1, 4 e 5 saem prontas, e as 2 e 3 entram por
+`brand/screenshots/manual/` — o painel do DevTools e o admin autenticado não
+são automatizáveis. **O número do arquivo é a ordem de envio**, e a ordem
+importa: a Chrome Web Store exibe na sequência
 enviada, e a primeira é a que quase todo mundo vê.
 
 1. Aba Página numa PDP — produto, com a lista de SKUs aberta
