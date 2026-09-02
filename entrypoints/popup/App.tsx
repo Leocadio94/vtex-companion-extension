@@ -8,6 +8,7 @@ import {
 import { collectCatalog } from '@/lib/catalog/probe';
 import type { CatalogSnapshot } from '@/lib/catalog/signals';
 import { resolveCatalogTarget } from '@/lib/catalog/target';
+import { sessionRisk } from '@/lib/detect/risk';
 import type { DetectionResult } from '@/lib/detect/signals';
 import {
   isDevModeOn,
@@ -25,7 +26,7 @@ import { collectSeoSignals } from '@/lib/seo/probe';
 import type { SeoSignals } from '@/lib/seo/signals';
 import { activeTab, previewPort, previews, redirectPreview } from '@/lib/settings';
 import { ApiIcon, PageIcon, PreviewIcon, StoreIcon } from './components/icons';
-import { PLATFORM_SHORT } from '@/ui/labels';
+import { identityLine, PLATFORM_SHORT } from '@/ui/labels';
 import { PageTab } from './tabs/PageTab';
 import { PreviewTab } from './tabs/PreviewTab';
 import { StoreTab } from './tabs/StoreTab';
@@ -43,6 +44,9 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]['id'];
 
+/** `idle` é o que faz a sonda rodar só quando a aba dela é aberta. */
+type ProbeState = 'idle' | 'loading' | 'done';
+
 export default function App() {
   const [tab, setTab] = useState<TabId>('store');
   const [context, setContext] = useState<TabContext | null>(null);
@@ -57,9 +61,18 @@ export default function App() {
   const [seo, setSeo] = useState<SeoSignals | null>(null);
   const [catalog, setCatalog] = useState<CatalogSnapshot | null>(null);
   const [pixels, setPixels] = useState<PixelReport | null>(null);
+  const [pageProbe, setPageProbe] = useState<ProbeState>('idle');
+  const [previewProbe, setPreviewProbe] = useState<ProbeState>('idle');
 
+  /**
+   * Só o que o painel precisa para pintar: contexto, preferências e detecção.
+   * Catálogo, SEO, scripts e frames são caros — inclusive uma chamada de rede —
+   * e ficam para os efeitos de cada aba.
+   */
   const load = useCallback(async () => {
     setLoading(true);
+    setPageProbe('idle');
+    setPreviewProbe('idle');
 
     const [tabContext, storedPort, storedRedirect, storedPreviews, storedTab] =
       await Promise.all([
@@ -83,40 +96,56 @@ export default function App() {
         : null,
     );
 
-    if (tabContext) {
-      const detection = await collectDetection(tabContext);
-      setResult(detection);
-      setSeo(await collectSeoSignals(tabContext.tabId));
-
-      const pixelSignals = await collectPixelSignals(tabContext.tabId);
-      setPixels(
-        pixelSignals ? classifyPixels(pixelSignals, tabContext.origin) : null,
-      );
-
-      setCatalog(
-        await collectCatalog(
-          tabContext.tabId,
-          resolveCatalogTarget(
-            toUrlSignals(tabContext.url),
-            detection.template,
-            detection.entityId,
-          ),
-        ),
-      );
-      setFrames(await readDevMode(tabContext.tabId));
-      setInjection(
-        detection.environment === 'admin'
-          ? await inspectAdminFrames(tabContext.tabId)
-          : [],
-      );
-    }
-
+    setResult(tabContext ? await collectDetection(tabContext) : null);
     setLoading(false);
   }, []);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!context || !result || tab !== 'page' || pageProbe !== 'idle') return;
+
+    setPageProbe('loading');
+    void (async () => {
+      const [seoSignals, pixelSignals, snapshot] = await Promise.all([
+        collectSeoSignals(context.tabId),
+        collectPixelSignals(context.tabId),
+        collectCatalog(
+          context.tabId,
+          resolveCatalogTarget(
+            toUrlSignals(context.url),
+            result.template,
+            result.entityId,
+          ),
+        ),
+      ]);
+
+      setSeo(seoSignals);
+      setPixels(
+        pixelSignals ? classifyPixels(pixelSignals, context.origin) : null,
+      );
+      setCatalog(snapshot);
+      setPageProbe('done');
+    })();
+  }, [context, result, tab, pageProbe]);
+
+  useEffect(() => {
+    if (!context || !result || tab !== 'preview' || previewProbe !== 'idle')
+      return;
+
+    setPreviewProbe('loading');
+    void (async () => {
+      setFrames(await readDevMode(context.tabId));
+      setInjection(
+        result.environment === 'admin'
+          ? await inspectAdminFrames(context.tabId)
+          : [],
+      );
+      setPreviewProbe('done');
+    })();
+  }, [context, result, tab, previewProbe]);
 
   const selectTab = (next: TabId) => {
     setTab(next);
@@ -158,16 +187,32 @@ export default function App() {
       ? `https://${result.account}.myvtex.com/admin/Site/ProdutoForm.aspx?id=${catalog.product.productId}`
       : null;
 
+  const identity = identityLine(context, result);
+  const risk =
+    result && context
+      ? sessionRisk(result, new URL(context.url).hostname)
+      : { level: 'none' as const };
+
   return (
     <main>
       <header>
-        <h1>VTEX Companion</h1>
+        <div className="identity">
+          <h1>VTEX Companion</h1>
+          {identity && <p className="identity-line">{identity}</p>}
+        </div>
         {result && (
           <span className={`badge badge-${result.platform}`}>
             {PLATFORM_SHORT[result.platform]}
           </span>
         )}
       </header>
+
+      {risk.level === 'warn' && (
+        <p className="risk">
+          <span aria-hidden="true">⚠</span>
+          {risk.message}
+        </p>
+      )}
 
       <div className="content">
         {loading ? (
@@ -190,6 +235,7 @@ export default function App() {
             catalog={catalog}
             adminProductUrl={adminProductUrl}
             pixels={pixels}
+            probing={pageProbe !== 'done'}
           />
         ) : tab === 'api' ? (
           <ApiPanel
@@ -211,6 +257,7 @@ export default function App() {
             localPreviewUrl={localPreviewUrl}
             frames={frames}
             injection={injection}
+            probing={previewProbe !== 'done'}
             onPortChange={savePort}
             onRedirectChange={toggleRedirect}
             onToggleDevMode={toggleDevMode}

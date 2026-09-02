@@ -14,6 +14,7 @@ import {
 } from '@/lib/runner/request';
 import { JsonView } from './components/JsonView';
 import { Empty } from './components/Row';
+import { useCopy } from './useCopy';
 
 const GROUPS = [...new Set(PRESETS.map((preset) => preset.group))];
 
@@ -44,11 +45,15 @@ export function ApiPanel({
   onReplay: (entry: HistoryEntry) => void;
 }) {
   const [confirming, setConfirming] = useState(false);
-  const [copied, setCopied] = useState<string | null>(null);
   const [raw, setRaw] = useState(false);
+  const clipboard = useCopy();
 
   if (!context) {
-    return <Empty>Abra uma aba de loja ou do admin para usar o runner.</Empty>;
+    return (
+      <Empty tone="empty">
+        Abra uma aba de loja ou do admin para usar o runner.
+      </Empty>
+    );
   }
 
   const built = buildRequest(input, context.origin);
@@ -83,17 +88,11 @@ export function ApiPanel({
     onSend();
   };
 
-  const copy = async (label: string, text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(label);
-    window.setTimeout(() => setCopied(null), 1500);
-  };
-
   const copyCsv = async () => {
     try {
-      await copy('csv', toCsv(JSON.parse(response?.body ?? '')));
+      await clipboard.copy(toCsv(JSON.parse(response?.body ?? '')), 'csv');
     } catch {
-      await copy('csv', 'resposta não é JSON');
+      await clipboard.copy('resposta não é JSON', 'csv');
     }
   };
 
@@ -163,7 +162,7 @@ export function ApiPanel({
           />
         )}
 
-        {!built.ok && <p className="muted">{built.error}</p>}
+        {!built.ok && <Empty tone="error">{built.error}</Empty>}
 
         {built.ok && !built.request.sameOrigin && (
           <p className="muted">
@@ -173,7 +172,12 @@ export function ApiPanel({
         )}
 
         <div className="actions">
-          <button type="button" disabled={!built.ok || running} onClick={send}>
+          <button
+            type="button"
+            className={confirming ? 'btn-danger' : undefined}
+            disabled={!built.ok || running}
+            onClick={send}
+          >
             {running
               ? 'Enviando…'
               : confirming
@@ -181,7 +185,11 @@ export function ApiPanel({
                 : 'Enviar'}
           </button>
           {confirming && (
-            <button type="button" onClick={() => setConfirming(false)}>
+            <button
+              type="button"
+              className="btn-ghost"
+              onClick={() => setConfirming(false)}
+            >
               Cancelar
             </button>
           )}
@@ -205,7 +213,7 @@ export function ApiPanel({
           </h2>
 
           {response.error ? (
-            <Empty>{response.error}</Empty>
+            <Empty tone="error">{response.error}</Empty>
           ) : (
             <>
               <p className="muted">
@@ -241,12 +249,19 @@ export function ApiPanel({
               <div className="actions">
                 <button
                   type="button"
-                  onClick={() => void copy('json', pretty ?? response.body)}
+                  className="btn-secondary"
+                  onClick={() =>
+                    void clipboard.copy(pretty ?? response.body, 'json')
+                  }
                 >
-                  {copied === 'json' ? 'Copiado' : 'Copiar JSON'}
+                  {clipboard.isCopied('json') ? 'Copiado' : 'Copiar JSON'}
                 </button>
-                <button type="button" onClick={copyCsv}>
-                  {copied === 'csv' ? 'Copiado' : 'Copiar CSV'}
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={copyCsv}
+                >
+                  {clipboard.isCopied('csv') ? 'Copiado' : 'Copiar CSV'}
                 </button>
               </div>
             </>

@@ -7,6 +7,12 @@
   --accent: #f71963;
   --accent-fg: #ffffff;
   --nav-bg: #ffffff;
+  --danger: #b0143c;
+  --danger-bg: #fde7ec;
+  --warn-fg: #8a5300;
+  --warn-bg: #fdf0dc;
+  --warn-line: #e8c489;
+  --shadow: rgb(0 0 0 / 0.13);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,6 +25,12 @@
     --accent: #ff3d7f;
     --accent-fg: #16181d;
     --nav-bg: #1a1d23;
+    --danger: #ff8fa9;
+    --danger-bg: #3d1220;
+    --warn-fg: #f2c069;
+    --warn-bg: #3a2a0e;
+    --warn-line: #6b4d15;
+    --shadow: rgb(0 0 0 / 0.4);
   }
 }
 
@@ -53,6 +65,33 @@ h1 {
   letter-spacing: -0.01em;
 }
 
+/* Account, workspace e ambiente são o que mais se confere: ficam fixos no
+   cabeçalho, e não numa aba que precisa ser escolhida. */
+.identity {
+  min-width: 0;
+}
+
+.identity-line {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.risk {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--warn-line);
+  background: var(--warn-bg);
+  color: var(--warn-fg);
+  font-size: 11px;
+  font-weight: 600;
+}
+
 h2 {
   margin: 0 0 8px;
   font-size: 11px;
@@ -61,7 +100,9 @@ h2 {
   color: var(--muted);
 }
 
-/* Rola só o conteúdo: cabeçalho e barra ficam ancorados. */
+/* Rola só o conteúdo: cabeçalho e barra ficam ancorados. Os gradientes com
+   `local` acompanham a rolagem e os com `scroll` ficam presos à borda — é o
+   que faz a sombra aparecer só do lado que ainda tem conteúdo cortado. */
 .content {
   flex: 1;
   overflow-y: auto;
@@ -69,6 +110,14 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  background:
+    linear-gradient(var(--bg) 30%, transparent) top / 100% 16px no-repeat local,
+    linear-gradient(transparent, var(--bg) 70%) bottom / 100% 16px no-repeat
+      local,
+    radial-gradient(farthest-side at 50% 0, var(--shadow), transparent) top /
+      100% 7px no-repeat scroll,
+    radial-gradient(farthest-side at 50% 100%, var(--shadow), transparent)
+      bottom / 100% 7px no-repeat scroll;
 }
 
 section {
@@ -93,9 +142,11 @@ section {
   background: var(--muted);
 }
 
+/* Percentual em vez de largura fixa: a mesma linha serve o popup de 380px e a
+   janela inteira do DevTools sem uma classe por host. */
 .row {
   display: grid;
-  grid-template-columns: 112px 1fr;
+  grid-template-columns: minmax(84px, 34%) 1fr;
   gap: 8px;
   padding: 4px 0;
   align-items: baseline;
@@ -113,6 +164,36 @@ section {
   overflow-wrap: anywhere;
 }
 
+/* Account, ids e URLs existem para ser copiados. O botão herda a aparência da
+   linha; só o cursor e o realce no hover denunciam que é clicável. */
+.row-copy {
+  position: relative;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+/* O realce é `--bg` porque a seção já é `--surface`: usar a mesma cor não
+   marcaria nada. */
+.row-copy:hover {
+  filter: none;
+  box-shadow: 0 0 0 4px var(--bg);
+  background: var(--bg);
+}
+
+.row-copy-flag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+}
+
 code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
@@ -126,6 +207,20 @@ code {
 
 section .muted {
   margin-top: 8px;
+}
+
+/* Uma sonda que falhou não pode sair com o mesmo peso de uma nota de rodapé:
+   foi assim que um erro de leitura passou despercebido antes. */
+.tone-error {
+  padding: 6px 8px;
+  border-left: 2px solid var(--danger);
+  border-radius: 0 4px 4px 0;
+  background: var(--danger-bg);
+  color: var(--fg);
+}
+
+.tone-empty {
+  font-style: italic;
 }
 
 .field,
@@ -167,7 +262,7 @@ input[type='number'] {
 
 button {
   padding: 6px 10px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 6px;
   background: var(--accent);
   color: var(--accent-fg);
@@ -178,6 +273,53 @@ button {
 
 button:hover {
   filter: brightness(1.08);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  filter: none;
+}
+
+/* Um painel com cinco botões cor de destaque não tem hierarquia. O preenchido
+   é a ação da seção; o resto é secundário, e o que destrói é vermelho. */
+.btn-secondary {
+  border-color: var(--line);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.btn-secondary:hover {
+  filter: none;
+  border-color: var(--muted);
+}
+
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.btn-ghost:hover {
+  filter: none;
+  color: var(--fg);
+}
+
+.btn-danger {
+  border-color: var(--danger);
+  background: transparent;
+  color: var(--danger);
+}
+
+.btn-danger:hover {
+  filter: none;
+  background: var(--danger-bg);
+}
+
+:where(button, summary, select, textarea, input):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .preview {
@@ -452,6 +594,7 @@ textarea {
 
 .segmented button {
   padding: 3px 10px;
+  border: 0;
   border-radius: 0;
   background: var(--bg);
   color: var(--muted);

@@ -9,7 +9,9 @@ export function PixelsSection({ report }: { report: PixelReport | null }) {
     return (
       <section>
         <h2>Scripts de terceiros</h2>
-        <Empty>Não foi possível ler os scripts desta página.</Empty>
+        <Empty tone="error">
+          Não foi possível ler os scripts desta página.
+        </Empty>
       </section>
     );
   }
@@ -24,7 +26,9 @@ export function PixelsSection({ report }: { report: PixelReport | null }) {
       </h2>
 
       {vendors.length === 0 ? (
-        <Empty>Nenhum vendor conhecido detectado nesta página.</Empty>
+        <Empty tone="empty">
+          Nenhum vendor conhecido detectado nesta página.
+        </Empty>
       ) : (
         <ul className="vendors">
           {vendors.map((vendor) => (

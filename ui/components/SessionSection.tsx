@@ -50,7 +50,11 @@ export function SessionSection({
         label="Cookie de admin"
         value={result.auth.admin ? 'presente nesta origem' : 'ausente'}
       />
-      <Row label="Origem" value={<code>{context.origin}</code>} />
+      <Row
+        label="Origem"
+        value={<code>{context.origin}</code>}
+        copy={context.origin}
+      />
 
       <label className="field">
         <span>Nome</span>
@@ -83,6 +87,7 @@ export function SessionSection({
 
         <button
           type="button"
+          className="btn-secondary"
           disabled={busy || !result.account || !name.trim()}
           onClick={() =>
             void run(() =>
@@ -95,6 +100,7 @@ export function SessionSection({
 
         <button
           type="button"
+          className="btn-danger"
           disabled={busy || !name.trim()}
           onClick={() => void run(() => clearAuthCookie(context.url, name.trim()))}
         >
@@ -102,7 +108,9 @@ export function SessionSection({
         </button>
       </div>
 
-      {status && <Empty>{status.message}</Empty>}
+      {status && (
+        <Empty tone={status.ok ? 'hint' : 'error'}>{status.message}</Empty>
+      )}
 
       {result.account ? (
         <Empty>
