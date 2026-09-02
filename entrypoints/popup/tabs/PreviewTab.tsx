@@ -9,7 +9,9 @@ import {
   summarizeInjection,
   type FrameInspection,
 } from '@/lib/preview/inspect';
+import { previewFit } from '@/lib/preview/scope';
 import { Empty, Row } from '@/ui/components/Row';
+import { PLATFORM_SHORT } from '@/ui/labels';
 import { useCopy } from '@/ui/useCopy';
 
 export function PreviewTab({
@@ -39,11 +41,27 @@ export function PreviewTab({
 }) {
   const clipboard = useCopy();
   const isAdmin = result?.environment === 'admin';
+  const fit = previewFit(result);
 
   return (
     <>
+      {fit === 'other-platform' && result ? (
+        <Empty tone="error">
+          Esta loja é {PLATFORM_SHORT[result.platform]}, e a pré-visualização
+          dela é por workspace. Nada nesta aba se aplica aqui — os campos
+          continuam valendo para quando você abrir o admin de uma loja em
+          FastStore.
+        </Empty>
+      ) : (
+        <Empty>
+          O preview no <code>localhost</code> é o do CMS do FastStore: o botão{' '}
+          <strong>Pré-visualização</strong> do Headless CMS e do Storefront
+          &gt; Content.
+        </Empty>
+      )}
+
       <section>
-        <h2>Dev server</h2>
+        <h2>Dev server do FastStore</h2>
 
         <label className="field">
           <span>Porta</span>
@@ -87,14 +105,15 @@ export function PreviewTab({
         ) : (
           <Empty tone="empty">
             Nenhum preview desta aba. Clique em{' '}
-            <strong>Pré-visualização</strong> no CMS e reabra este painel.
+            <strong>Pré-visualização</strong> no CMS do FastStore e reabra este
+            painel.
           </Empty>
         )}
       </section>
 
       {isAdmin ? (
         <section>
-          <h2>Development Mode do CMS</h2>
+          <h2>Development Mode do CMS do FastStore</h2>
           {probing ? (
             <Empty>Lendo os frames do admin…</Empty>
           ) : (

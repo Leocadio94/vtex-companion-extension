@@ -61,7 +61,14 @@ aparecem em domínio reconhecido como VTEX.
 - Open Graph, Twitter, hreflang, JSON-LD, headings e imagens sem alt
 - Regras por tipo de página: PDP sem `Product`, listagem sem `ItemList`
 
-**Preview no localhost** — quatro caminhos, nenhum deles dependente de `cmsDevMode`:
+**Preview no localhost — CMS do FastStore**
+
+O recurso é do CMS do FastStore, nas duas versões: o Headless CMS (legacy) e o
+Storefront > Content. VTEX IO e o portal legacy têm pré-visualização própria,
+por workspace, e não passam por aqui — a aba Preview diz isso quando a loja
+aberta é de uma dessas plataformas, em vez de oferecer controles inertes.
+
+São quatro caminhos, nenhum deles dependente de `cmsDevMode`:
 
 1. Redirecionamento automático da aba de preview (toggle no popup)
 2. Botão **Localhost** injetado ao lado de "Pré-visualização" no admin
@@ -95,8 +102,8 @@ pnpm build:firefox && pnpm dlx web-ext lint --source-dir .output/firefox-mv3
 
 ## Como o preview funciona
 
-O botão **Pré-visualização** do CMS abre uma aba para a Preview URL configurada
-na loja. O formato muda entre as duas versões do CMS:
+O botão **Pré-visualização** do CMS do FastStore abre uma aba para a Preview URL
+configurada na loja. O formato muda entre as duas versões do CMS:
 
 | CMS | URL que o botão abre |
 | --- | --- |
