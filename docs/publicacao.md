@@ -301,9 +301,24 @@ necessário quando o que muda é o código.
 3. Responder **sim** à pergunta sobre código minificado ou compilado, subir
    `vtex-companion-extension-<versão>-sources.zip` e colar as instruções de
    build da seção anterior.
-4. Listagem: nome, resumo, descrição, categoria, licença MIT, URL da política,
-   site, suporte e capturas. A AMO não exige dimensão fixa nas capturas — as
-   mesmas do envio da Chrome servem.
+4. Listagem: nome, resumo, descrição, categoria, licença MIT, e-mail e página de
+   suporte. Quatro detalhes em que a AMO não se parece com a Chrome:
+
+   - **Resumo e descrição são campos distintos**, e o resumo aparece nas listas e
+     na busca. O primeiro parágrafo da descrição longa vira o resumo, e a
+     descrição começa do segundo — colar o texto inteiro nos dois deixa o
+     parágrafo duplicado na página do produto.
+   - **Categoria: só _Desenvolvimento Web_.** Cabem três, mas nenhuma outra
+     descreve a extensão. "Privacidade e Segurança" atrai revisão mais dura sem
+     ser verdade, e "Compras" é categoria de consumidor final.
+   - **A política de privacidade é uma caixa de texto, não uma URL.** O texto sai
+     do mesmo lugar que a página do site, `src/data/vtex-companion.ts` no
+     `../portfolio-astro`, convertido para texto puro e com o link da versão
+     canônica no topo. Não manter uma segunda cópia aqui é proposital: o texto
+     tem um dono só.
+   - **As capturas não aparecem neste formulário.** A seção de imagens só existe
+     depois de _Enviar versão_, na edição da listagem. A AMO não exige dimensão
+     fixa — as mesmas do envio da Chrome servem.
 5. Confirmar a declaração de coleta de dados como _nenhuma_, igual ao
    `data_collection_permissions` do manifesto.
 6. Enviar. A extensão é assinada e publicada em minutos; a revisão humana pode
