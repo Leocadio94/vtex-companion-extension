@@ -132,6 +132,28 @@ Marcar apenas o que é verdade:
 - Não usamos dados para finalidade alheia à função principal
 - Não usamos dados para avaliação de crédito ou empréstimo
 
+## Instruções de teste (Chrome Web Store)
+
+Os campos de credenciais ficam vazios: não há login. O campo **Mais instruções**
+(500 caracteres) não é dispensável, porém — a extensão só renderiza dado em loja
+VTEX, e um revisor que a abre numa página qualquer vê a mensagem de "não é VTEX"
+e nada mais, o que já foi lido como "não funciona conforme descrito". O texto vai
+em inglês: quem lê é o time de revisão, não o público da listagem.
+
+```text
+No login is needed. The extension only shows data on VTEX stores.
+
+To test:
+1. Open the public VTEX demo store https://storetheme.vtex.com and click any product.
+2. Click the extension icon. The popup shows the detected VTEX stack, page type, catalog SKUs, SEO findings and third-party scripts of that page.
+3. The Fetch tab calls that store's API with the tab's own session.
+
+The FastStore localhost preview needs a VTEX admin account, so it cannot be exercised without one.
+```
+
+A última linha é deliberada: o preview exige admin VTEX, e dizer isso antes evita
+que o recurso volte marcado como não verificável.
+
 ## Notas para o revisor da AMO
 
 A AMO exige o código-fonte quando o pacote é minificado, e o build do WXT é.
