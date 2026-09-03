@@ -5,21 +5,79 @@ que os revisores costumam pedir.
 
 ## Metadados
 
-| Campo | Valor |
-| --- | --- |
-| Nome | VTEX Companion |
-| Descrição curta | Identifica a tecnologia VTEX do site, abre o preview do FastStore no localhost e chama as APIs com a sessão da aba. |
-| Categoria | Ferramentas para desenvolvedores |
-| Idioma principal | Português (Brasil) |
-| Política de privacidade | <https://leocadio.dev/vtex-companion/privacy/> (EN: `/en/vtex-companion/privacy/`) |
-| Site / homepage | <https://leocadio.dev/vtex-companion/> (EN: `/en/vtex-companion/`) |
-| Código-fonte | <https://github.com/Leocadio94/vtex-companion-extension> |
-| Suporte | <https://github.com/Leocadio94/vtex-companion-extension/issues> |
+| Campo                   | Valor                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Nome                    | VTEX Companion                                                                                                      |
+| Descrição curta         | Identifica a tecnologia VTEX do site, abre o preview do FastStore no localhost e chama as APIs com a sessão da aba. |
+| Categoria               | Ferramentas para desenvolvedores                                                                                    |
+| Idioma principal        | Português (Brasil)                                                                                                  |
+| Política de privacidade | <https://leocadio.dev/vtex-companion/privacy/> (EN: `/en/vtex-companion/privacy/`)                                  |
+| Site / homepage         | <https://leocadio.dev/vtex-companion/> (EN: `/en/vtex-companion/`)                                                  |
+| Código-fonte            | <https://github.com/Leocadio94/vtex-companion-extension>                                                            |
+| Suporte                 | <https://github.com/Leocadio94/vtex-companion-extension/issues>                                                     |
 
 O `homepage_url` do manifesto aponta para a página de apresentação, não para o
 repositório: é o link que o gerenciador de extensões mostra ao usuário, e quem
 chega ali pelo aviso de permissão quer saber o que a extensão faz, não ler
 código. O repositório fica linkado na própria página.
+
+## Descrição longa
+
+O campo **Descrição** da Chrome Web Store é texto puro: não renderiza Markdown,
+mas preserva as quebras de linha. O texto abaixo é o que vai colado, sem
+alteração, nas duas lojas — na AMO ele ocupa o campo _Description_, e a primeira
+frase serve de _Summary_.
+
+```text
+VTEX Companion lê a stack, o catálogo e o SEO da loja VTEX que você já tem aberta, chama as APIs dessa loja com a sessão da própria aba e abre o preview do CMS do FastStore no seu servidor local.
+
+É uma ferramenta de diagnóstico para quem desenvolve em VTEX. Não há servidor: a extensão lê a aba sob demanda e descarta quando o painel fecha. Nada é coletado, nada é transmitido.
+
+DETECÇÃO DA STACK
+• É VTEX? Com que confiança e por quais sinais
+• Tecnologia: VTEX IO (Store Framework), FastStore, CMS Legacy Portal ou headless
+• Account, workspace e binding
+• Admin x loja final, e se a URL está num workspace de desenvolvimento
+• Tipo de página: home, PDP, listagem, busca, checkout, order placed, login
+
+CATÁLOGO DA PÁGINA
+• PDP: produto, referência, marca, categoria e a lista de SKUs com EAN, refId, seller, disponibilidade e preço — mais atalho para o admin
+• Listagem e busca: categoria, caminho, termo, map, ordenação e página
+
+SEO DA PÁGINA
+• Indexação (robots, googlebot), title, description, canonical, lang
+• Open Graph, Twitter, hreflang, JSON-LD, headings e imagens sem alt
+• Regras por tipo de página: PDP sem Product, listagem sem ItemList
+
+SCRIPTS DE TERCEIROS
+• Vendors conhecidos com o id da conta quando existe: GTM, GA4, Google Ads, Meta, TikTok, Clarity, Hotjar, Criteo, RD Station, Linx e outros
+• Origens de terceiros não catalogadas, agrupadas por volume de requisições
+
+FETCH RUNNER
+• Chame as APIs da loja de dentro da própria aba, com a sessão que ela já tem
+• Presets de Sessão, Checkout, Catálogo, Intelligent Search, OMS e Master Data
+• Confirmação explícita antes de qualquer método que altera dados
+• Resposta formatada com realce ou o corpo cru, histórico da sessão e cópia como JSON ou CSV
+• Disponível no popup e num painel VTEX Companion dentro do DevTools
+
+SESSÃO
+• Os cookies de sessão presentes na origem, com o escopo de cada um
+• Clonar a sessão de {account}.myvtex.com para o domínio da loja, sem o token passar pela área de transferência
+• Entrar numa origem colando um token, e limpar todos os cookies de sessão de uma vez
+• O token nunca é gravado pela extensão nem sai da máquina, e os controles só aparecem em domínio reconhecido como VTEX
+
+PREVIEW DO FASTSTORE NO LOCALHOST
+O botão Pré-visualização do CMS do FastStore — o Headless CMS (legacy) e o Storefront > Content — abre a loja publicada. A extensão injeta um botão Localhost ao lado dele que abre a mesma URL no seu dev server, com a query inteira preservada, nas duas versões do CMS e sem depender do cmsDevMode. Também há redirecionamento automático da aba de preview, a última URL capturada com copiar/abrir, e o liga/desliga do cmsDevMode com status por frame.
+
+Lojas em VTEX IO e no portal legacy pré-visualizam por workspace e não usam esse fluxo — a aba Preview diz isso em vez de oferecer controles inertes.
+
+PRIVACIDADE
+Não há servidor e nenhum dado é coletado, armazenado remotamente ou transmitido. Não existe content script global: a leitura da página é injetada sob demanda quando você abre o painel, e por isso a instalação não pede "ler dados em todos os sites". O acesso fixo é só a *.myvtex.com e localhost; o domínio da loja é opcional e concedido por você, site a site.
+Política de privacidade: https://leocadio.dev/vtex-companion/privacy/
+
+Projeto independente e de código aberto. Não é um produto oficial da VTEX e não usa a identidade visual da VTEX.
+Código-fonte: https://github.com/Leocadio94/vtex-companion-extension
+```
 
 ## Propósito único (Chrome Web Store)
 
@@ -93,18 +151,21 @@ Sem código remoto: nada é baixado ou avaliado em tempo de execução.
 
 ## Antes de enviar
 
-- [ ] `pnpm test`, `pnpm compile` e `pnpm dlx web-ext lint --source-dir .output/firefox-mv3` sem erros
-- [ ] Testar num perfil limpo do navegador, sem outras extensões
-- [ ] Conferir que a versão em `package.json` subiu
-- [ ] Conferir que <https://leocadio.dev/vtex-companion/privacy/> responde 200 e
+- [x] `pnpm test`, `pnpm compile` e `pnpm dlx web-ext lint --source-dir .output/firefox-mv3` sem erros
+- [x] Testar num perfil limpo do navegador, sem outras extensões
+- [x] Conferir que a versão em `package.json` subiu
+- [x] Conferir que <https://leocadio.dev/vtex-companion/privacy/> responde 200 e
       apontar o formulário para ela (o texto é mantido no repo do site, não aqui)
-- [ ] Conferir que <https://leocadio.dev/vtex-companion/> responde 200 — é o
+- [x] Conferir que <https://leocadio.dev/vtex-companion/> responde 200 — é o
       `homepage_url` do manifesto, e um link quebrado ali aparece no navegador
       de todo mundo que instalar
-- [ ] Capturas de tela em `brand/screenshots/` — **exatamente** 1280×800 ou
+- [x] Capturas de tela em `brand/screenshots/` — **exatamente** 1280×800 ou
       640×400; a Chrome Web Store recusa 1282×800, e a captura de janela do
       Windows costuma sair alguns pixels maior
-- [ ] Ícone da listagem: `brand/icon-512.png`
+- [x] Ícone da listagem: `brand/icon-128.png` — a Chrome Web Store exige
+      **128×128** e recusa outro tamanho; `brand/icon-512.png` só serve à AMO,
+      que pede 96×96 ou maior. Os dois saem de `brand/icon.svg`:
+      `rsvg-convert -w 128 -h 128 brand/icon.svg -o brand/icon-128.png`
 
 ## Passo a passo do envio
 
@@ -129,17 +190,23 @@ for rejeitado, suba a versão em `package.json` antes de tentar de novo.
 
 1. Criar a conta em <https://chrome.google.com/webstore/devconsole> — taxa única
    de US$ 5, e-mail de contato verificado e verificação de identidade.
-2. Em **Account settings**, declarar a condição de *trader* ou *non-trader*. É
+2. Em **Account settings**, declarar a condição de _trader_ ou _non-trader_. É
    exigência da UE e bloqueia a publicação enquanto estiver em branco; quem
-   publica sem fim comercial marca *non-trader*.
+   publica sem fim comercial marca _non-trader_.
 3. **Add new item** → subir `vtex-companion-extension-<versão>-chrome.zip`.
 4. **Store listing**: descrição curta (o campo corta em 132 caracteres),
-   descrição longa, categoria *Developer Tools*, idioma Português (Brasil),
-   ícone `brand/icon-512.png`, as cinco capturas de `brand/screenshots/` na
+   descrição longa, categoria _Developer Tools_, idioma Português (Brasil),
+   ícone `brand/icon-128.png`, as cinco capturas de `brand/screenshots/` na
    ordem numerada, e os campos de site e suporte da tabela de metadados.
-5. **Privacy**: propósito único, a justificativa de cada permissão e de host
-   (os textos deste arquivo), a URL da política e as declarações de uso de
-   dados.
+   Em **Campos extras**, no fim da página: _URL oficial_ é o domínio verificado
+   (`leocadio.dev`), _URL da página inicial_ é a landing e **_URL do suporte_ é o
+   issues do GitHub, não a landing** — é o link que o usuário clica quando algo
+   quebra. _Conteúdo adulto_ fica desligado.
+5. **Prática de privacidade** — aba separada da listagem, e é só lá que aparece o
+   campo da política. Propósito único, a justificativa de cada permissão e de
+   host (os textos deste arquivo), a URL da política e as declarações de uso de
+   dados. Há também um campo de política em **Configurações da conta**, a nível
+   de conta: aponta para a mesma URL.
 6. **Distribution**: público, todas as regiões.
 7. **Submit for review**. A primeira submissão de uma conta nova costuma demorar
    mais que as seguintes.
@@ -148,7 +215,7 @@ for rejeitado, suba a versão em `package.json` antes de tentar de novo.
 
 1. Criar a conta em <https://addons.mozilla.org/developers/> — gratuita, exige
    uma conta Mozilla e um nome de exibição.
-2. **Submit a New Add-on** → *On this site* (listada) → subir
+2. **Submit a New Add-on** → _On this site_ (listada) → subir
    `vtex-companion-extension-<versão>-firefox.zip`. A validação roda sozinha e
    repete o que o `web-ext lint` já mostrou.
 3. Responder **sim** à pergunta sobre código minificado ou compilado, subir
@@ -157,7 +224,7 @@ for rejeitado, suba a versão em `package.json` antes de tentar de novo.
 4. Listagem: nome, resumo, descrição, categoria, licença MIT, URL da política,
    site, suporte e capturas. A AMO não exige dimensão fixa nas capturas — as
    mesmas do envio da Chrome servem.
-5. Confirmar a declaração de coleta de dados como *nenhuma*, igual ao
+5. Confirmar a declaração de coleta de dados como _nenhuma_, igual ao
    `data_collection_permissions` do manifesto.
 6. Enviar. A extensão é assinada e publicada em minutos; a revisão humana pode
    vir depois e pedir esclarecimento pelo painel.
@@ -200,6 +267,21 @@ Duas armadilhas que já apareceram:
 Antes de enviar, olhe cada captura procurando dado que não deveria estar lá:
 account de cliente, e-mail, id de pedido, token. Lojas de demonstração públicas
 (`storetheme.vtex.com`, `starter.vtex.app`) evitam o problema na origem.
+
+## Imagens promocionais
+
+Nenhuma das duas é obrigatória para publicar, e a listagem fica completa sem
+elas.
+
+- **Bloco promocional pequeno (440×280).** É o cartão que a Chrome Web Store usa
+  quando exibe a extensão fora da própria página — coleções, páginas de
+  categoria e o material que a equipe editorial monta. Sem ele, a extensão não
+  entra em nenhuma dessas superfícies, nem é considerada para destaque. Vale
+  gerar, e `pnpm promo` gera: `brand/promo-440x280.png`, o ícone sobre o mesmo
+  fundo escuro das capturas, com o nome e uma linha de resumo.
+- **Bloco promocional de letreiro (1400×560).** Só aparece no carrossel de
+  destaque da home da loja, que é curadoria manual do Google. Uma extensão nova,
+  de nicho e sem instalações, não chega lá. Não gerar agora.
 
 ## Marca
 

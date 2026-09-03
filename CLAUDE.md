@@ -14,6 +14,7 @@ pnpm test                # vitest run
 pnpm test:watch
 pnpm screenshots         # regera as capturas da listagem (ver docs/release.md)
 pnpm screenshots 1 4     # só essas; --theme=light|auto muda o tema do painel
+pnpm promo               # brand/promo-440x280.png (bloco promocional da Chrome)
 
 pnpm vitest run lib/preview/rewrite.test.ts       # one file
 pnpm vitest run -t "não gerar loop"               # one test by name
