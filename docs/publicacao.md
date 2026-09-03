@@ -50,12 +50,12 @@ SEO DA PÁGINA
 • Regras por tipo de página: PDP sem Product, listagem sem ItemList
 
 SCRIPTS DE TERCEIROS
-• Vendors conhecidos com o id da conta quando existe: GTM, GA4, Google Ads, Meta, TikTok, Clarity, Hotjar, Criteo, RD Station, Linx e outros
-• Origens de terceiros não catalogadas, agrupadas por volume de requisições
+• Quais tags de analytics, publicidade, remarketing e monitoramento a página carrega, com o id da conta quando ele está exposto no próprio script
+• Origens de terceiros que a extensão não reconhece, agrupadas por volume de requisições
 
 FETCH RUNNER
 • Chame as APIs da loja de dentro da própria aba, com a sessão que ela já tem
-• Presets de Sessão, Checkout, Catálogo, Intelligent Search, OMS e Master Data
+• Presets prontos para as APIs de sessão, checkout, catálogo, busca, pedidos e master data da loja
 • Confirmação explícita antes de qualquer método que altera dados
 • Resposta formatada com realce ou o corpo cru, histórico da sessão e cópia como JSON ou CSV
 • Disponível no popup e num painel VTEX Companion dentro do DevTools
@@ -78,6 +78,16 @@ Política de privacidade: https://leocadio.dev/vtex-companion/privacy/
 Projeto independente e de código aberto. Não é um produto oficial da VTEX e não usa a identidade visual da VTEX.
 Código-fonte: https://github.com/Leocadio94/vtex-companion-extension
 ```
+
+A listagem de vendors da seção de scripts de terceiros **não volta**. A primeira
+submissão da 1.1.0 foi rejeitada por _spam e colocação na loja_ — "apresenta
+palavras-chave excessivas na descrição do item" — apontando exatamente a linha
+que enumerava GTM, GA4, Google Ads, Meta, TikTok, Clarity, Hotjar, Criteo, RD
+Station e Linx. Dez nomes de empresa numa linha lêem como SEO para o filtro, por
+mais que descrevam um recurso real. A descrição diz o que a extensão detecta, em
+categoria; a lista concreta de vendors vive em `lib/pixels/vendors.ts` e na
+página de apresentação, onde nenhuma política de loja alcança. Pelo mesmo motivo
+os presets do runner saíram de nomes próprios para minúsculas.
 
 ## Propósito único (Chrome Web Store)
 
@@ -250,8 +260,11 @@ pnpm zip:firefox   # o mesmo, sufixos -firefox.zip e -sources.zip
 pnpm dlx web-ext lint --source-dir .output/firefox-mv3
 ```
 
-Nenhuma das duas lojas aceita reenviar um número de versão já usado. Se um envio
-for rejeitado, suba a versão em `package.json` antes de tentar de novo.
+Nenhuma das duas lojas aceita reenviar um número de versão já publicado. Isso
+vale para o pacote, não para o rascunho: rejeição que só toca metadados —
+descrição, capturas, justificativa — se corrige editando o rascunho e reenviando
+na mesma versão, sem rebuild nem upload. Subir a versão em `package.json` só é
+necessário quando o que muda é o código.
 
 ### Chrome Web Store
 
