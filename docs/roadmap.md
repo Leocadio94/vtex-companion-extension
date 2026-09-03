@@ -57,7 +57,11 @@ Em ordem de valor por esforço, na minha leitura.
   domínio de produção, H1 duplicado, `og:image` ausente. `lib/seo/analyze.ts` já
   é função pura: é somar caso e teste.
 - **i18n pt/en** (M) — a interface é só português e a listagem é mundial.
-  Depende de decidir se o inglês vira o padrão da loja.
+  Depende de decidir se o inglês vira o padrão da loja. Não é ajuste de console:
+  a Chrome Web Store só oferece os idiomas de listagem que existem como
+  `_locales/` no pacote, então traduzir custa uma versão nova e uma revisão nova.
+  Interface e listagem têm de sair juntas — listagem em inglês sobre painel em
+  português rende review ruim. Ver `docs/publicacao.md`.
 
 ## Dívidas encontradas pelo caminho
 

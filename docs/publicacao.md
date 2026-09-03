@@ -154,22 +154,67 @@ The FastStore localhost preview needs a VTEX admin account, so it cannot be exer
 A última linha é deliberada: o preview exige admin VTEX, e dizer isso antes evita
 que o recurso volte marcado como não verificável.
 
+## Idiomas
+
+A listagem sai só em português nesta versão, e a razão é mecânica, não de
+esforço: **a Chrome Web Store não deixa traduzir a listagem pelo console.** Os
+idiomas oferecidos no seletor da página de listagem vêm do pacote — só aparecem
+os que existem como `_locales/<locale>/messages.json`, com `default_locale` no
+manifesto. Nome e descrição curta passam a sair de `__MSG_…__`; descrição longa,
+capturas e imagens promocionais viram um conjunto por idioma no console.
+
+Ou seja: acrescentar inglês **exige novo pacote, nova versão e nova revisão**.
+Não é ajuste de formulário depois de publicado.
+
+A AMO é o oposto — traduz a listagem direto no painel, sem depender do pacote.
+
+Traduzir a listagem sem traduzir a interface é pior que não traduzir: quem chega
+pelo texto em inglês instala e encontra um painel em português. Os dois andam
+juntos, e é por isso que o item está no `docs/roadmap.md` e não aqui.
+
 ## Notas para o revisor da AMO
 
 A AMO exige o código-fonte quando o pacote é minificado, e o build do WXT é.
 `pnpm zip:firefox` gera o `.zip` da extensão **e** o `.zip` de fontes; envie os
 dois.
 
-Instruções de build para colar no campo de notas:
+O campo de notas da AMO é um só, e cobre o que na Chrome são dois formulários
+separados: como reconstruir o pacote e como exercitar a extensão. Vale colar as
+duas coisas, porque o revisor da AMO é uma pessoa que vai abrir a extensão.
 
 ```
-Ambiente: Node 24, pnpm 11
-Passos:
-  pnpm install
-  pnpm build:firefox
-Saída: .output/firefox-mv3/ — deve corresponder ao pacote enviado.
-Sem código remoto: nada é baixado ou avaliado em tempo de execução.
+Build
+  Ambiente: Node 24.16.0, pnpm 11.2.1
+  Passos:
+    pnpm install
+    pnpm build:firefox
+  Saída: .output/firefox-mv3/ — deve corresponder ao pacote enviado.
+  Sem código remoto: nada é baixado ou avaliado em tempo de execução.
+
+Testing
+  No login is needed. The extension only shows data on VTEX stores.
+  1. Open the public VTEX demo store https://storetheme.vtex.com and click any product.
+  2. Click the extension icon. The popup shows the detected VTEX stack, page type,
+     catalog SKUs, SEO findings and third-party scripts of that page.
+  3. The Fetch tab calls that store's API with the tab's own session.
+  The FastStore localhost preview needs a VTEX admin account, so it cannot be
+  exercised without one.
 ```
+
+As versões vão exatas de propósito. "Node 24" é ambíguo o bastante para o build
+do revisor divergir do enviado, e divergência de saída é motivo de devolução;
+`packageManager` no `package.json` fixa o pnpm do lado de cá.
+
+Três coisas que a AMO cobra e a Chrome não:
+
+- **2FA na conta Mozilla.** É pré-requisito para enviar qualquer add-on. Ligar
+  antes, não na hora.
+- **Licença.** Add-on listado precisa declarar uma; é a MIT do `LICENSE`.
+- **Android.** O manifesto declara `browser_specific_settings.gecko_android`, o
+  que oferece a extensão no Firefox para Android. Decidir se é isso mesmo: o
+  painel do DevTools não existe lá e o preview no localhost não faz sentido num
+  celular, então sobra a detecção e o SEO. Não é errado — é uma extensão menor
+  do que a listagem promete. Tirar a chave restringe a desktop.
 
 ## Antes de enviar
 
