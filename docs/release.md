@@ -45,6 +45,11 @@ painel sai no tema escuro por padrão, para combinar com as duas capturas
 manuais; `--theme=light` ou `--theme=auto` mudam isso, e um número como
 argumento refaz só aquela.
 
+**Resto dos artefatos de listagem** — `brand/icon-128.png` é o ícone exigido pela
+Chrome Web Store (128×128 exatos, gerado do SVG), `brand/icon-512.png` serve à
+AMO, e `pnpm promo` refaz o bloco promocional 440×280. Só mudam quando a marca
+muda; estão listados aqui para não serem procurados no meio do envio.
+
 **Versão** — subir em `package.json`, que é de onde o WXT tira a do manifesto:
 
 - **minor** quando muda o que o usuário vê: recurso novo, comportamento
@@ -71,7 +76,7 @@ Nesta ordem, e só depois do merge:
 
 ```bash
 git checkout main && git pull
-git tag v1.1.0 && git push --tags
+git tag v<versão> && git push --tags
 git push origin --delete <branch>
 ```
 
@@ -86,12 +91,29 @@ pnpm zip           # .output/vtex-companion-extension-<versão>-chrome.zip
 pnpm zip:firefox   # o mesmo, mais -firefox.zip e -sources.zip
 ```
 
-Daqui em diante o roteiro é o de [`publicacao.md`](./publicacao.md).
+Daqui em diante o roteiro é o de [`publicacao.md`](./publicacao.md). O upload
+manual pelos dois consoles foi o custo da primeira vez: os itens já existem nas
+duas lojas, então da 1.2.0 em diante o envio dos pacotes é
+
+```bash
+pnpm dlx wxt submit \
+  --chrome-zip .output/*-chrome.zip \
+  --firefox-zip .output/*-firefox.zip \
+  --firefox-sources-zip .output/*-sources.zip
+```
+
+com as credenciais que `wxt submit init` grava num `.env` fora do git, e
+`--dry-run` para conferir autenticação sem enviar. Isso automatiza o **pacote**,
+não a listagem: descrição, capturas, imagens promocionais e privacidade
+continuam sendo campos de console.
 
 ## 5. Depois de aprovado
 
-- Guardar as duas URLs de listagem e colocá-las no `README.md` **e** na landing,
-  trocando o `soon: 'Em breve'` dos botões de instalação por links reais.
+- Guardar as duas URLs de listagem e colocá-las no `README.md` **e** em
+  `storeLinks` (`src/data/vtex-companion.ts` do repositório irmão), que é o único
+  ponto do código que sabe se a extensão está no ar: `null` deixa o botão em
+  "Em breve". Usar a URL canônica com slug que a loja serve, não a de id puro
+  que o console mostra.
 - Conferir que `https://leocadio.dev/vtex-companion/` responde 200: é o
   `homepage_url` do manifesto, e um link quebrado ali aparece no gerenciador de
   extensões de todo mundo que instalar.
@@ -99,8 +121,15 @@ Daqui em diante o roteiro é o de [`publicacao.md`](./publicacao.md).
 ## Regras que não mudam
 
 **Versão já usada não volta.** Nenhuma das duas lojas aceita reenviar um número
-que já subiu. Envio rejeitado custa um bump antes da próxima tentativa — por
-isso o número sobe na branch, e não depois de aprovado.
+já publicado — por isso o número sobe na branch, e não depois de aprovado.
+Rejeição é outra coisa: se o que voltou foi metadado (descrição, capturas,
+justificativa), corrige-se o rascunho e reenvia na mesma versão, sem rebuild.
+Bump só quando o que muda é o pacote.
+
+**Alterar a listagem publicada custa uma revisão.** Trocar uma linha da descrição
+põe o item na fila de novo — sem tirar do ar a versão aprovada, mas com o mesmo
+risco de rejeição por metadado que a 1.1.0 já pagou uma vez. Ajuste de texto
+viaja junto do próximo release, nunca sozinho.
 
 **Permissão que muda arrasta o formulário.** Alterar `permissions` ou
 `host_permissions` em `wxt.config.ts` invalida a justificativa correspondente em

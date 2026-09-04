@@ -20,6 +20,7 @@ pnpm vitest run lib/preview/rewrite.test.ts       # one file
 pnpm vitest run -t "não gerar loop"               # one test by name
 
 pnpm dlx web-ext lint --source-dir .output/firefox-mv3   # AMO check, must stay at 0 errors
+pnpm dlx wxt submit --dry-run                            # store credentials check, uploads nothing
 ```
 
 Two lint warnings are expected and not actionable: `UNSAFE_VAR_ASSIGNMENT` from
@@ -183,3 +184,21 @@ shifts the whole layout down; keep those titles static.
 version bump happens on the branch, the tag only after the merge. `docs/roadmap.md`
 holds what was decided against doing yet, with the reason. Neither file is a
 changelog — release notes come from the commit messages.
+
+1.1.0 is published on the Chrome Web Store as `bolibelfgalkiclnpnfdgbdljikflfba`,
+and awaiting review on AMO. Four things follow from being live:
+
+- **Store copy is not written here.** Every listing field — descriptions, the
+  test instructions, the permission justifications, the privacy text pasted into
+  AMO — lives in `docs/publicacao.md`, ready to paste. Change a permission and
+  that file is stale until it is updated with it.
+- **Editing the published listing costs a review.** A one-line description change
+  puts the item back in the queue, at the same risk of a metadata rejection the
+  1.1.0 submission already paid once. Text fixes ship with the next version;
+  the ones waiting are listed under "Pendências da listagem" in the roadmap.
+- **Uploading by hand was a first-time cost.** Both items exist now, so packages
+  go up with `wxt submit`, which takes the Firefox sources zip as a flag.
+  Credentials come from `wxt submit init` into a `.env` that stays out of git.
+- **`storeLinks` in the sibling repo decides what the landing shows.** It is the
+  only place in that code that knows whether the extension is live; `null` keeps
+  the button on "Em breve".

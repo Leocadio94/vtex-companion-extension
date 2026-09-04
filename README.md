@@ -175,8 +175,12 @@ Ideias levantadas e ainda não feitas, com o motivo de cada uma, em
 
 ## Publicação
 
+A 1.1.0 está publicada na Chrome Web Store e em análise na AMO.
+
 Textos de listagem, justificativa de cada permissão e checklist de envio em
-[`docs/publicacao.md`](./docs/publicacao.md). Política de privacidade em
+[`docs/publicacao.md`](./docs/publicacao.md) — inclusive a descrição pronta para
+colar, que não se reescreve na hora do envio. A ordem das etapas de um release
+está em [`docs/release.md`](./docs/release.md). Política de privacidade em
 [`PRIVACY.md`](./PRIVACY.md), que aponta para a versão publicada.
 
 A página de apresentação e a política moram no repositório do site

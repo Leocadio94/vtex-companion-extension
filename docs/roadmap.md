@@ -63,6 +63,19 @@ Em ordem de valor por esforço, na minha leitura.
   Interface e listagem têm de sair juntas — listagem em inglês sobre painel em
   português rende review ruim. Ver `docs/publicacao.md`.
 
+## Pendências da listagem
+
+Mudanças de texto já escritas em `docs/publicacao.md` e ainda não enviadas. As
+duas viajam junto do próximo release: alterar a listagem publicada custa uma
+revisão nova, e não vale gastar uma só com isso.
+
+- **Linha "Página do projeto" na descrição** — a URL da página inicial do item
+  não vira link nenhum na página da loja, que mostra o site do publisher. A
+  descrição é o único caminho da vitrine para a landing.
+- **Cortar o primeiro parágrafo da descrição longa** — ele repete a descrição
+  curta, que a loja imprime logo acima. Na AMO esse parágrafo já é o campo
+  Resumo; cortá-lo deixa as duas lojas com o mesmo texto.
+
 ## Dívidas encontradas pelo caminho
 
 Coisas que apareceram enquanto se mexia noutra parte, e que ninguém pediu.
@@ -75,6 +88,7 @@ Coisas que apareceram enquanto se mexia noutra parte, e que ninguém pediu.
   avisa quando sobra algo, o que é honesto, mas não resolve. Remover também no
   domínio pai exige decidir até onde subir, e subir demais desloga o usuário de
   onde ele não pediu.
-- **As capturas da listagem envelhecem a cada mudança de interface** — cinco
-  arquivos em `brand/screenshots/`, exigidos em 1280×800 exatos, refeitos à mão.
-  Vale avaliar gerar por script, como a OG image do site já é gerada.
+- **Duas capturas da listagem continuam manuais** — `pnpm screenshots` já gera a
+  1, a 4 e a 5. A 2 (painel do DevTools) e a 3 (admin autenticado) entram por
+  `brand/screenshots/manual/`, porque nenhuma das duas é alcançável sem uma
+  sessão real. Envelhecem a cada mudança de interface e ninguém lembra delas.
