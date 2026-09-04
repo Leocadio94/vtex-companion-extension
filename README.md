@@ -6,6 +6,9 @@ trás da página aberta e destrava o preview do FastStore no `localhost`.
 Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
 `background.scripts`; o Chrome, em MV3 com `service_worker`.
 
+[**Instalar no Chrome**](https://chromewebstore.google.com/detail/vtex-companion/bolibelfgalkiclnpnfdgbdljikflfba)
+· Firefox em análise na AMO.
+
 Página de apresentação: <https://leocadio.dev/vtex-companion/> · Política de
 privacidade: <https://leocadio.dev/vtex-companion/privacy/>
 

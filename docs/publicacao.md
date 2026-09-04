@@ -15,6 +15,8 @@ que os revisores costumam pedir.
 | Site / homepage         | <https://leocadio.dev/vtex-companion/> (EN: `/en/vtex-companion/`)                                                  |
 | Código-fonte            | <https://github.com/Leocadio94/vtex-companion-extension>                                                            |
 | Suporte                 | <https://github.com/Leocadio94/vtex-companion-extension/issues>                                                     |
+| Listagem Chrome         | <https://chromewebstore.google.com/detail/vtex-companion/bolibelfgalkiclnpnfdgbdljikflfba>                           |
+| Item ID (Chrome)        | `bolibelfgalkiclnpnfdgbdljikflfba`                                                                                  |
 
 O `homepage_url` do manifesto aponta para a página de apresentação, não para o
 repositório: é o link que o gerenciador de extensões mostra ao usuário, e quem
@@ -76,6 +78,7 @@ Não há servidor e nenhum dado é coletado, armazenado remotamente ou transmiti
 Política de privacidade: https://leocadio.dev/vtex-companion/privacy/
 
 Projeto independente e de código aberto. Não é um produto oficial da VTEX e não usa a identidade visual da VTEX.
+Página do projeto: https://leocadio.dev/vtex-companion/
 Código-fonte: https://github.com/Leocadio94/vtex-companion-extension
 ```
 
@@ -425,6 +428,53 @@ elas.
 - **Bloco promocional de letreiro (1400×560).** Só aparece no carrossel de
   destaque da home da loja, que é curadoria manual do Google. Uma extensão nova,
   de nicho e sem instalações, não chega lá. Não gerar agora.
+
+## O que a página publicada mostra, e o que não
+
+A "URL da página inicial" do item **não vira link na página da loja**. Ela existe
+no manifesto e aparece no gerenciador de extensões do navegador, que é onde o
+usuário instalado a procura; na vitrine, o que a loja mostra em _Details_ é o
+site do publisher, vindo do domínio verificado. Não há campo para corrigir isso.
+
+Por isso a descrição carrega a linha "Página do projeto" junto da política e do
+código-fonte: é o único caminho da vitrine para a página de apresentação. A linha
+entrou depois da aprovação da 1.1.0, então sobe junto da próxima atualização —
+reenviar a listagem só para acrescentar um link põe o item na fila de revisão sem
+necessidade.
+
+O selo azul ao lado do publisher é outra coisa: sai do domínio verificado somado
+a histórico sem violação ao longo do tempo, e não tem formulário. O domínio já
+está verificado desde o envio; o resto é tempo. "Em destaque" é curadoria
+editorial da loja, e depende de seguir as boas práticas e ter as imagens
+promocionais — daí o bloco 440×280 existir.
+
+## Atualizar uma versão publicada
+
+O upload manual serve para a primeira vez. Depois disso o WXT já traz
+`wxt submit`, que é o `publish-browser-extension` e fala com as duas lojas:
+
+```bash
+pnpm test && pnpm compile
+pnpm zip && pnpm zip:firefox
+pnpm dlx wxt submit \
+  --chrome-zip .output/*-chrome.zip \
+  --firefox-zip .output/*-firefox.zip \
+  --firefox-sources-zip .output/*-sources.zip
+```
+
+`wxt submit init` faz o passo a passo das credenciais e grava um `.env` — que
+**não entra no git**. São duas contas distintas: a Chrome quer service account
+(ou o par client id/secret e refresh token, na API v1.1 já depreciada) mais o
+item id; a AMO quer issuer e secret do JWT. O `--firefox-sources-zip` é o que
+dispensa lembrar do zip de fontes toda vez, que é justamente o passo que se
+esquece.
+
+`--dry-run` confere a autenticação sem enviar nada, e é o que se roda primeiro
+depois de mexer nas credenciais. Nada disso pula revisão: automatiza o envio, não
+a fila.
+
+O que continua manual, porque não é do pacote: descrição, capturas, imagens
+promocionais e os textos de privacidade. Metadado se edita no console.
 
 ## Marca
 
