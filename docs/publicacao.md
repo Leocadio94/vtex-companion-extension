@@ -448,6 +448,23 @@ está verificado desde o envio; o resto é tempo. "Em destaque" é curadoria
 editorial da loja, e depende de seguir as boas práticas e ter as imagens
 promocionais — daí o bloco 440×280 existir.
 
+## Busca da loja
+
+Item recém-publicado **não aparece na busca da Chrome Web Store**, nem pelo
+próprio nome. Verificado um dia depois da aprovação da 1.1.0: `vtex` devolvia
+nove extensões VTEX de terceiros e nenhuma delas era esta; `vtex companion`
+devolvia nada. Entrar pela URL direta funciona — é o índice que ainda não pegou,
+e leva de alguns dias a duas semanas.
+
+Não há o que configurar. A loja não tem campo de palavras-chave desde que o
+removeu por abuso; a busca lê nome, descrição curta e descrição. Repetir termo
+para "ajudar" é o comportamento que a política trata como spam, e esta listagem
+já foi rejeitada uma vez por isso.
+
+Depois de indexado, o que decide posição não é texto: é instalação e avaliação.
+Com zero usuários a extensão fica atrás de qualquer concorrente estabelecido, e
+a alavanca está fora da loja — a landing, o repositório e a comunidade VTEX.
+
 ## Atualizar uma versão publicada
 
 O upload manual serve para a primeira vez. Depois disso o WXT já traz
