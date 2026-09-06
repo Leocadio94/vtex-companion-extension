@@ -65,16 +65,20 @@ Em ordem de valor por esforço, na minha leitura.
 
 ## Pendências da listagem
 
-Mudanças de texto já escritas em `docs/publicacao.md` e ainda não enviadas. As
-duas viajam junto do próximo release: alterar a listagem publicada custa uma
-revisão nova, e não vale gastar uma só com isso.
+Mudanças de texto já escritas em `docs/publicacao.md` e ainda não enviadas.
+Viajam junto do próximo release: alterar a listagem publicada custa uma revisão
+nova, e não vale gastar uma só com isso.
 
 - **Linha "Página do projeto" na descrição** — a URL da página inicial do item
   não vira link nenhum na página da loja, que mostra o site do publisher. A
   descrição é o único caminho da vitrine para a landing.
-- **Cortar o primeiro parágrafo da descrição longa** — ele repete a descrição
-  curta, que a loja imprime logo acima. Na AMO esse parágrafo já é o campo
-  Resumo; cortá-lo deixa as duas lojas com o mesmo texto.
+- **Cortar o primeiro parágrafo da descrição longa** (só Chrome) — ele repete a
+  descrição curta, que a loja imprime logo acima. Na AMO isso já está resolvido:
+  a listagem saiu com o parágrafo no campo Resumo e a descrição começando no
+  segundo, que é o que se quer nas duas.
+- **Seção "NO ANDROID" na descrição** — a extensão é oferecida no Firefox para
+  Android e a descrição promete painel do DevTools e preview no localhost, que
+  não existem lá. O texto já está em `publicacao.md`.
 
 ## Dívidas encontradas pelo caminho
 
@@ -88,6 +92,13 @@ Coisas que apareceram enquanto se mexia noutra parte, e que ninguém pediu.
   avisa quando sobra algo, o que é honesto, mas não resolve. Remover também no
   domínio pai exige decidir até onde subir, e subir demais desloga o usuário de
   onde ele não pediu.
+- **O popup tem tamanho fixo e o Android não é uma janela** — `main` mede
+  400×600 em `entrypoints/popup/popup.css`, medida do popup do desktop. No
+  Firefox para Android o popup abre como página inteira, então numa tela de 360
+  CSS px os 400 cortam o conteúdo à direita. Não impede o uso: a extensão foi
+  testada no aparelho e funciona. O conserto é deixar a largura ceder à
+  viewport, e a armadilha é que a media query também vale para o popup do
+  desktop, cuja viewport inicial não é a final — precisa de teste nos dois.
 - **Duas capturas da listagem continuam manuais** — `pnpm screenshots` já gera a
   1, a 4 e a 5. A 2 (painel do DevTools) e a 3 (admin autenticado) entram por
   `brand/screenshots/manual/`, porque nenhuma das duas é alcançável sem uma

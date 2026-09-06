@@ -143,6 +143,11 @@ Firefox is built as MV3 (`manifestVersion: 3` overrides WXT's MV2 default,
 which lacks `optional_host_permissions`). `data_collection_permissions` forces
 `strict_min_version` 140 / Android 142.
 
+`gecko_android` is declared on purpose: the popup works on a phone, and it is
+the whole product there — Firefox for Android has no DevTools, so the panel does
+not exist, and the localhost preview assumes a dev server on the same machine.
+Store copy has to say so; `docs/publicacao.md` carries the paragraph.
+
 ## Conventions
 
 - Code comments are written in Portuguese; identifiers and commit messages in

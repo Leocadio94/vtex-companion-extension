@@ -75,6 +75,9 @@ O botão Pré-visualização do CMS do FastStore — o Headless CMS (legacy) e o
 
 Lojas em VTEX IO e no portal legacy pré-visualizam por workspace e não usam esse fluxo — a aba Preview diz isso em vez de oferecer controles inertes.
 
+NO ANDROID
+A extensão também é oferecida no Firefox para Android, onde tudo passa pelo popup: detecção, catálogo, SEO, scripts, sessão e o runner. O painel do DevTools não existe lá, porque o navegador não tem DevTools no aparelho, e o preview no localhost pressupõe um servidor de desenvolvimento na mesma máquina.
+
 PRIVACIDADE
 Não há servidor e nenhum dado é coletado, armazenado remotamente ou transmitido. Não existe content script global: a leitura da página é injetada sob demanda quando você abre o painel, e por isso a instalação não pede "ler dados em todos os sites". O acesso fixo é só a *.myvtex.com e localhost; o domínio da loja é opcional e concedido por você, site a site.
 Política de privacidade: https://leocadio.dev/vtex-companion/privacy/
@@ -226,10 +229,13 @@ Três coisas que a AMO cobra e a Chrome não:
   antes, não na hora.
 - **Licença.** Add-on listado precisa declarar uma; é a MIT do `LICENSE`.
 - **Android.** O manifesto declara `browser_specific_settings.gecko_android`, o
-  que oferece a extensão no Firefox para Android. Decidir se é isso mesmo: o
-  painel do DevTools não existe lá e o preview no localhost não faz sentido num
-  celular, então sobra a detecção e o SEO. Não é errado — é uma extensão menor
-  do que a listagem promete. Tirar a chave restringe a desktop.
+  que oferece a extensão no Firefox para Android. **Fica.** Testada num aparelho
+  em 06/09/2026: instala, aparece na lista de extensões e o popup funciona —
+  detecção, catálogo, SEO, scripts, sessão e runner. O que não existe lá é o
+  painel do DevTools, porque o navegador não tem DevTools no aparelho, e o
+  preview no localhost, que pressupõe um dev server na mesma máquina. Como a
+  listagem promete as duas coisas, a descrição ganha a seção "NO ANDROID" — e
+  ela só chega às lojas no envio da 1.2.0, junto das outras pendências.
 
 ## Política de privacidade em texto (AMO)
 

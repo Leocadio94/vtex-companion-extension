@@ -6,6 +6,12 @@ trás da página aberta e destrava o preview do FastStore no `localhost`.
 Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
 `background.scripts`; o Chrome, em MV3 com `service_worker`.
 
+O build do Firefox é oferecido também no **Android**, e lá tudo passa pelo
+popup: detecção, catálogo, SEO, scripts, sessão e o runner. O painel do DevTools
+não existe no aparelho — o Firefox para Android não tem DevTools —, e o preview
+no `localhost` pressupõe um dev server na mesma máquina, o que raramente é o
+caso num celular.
+
 [**Instalar no Chrome**](https://chromewebstore.google.com/detail/vtex-companion/bolibelfgalkiclnpnfdgbdljikflfba)
 · [**Instalar no Firefox**](https://addons.mozilla.org/firefox/addon/vtex-companion/)
 
