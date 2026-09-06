@@ -185,8 +185,9 @@ version bump happens on the branch, the tag only after the merge. `docs/roadmap.
 holds what was decided against doing yet, with the reason. Neither file is a
 changelog — release notes come from the commit messages.
 
-1.1.0 is published on the Chrome Web Store as `bolibelfgalkiclnpnfdgbdljikflfba`,
-and awaiting review on AMO. Four things follow from being live:
+1.1.0 is published on both stores: the Chrome Web Store as
+`bolibelfgalkiclnpnfdgbdljikflfba`, and AMO as the slug `vtex-companion`. Four
+things follow from being live:
 
 - **Store copy is not written here.** Every listing field — descriptions, the
   test instructions, the permission justifications, the privacy text pasted into
@@ -201,4 +202,6 @@ and awaiting review on AMO. Four things follow from being live:
   Credentials come from `wxt submit init` into a `.env` that stays out of git.
 - **`storeLinks` in the sibling repo decides what the landing shows.** It is the
   only place in that code that knows whether the extension is live; `null` keeps
-  the button on "Em breve".
+  a button on "Em breve". Both links are filled since the AMO approval, and the
+  AMO one carries no locale prefix so the store answers in the visitor's
+  language — the landing is bilingual and the link is the same on both pages.

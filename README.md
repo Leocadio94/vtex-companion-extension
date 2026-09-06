@@ -7,7 +7,7 @@ Um único código-fonte gera os dois builds. O Firefox sai em MV3 com
 `background.scripts`; o Chrome, em MV3 com `service_worker`.
 
 [**Instalar no Chrome**](https://chromewebstore.google.com/detail/vtex-companion/bolibelfgalkiclnpnfdgbdljikflfba)
-· Firefox em análise na AMO.
+· [**Instalar no Firefox**](https://addons.mozilla.org/firefox/addon/vtex-companion/)
 
 Página de apresentação: <https://leocadio.dev/vtex-companion/> · Política de
 privacidade: <https://leocadio.dev/vtex-companion/privacy/>
@@ -175,7 +175,7 @@ Ideias levantadas e ainda não feitas, com o motivo de cada uma, em
 
 ## Publicação
 
-A 1.1.0 está publicada na Chrome Web Store e em análise na AMO.
+A 1.1.0 está publicada nas duas lojas, Chrome Web Store e AMO.
 
 Textos de listagem, justificativa de cada permissão e checklist de envio em
 [`docs/publicacao.md`](./docs/publicacao.md) — inclusive a descrição pronta para

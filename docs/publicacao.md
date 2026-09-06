@@ -17,6 +17,8 @@ que os revisores costumam pedir.
 | Suporte                 | <https://github.com/Leocadio94/vtex-companion-extension/issues>                                                     |
 | Listagem Chrome         | <https://chromewebstore.google.com/detail/vtex-companion/bolibelfgalkiclnpnfdgbdljikflfba>                           |
 | Item ID (Chrome)        | `bolibelfgalkiclnpnfdgbdljikflfba`                                                                                  |
+| Listagem AMO            | <https://addons.mozilla.org/firefox/addon/vtex-companion/>                                                          |
+| Slug (AMO)              | `vtex-companion` — a URL vai sem prefixo de idioma; a loja redireciona para o do visitante                          |
 
 O `homepage_url` do manifesto aponta para a página de apresentação, não para o
 repositório: é o link que o gerenciador de extensões mostra ao usuário, e quem
@@ -455,6 +457,12 @@ próprio nome. Verificado um dia depois da aprovação da 1.1.0: `vtex` devolvia
 nove extensões VTEX de terceiros e nenhuma delas era esta; `vtex companion`
 devolvia nada. Entrar pela URL direta funciona — é o índice que ainda não pegou,
 e leva de alguns dias a duas semanas.
+
+A AMO indexa na hora: no dia da aprovação, `vtex companion` já devolvia a
+extensão em segundo lugar. O que ela não faz é casar termo parcial com peso —
+`vtex` sozinho devolve 2.831 resultados por similaridade de texto e a extensão
+não está entre os dez primeiros. As duas lojas cobram a mesma coisa no fim,
+que é instalação e avaliação; só a Chrome cobra também espera.
 
 Não há o que configurar. A loja não tem campo de palavras-chave desde que o
 removeu por abuso; a busca lê nome, descrição curta e descrição. Repetir termo
