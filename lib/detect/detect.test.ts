@@ -327,3 +327,29 @@ describe('detect — site que não é VTEX', () => {
     expect(result.confidence).toBe('none');
   });
 });
+
+describe('detect — segmento', () => {
+  const value =
+    'eyJjaGFubmVsIjoiMSIsImN1cnJlbmN5U3ltYm9sIjoiUiQifQ==';
+
+  it('decodifica o vtex_segment da origem', () => {
+    const result = detect(
+      signals('https://www.acme.com.br/', {
+        cookies: cookieSignals({ names: ['vtex_segment'], vtexSegment: value }),
+      }),
+    );
+
+    expect(result.segment?.channel).toBe('1');
+  });
+
+  it('fica null quando o cookie não existe ou não decodifica', () => {
+    expect(detect(signals('https://www.acme.com.br/')).segment).toBeNull();
+    expect(
+      detect(
+        signals('https://www.acme.com.br/', {
+          cookies: cookieSignals({ vtexSegment: 'lixo %%%' }),
+        }),
+      ).segment,
+    ).toBeNull();
+  });
+});

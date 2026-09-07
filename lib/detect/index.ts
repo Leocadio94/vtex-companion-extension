@@ -3,6 +3,7 @@
  */
 
 import { isAdminDomain, listAuthCookies } from '../auth/names';
+import { decodeSegment } from '../segment/segment';
 import { resolveIdentity } from './account';
 import { detectPlatform } from './platform';
 import { detectTemplate } from './template';
@@ -57,5 +58,8 @@ export function detect(signals: DetectionSignals): DetectionResult {
     templateReason: reason,
     entityId: resolveEntityId(signals),
     auth: resolveAuth(signals),
+    segment: signals.cookies.vtexSegment
+      ? decodeSegment(signals.cookies.vtexSegment)
+      : null,
   };
 }

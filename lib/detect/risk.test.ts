@@ -13,6 +13,7 @@ function result(overrides: Partial<DetectionResult> = {}): DetectionResult {
     isWorkspace: false,
     template: 'home',
     auth: { storefront: false, admin: true, cookies: [] },
+    segment: null,
     ...overrides,
   };
 }

@@ -7,6 +7,7 @@
  */
 
 import type { AuthCookieInfo } from '../auth/names';
+import type { SegmentPayload } from '../segment/segment';
 
 export type VtexPlatform =
   | 'io'
@@ -47,6 +48,8 @@ export interface CookieSignals {
   names: string[];
   /** Valor de `VtexWorkspace`, quando presente. */
   vtexWorkspace?: string;
+  /** Valor cru de `vtex_segment`. Quem decide se é um segmento é o decode. */
+  vtexSegment?: string;
   /** `VtexIdclientAutCookie` presente — sessão de admin neste domínio. */
   hasAdminAuthCookie: boolean;
 }
@@ -157,4 +160,6 @@ export interface DetectionResult {
    */
   entityId?: string;
   auth: AuthState;
+  /** `vtex_segment` decodificado, ou `null` quando não há um legível. */
+  segment: SegmentPayload | null;
 }

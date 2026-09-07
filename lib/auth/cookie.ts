@@ -7,6 +7,7 @@
  * admin numa página qualquer não teria utilidade e teria risco.
  */
 
+import { cookieAttributes, type CookieResult } from '../browser/cookies';
 import { AUTH_COOKIE, authCookieNames, pickSourceCookie } from './names';
 
 export {
@@ -18,41 +19,8 @@ export {
 } from './names';
 export type { AuthCookieInfo, AuthScope } from './names';
 
-export interface CookieTarget {
-  url: string;
-  name: string;
-  secure: boolean;
-  sameSite: 'lax' | 'no_restriction';
-}
-
-/**
- * Atributos com que o cookie é gravado.
- *
- * `sameSite: 'lax'` de propósito: é o suficiente para as chamadas que a
- * extensão faz, que saem da própria origem, e não afrouxa o cookie além do que
- * a VTEX já usa. `secure` acompanha o protocolo porque o Chrome recusa cookie
- * seguro em http.
- */
-export function cookieAttributes(url: string, name: string): CookieTarget | null {
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
-
-    return {
-      url: parsed.origin,
-      name,
-      secure: parsed.protocol === 'https:',
-      sameSite: 'lax',
-    };
-  } catch {
-    return null;
-  }
-}
-
-export interface CookieResult {
-  ok: boolean;
-  message: string;
-}
+export { cookieAttributes } from '../browser/cookies';
+export type { CookieResult, CookieTarget } from '../browser/cookies';
 
 export async function writeAuthCookie(
   url: string,

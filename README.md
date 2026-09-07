@@ -84,6 +84,11 @@ Firefox com `background.scripts`, ambos em MV3.
   clonagem da sessão de `{account}.myvtex.com` para o domínio da loja sem
   passar pela área de transferência, entrada por token colado, e limpeza que
   confere o resultado relendo os cookies.
+- 🎯 **Segmento** — o `vtex_segment` da origem decodificado, com sales channel,
+  culture info, moeda e region id em campos editáveis e o JSON inteiro para o
+  resto (`priceTables`, `campaigns`, `utm_*`). Gravar recarrega a aba; o formato
+  e o que a Session Manager faz depois estão em
+  [`docs/segment.md`](./docs/segment.md).
 - ⚡ **Fetch runner** — todos os métodos, com o cookie da aba atual. Presets de
   Sessão, Checkout, Catálogo, Intelligent Search, OMS e Master Data;
   confirmação explícita antes de qualquer método que altera dados; histórico da
@@ -285,6 +290,7 @@ Entregue:
 | ✅ | Catálogo da página — PDP, listagem e busca |
 | ✅ | Scripts de terceiros com id da conta por vendor |
 | ✅ | Sessão: clonar, colar token e limpar, sem persistir credencial |
+| ✅ | Segmento: `vtex_segment` decodificado e editável, com JSON cru |
 | ✅ | Fetch runner com presets, confirmação de método inseguro e histórico |
 | ✅ | Análise de SEO com regras por tipo de página |
 | ✅ | Painel no DevTools compartilhando estado e componentes com o popup |
@@ -299,7 +305,6 @@ Levantado e ainda não feito — o motivo de cada um está em
 
 | Status | Item | Tam. |
 | ------ | ---- | ---- |
-| ⏳ | Decodificar e editar o `vtex_segment` (sales channel, região, moeda) | M |
 | ⏳ | Flags de URL em um clique (`workspace=`, `__siteEditor`, `sc=`, …) | M |
 | ⏳ | Trocador de workspace, com lista dos recentes | M |
 | ⏳ | Runner: preencher `{slug}`/`{productId}`/`{skuId}`, presets salvos, copiar como cURL | M |
