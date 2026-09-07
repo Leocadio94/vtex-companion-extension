@@ -29,11 +29,6 @@ O que sobrou do levantamento de layout depois da rodada 1.1.0.
 
 Em ordem de valor por esforço, na minha leitura.
 
-- **Flags de URL em um clique** (M) — `workspace=`, `__siteEditor=true`,
-  `__disableSSR`, `__disableRuntimeSSR`, `__bindingAddress`, `sc=`. Mesmo
-  formato de `rewritePreviewUrl`: função pura sobre a URL, com testes.
-- **Trocador de workspace** (M) — abrir o mesmo path em outro workspace, com
-  lista dos recentes. Depende da mesma função de URL do item acima.
 - **Inspector de app e handle** (G) — no IO as classes seguem
   `vtex-{app}-{major}-x-{handle}`: clicar num elemento e saber qual app o
   renderiza. No FastStore, o equivalente com `data-fs-*` e as sections do
@@ -72,8 +67,15 @@ nova, e não vale gastar uma só com isso.
   descrição curta, que a loja imprime logo acima. Na AMO isso já está resolvido:
   a listagem saiu com o parágrafo no campo Resumo e a descrição começando no
   segundo, que é o que se quer nas duas.
-- **Bullet do segmento na descrição** — a edição do `vtex_segment` é recurso da
-  1.2.0 e a descrição não menciona. O texto já está em `publicacao.md`.
+- **Seção NAVEGAÇÃO e bullet do segmento na descrição** — o trocador de
+  workspace, as flags de URL e a edição do `vtex_segment` são recursos da 1.2.0 e
+  a descrição não menciona nenhum. O texto já está em `publicacao.md`.
+- **Linha dos workspaces recentes na política de privacidade** — o trocador
+  guarda a lista em `local:`, e a lista do que é salvo está enumerada na
+  política. `publicacao.md` já tem a linha; falta a fonte da verdade em
+  `src/data/products/vtex-companion.ts` do repositório irmão, nos dois idiomas,
+  com `privacyUpdatedAt` novo. Ficou para depois porque aquele repositório está
+  no meio de um refactor de dados com mudanças em stage.
 - **Seção "NO ANDROID" na descrição** — a extensão é oferecida no Firefox para
   Android e a descrição promete painel do DevTools e preview no localhost, que
   não existem lá. O texto já está em `publicacao.md`.

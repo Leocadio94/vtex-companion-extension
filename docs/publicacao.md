@@ -57,6 +57,10 @@ SCRIPTS DE TERCEIROS
 • Quais tags de analytics, publicidade, remarketing e monitoramento a página carrega, com o id da conta quando ele está exposto no próprio script
 • Origens de terceiros que a extensão não reconhece, agrupadas por volume de requisições
 
+NAVEGAÇÃO
+• Abrir a mesma rota em outro workspace, com os recentes e a volta ao master
+• Flags de URL em um clique: Site Editor, sem SSR, binding address e sales channel
+
 FETCH RUNNER
 • Chame as APIs da loja de dentro da própria aba, com a sessão que ela já tem
 • Presets prontos para as APIs de sessão, checkout, catálogo, busca, pedidos e master data da loja
@@ -277,6 +281,7 @@ Apenas preferências e estado de trabalho, no armazenamento local do navegador:
 - Aba do painel em que você estava
 - Última URL de preview capturada, por aba
 - Formulário e histórico do fetch runner, durante a sessão do navegador
+- Workspaces abertos recentemente pelo trocador, para oferecê-los de novo
 Nada disso contém credenciais, e nada disso é enviado para fora do navegador.
 
 PERMISSÕES

@@ -229,6 +229,10 @@ export default function App() {
               if (context) void browser.tabs.reload(context.tabId);
               void load();
             }}
+            onNavigate={(url) => {
+              if (!context) return;
+              void browser.tabs.update(context.tabId, { url }).then(load);
+            }}
           />
         ) : tab === 'page' ? (
           <PageTab

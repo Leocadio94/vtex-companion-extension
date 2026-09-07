@@ -342,6 +342,11 @@ button:disabled {
   margin-top: 8px;
 }
 
+.actions input[type='text'] {
+  flex: 1;
+  min-width: 0;
+}
+
 .advanced {
   margin-top: 10px;
 }

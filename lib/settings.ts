@@ -45,6 +45,18 @@ export const oneShotUntil = storage.defineItem<number | null>(
 /** Quanto tempo a arma fica válida depois do clique. */
 export const ONE_SHOT_TTL_MS = 30_000;
 
+/**
+ * Workspaces abertos pelo trocador, mais recente na frente.
+ *
+ * `local:` e não `sync:`: nome de workspace costuma ser nome de cliente, e o
+ * `sync` do navegador levaria a lista para a conta do usuário — fora da máquina,
+ * que é o que a política de privacidade promete não acontecer.
+ */
+export const recentWorkspaces = storage.defineItem<string[]>(
+  'local:recentWorkspaces',
+  { fallback: [] },
+);
+
 /** Aba do popup em que o usuário estava, para reabrir onde parou. */
 export const activeTab = storage.defineItem<string>('session:activeTab', {
   fallback: 'store',
