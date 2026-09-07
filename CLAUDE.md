@@ -163,6 +163,10 @@ Store copy has to say so; `docs/publicacao.md` carries the paragraph.
 - The DevTools panel gets no `activeTab` grant — that comes from clicking the
   extension's action, which the panel never does. It needs an explicit host
   permission, and says so instead of failing silently.
+- Split work across sub-agents when the task actually divides — independent
+  parts, no shared file. Two features that share a pure function are sequential,
+  not parallel, and paying for a cold agent to wait on another's output costs
+  more than doing it in one pass.
 - The fetch runner sends from the active tab, which is what makes "the current
   session cookie" true: same origin, that tab's cookies, no host permission. The
   cost is that only the tab's own origin works, and `buildRequest` flags the
