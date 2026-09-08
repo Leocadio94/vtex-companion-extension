@@ -3,6 +3,7 @@ import { isPreviewUrl, rewritePreviewUrl } from '@/lib/preview/rewrite';
 import { forgetTab, rememberPreview } from '@/lib/preview/store';
 import {
   ONE_SHOT_TTL_MS,
+  migrateFromSync,
   oneShotUntil,
   previewPort,
   previews,
@@ -37,6 +38,8 @@ async function consumeOneShot(): Promise<boolean> {
 }
 
 export default defineBackground(() => {
+  browser.runtime.onInstalled.addListener(() => void migrateFromSync());
+
   browser.runtime.onMessage.addListener((message: CompanionMessage) => {
     if (message?.type === 'preview:arm-one-shot') {
       return oneShotUntil.setValue(Date.now() + ONE_SHOT_TTL_MS).then(() => true);

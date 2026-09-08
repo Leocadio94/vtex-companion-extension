@@ -117,8 +117,10 @@ file breaks, and not finding an element is a valid result rather than an error.
 ### Background is ephemeral
 
 Chrome's service worker dies at will. Nothing lives in module state — use
-`lib/settings.ts`, where `sync:` holds preferences and `session:` holds what only
-matters while the browser is open.
+`lib/settings.ts`, where `local:` holds preferences and `session:` holds what only
+matters while the browser is open. Nothing uses `sync:`: it leaves the machine
+through the browser account, and the privacy policy promises that what is saved
+stays here. `migrateFromSync` carries the two preferences that predate the rule.
 
 ## Session cookies
 
