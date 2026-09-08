@@ -499,12 +499,50 @@ pnpm dlx wxt submit \
   --firefox-sources-zip .output/*-sources.zip
 ```
 
-`wxt submit init` faz o passo a passo das credenciais e grava um `.env` — que
-**não entra no git**. São duas contas distintas: a Chrome quer service account
-(ou o par client id/secret e refresh token, na API v1.1 já depreciada) mais o
-item id; a AMO quer issuer e secret do JWT. O `--firefox-sources-zip` é o que
-dispensa lembrar do zip de fontes toda vez, que é justamente o passo que se
-esquece.
+O `--firefox-sources-zip` é o que dispensa lembrar do zip de fontes toda vez,
+que é justamente o passo que se esquece.
+
+### Credenciais: `.env.submit`
+
+`pnpm dlx wxt submit init` é um roteiro interativo que pergunta cada valor e
+grava tudo num **`.env.submit` na raiz** — o arquivo que o `publish-extension`
+procura sozinho na hora do envio. O `.gitignore` cobre `.env.*`; conferir com
+`git check-ignore -v .env.submit` antes de rodar o init, porque o que ele grava
+é credencial de publicação.
+
+Todo valor do arquivo também pode ir por flag: a env var é o nome da flag em
+UPPER_SNAKE_CASE (`--chrome-extension-id` é `CHROME_EXTENSION_ID`).
+
+**Chrome — API v2, service account.** A v1.1 (client id, client secret e refresh
+token) **para de funcionar em 15/10/2026**, e o fluxo dela ainda usa o redirect
+`urn:ietf:wg:oauth:2.0:oob`, que o Google bloqueia para cliente OAuth novo. No
+init, escolher `v2`:
+
+| Variável | De onde vem |
+| -------- | ----------- |
+| `CHROME_API_VERSION` | `v2` |
+| `CHROME_EXTENSION_ID` | `bolibelfgalkiclnpnfdgbdljikflfba` |
+| `CHROME_PUBLISHER_ID` | URL do dashboard: `chrome.google.com/webstore/devconsole/<publisher-id>` |
+| `CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL` | campo `client_email` do JSON da service account |
+| `CHROME_SERVICE_ACCOUNT_PRIVATE_KEY` | campo `private_key` do mesmo JSON |
+
+A service account sai do guia oficial —
+<https://developer.chrome.com/docs/webstore/service-accounts> —, parando depois
+de baixar o JSON: em "Obtain access tokens", seguir "Use a JSON Web Token" e não
+continuar. No init, a `private_key` é colada sem as aspas de fora e **com os
+`\n` como estão**; ele mesmo converte.
+
+**Firefox — JWT da AMO.** Três valores:
+
+| Variável | De onde vem |
+| -------- | ----------- |
+| `FIREFOX_EXTENSION_ID` | `vtex-companion` — o que aparece em `addons.mozilla.org/developers/addon/<id>/edit`. O GUID do manifesto (`vtex-companion@gabrielleocadio.dev`) também serve |
+| `FIREFOX_JWT_ISSUER` | <https://addons.mozilla.org/developers/addon/api/key/> |
+| `FIREFOX_JWT_SECRET` | a mesma página, e o segredo só aparece uma vez |
+
+O init ainda pergunta o canal (`listed`, que é o nosso) e se envia para revisão
+depois de subir. A compatibilidade com Android não precisa de flag: sai do
+`gecko_android` do manifesto.
 
 `--dry-run` confere a autenticação sem enviar nada, e é o que se roda primeiro
 depois de mexer nas credenciais. Nada disso pula revisão: automatiza o envio, não

@@ -16,6 +16,10 @@ stats-*.json
 .wxt
 web-ext.config.ts
 
+# Credenciais das lojas: o `wxt submit init` escreve este arquivo na raiz.
+.env
+.env.*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
