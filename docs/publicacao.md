@@ -544,6 +544,34 @@ O init ainda pergunta o canal (`listed`, que é o nosso) e se envia para revisã
 depois de subir. A compatibilidade com Android não precisa de flag: sai do
 `gecko_android` do manifesto.
 
+### `CHROME_API_VERSION` decide o resto
+
+Sem essa linha o schema do Chrome é o **v1.1**, e a validação passa a cobrar
+`chrome.clientId`, `chrome.clientSecret` e `chrome.refreshToken` — mesmo que o
+arquivo tenha os campos da v2. O erro típico de arquivo pela metade:
+
+```
+× Error: Invalid config:
+  - chrome.clientId: Expected a string, but received: undefined
+```
+
+E ele aparece **também no `wxt submit init`**, que resolve e valida o config
+existente antes de abrir o menu de lojas: com um `.env.submit` incompleto na
+raiz, o walkthrough morre sem perguntar nada. Duas saídas:
+
+- completar o arquivo à mão, que é o caminho curto — são cinco linhas por loja;
+- ou rodar o init com placeholders na frente, só para passar da validação. Os
+  valores são descartados pelo próprio walkthrough:
+
+  ```bash
+  CHROME_API_VERSION=v2 CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL=x \
+  CHROME_SERVICE_ACCOUNT_PRIVATE_KEY=x FIREFOX_JWT_ISSUER=x FIREFOX_JWT_SECRET=x \
+  pnpm exec wxt submit init
+  ```
+
+O arquivo é lido do diretório onde o comando roda, não da raiz do repositório —
+rodar de dentro de uma subpasta é o outro jeito de ver o mesmo erro.
+
 `--dry-run` confere a autenticação sem enviar nada, e é o que se roda primeiro
 depois de mexer nas credenciais. Nada disso pula revisão: automatiza o envio, não
 a fila.
