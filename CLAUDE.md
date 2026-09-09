@@ -195,8 +195,11 @@ shifts the whole layout down; keep those titles static.
 
 `docs/release.md` is the order of operations, and the order is the point: the
 version bump happens on the branch, the tag only after the merge. `docs/roadmap.md`
-holds what was decided against doing yet, with the reason. Neither file is a
-changelog — release notes come from the commit messages.
+holds what was decided against doing yet, with the reason, and neither of those
+two is a changelog: `CHANGELOG.md` is, with one section per published version,
+written on the branch next to the bump and reused verbatim as the GitHub release
+body. Write it from the commit messages, which are already prose about the
+decision — the file is the source and the release page quotes it.
 
 1.1.0 is published on both stores: the Chrome Web Store as
 `bolibelfgalkiclnpnfdgbdljikflfba`, and AMO as the slug `vtex-companion`. Four
