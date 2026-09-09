@@ -342,6 +342,16 @@ button:disabled {
   margin-top: 8px;
 }
 
+.chips {
+  align-items: center;
+}
+
+.chip {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
 .actions input[type='text'] {
   flex: 1;
   min-width: 0;

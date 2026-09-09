@@ -86,8 +86,9 @@ Firefox com `background.scripts`, ambos em MV3.
   confere o resultado relendo os cookies.
 - 🔀 **Workspace e flags de URL** — abrir a mesma rota noutro workspace, com os
   recentes e a volta ao master, e ligar `__siteEditor`, `__disableSSR`,
-  `__disableRuntimeSSR`, `__bindingAddress` e `sc` num clique, sem perder o resto
-  da query. As duas formas de dizer o workspace estão em
+  `__disableRuntimeSSR`, `__disablePixels`, `__bindingAddress` e `sc` num clique,
+  sem perder o resto da query. As flags do render-runtime só aparecem em loja
+  VTEX IO, que é quem as lê. As duas formas de dizer o workspace estão em
   [`docs/url.md`](./docs/url.md).
 - 🎯 **Segmento** — o `vtex_segment` da origem decodificado, com sales channel,
   culture info, moeda e region id em campos editáveis e o JSON inteiro para o

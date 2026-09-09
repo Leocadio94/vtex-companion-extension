@@ -15,6 +15,12 @@ import { Empty, Row } from './Row';
 // Ele continua na lista do módulo porque `clearFlags` precisa removê-lo.
 const FLAGS = URL_FLAGS.filter((flag) => flag.key !== 'workspace');
 
+/** Tooltip: o parâmetro que a flag escreve, e o que ele faz. */
+function flagTitle(flag: (typeof FLAGS)[number]): string {
+  const param = flag.kind === 'toggle' ? `${flag.key}=${flag.on}` : `${flag.key}=`;
+  return `${param} — ${flag.hint}`;
+}
+
 export function UrlSection({
   context,
   result,
@@ -37,6 +43,11 @@ export function UrlSection({
 
   const flags = readFlags(context.url);
   const workspace = currentWorkspace(context.url);
+
+  // Fora do IO, as flags do render-runtime não fazem nada: um botão que não
+  // muda a página é pior do que botão nenhum.
+  const isIo = result.platform === 'io';
+  const visible = FLAGS.filter((flag) => !flag.io || isIo);
 
   const goWorkspace = (name: string) => {
     const url = switchWorkspace(context.url, name);
@@ -101,16 +112,26 @@ export function UrlSection({
       </div>
 
       {(recent.length > 0 || workspace !== MASTER) && (
-        <div className="actions">
+        <div className="actions chips">
+          <span className="row-label">Recentes</span>
           {workspace !== MASTER && (
-            <button type="button" onClick={() => goWorkspace(MASTER)}>
+            <button
+              type="button"
+              className="btn-secondary chip"
+              onClick={() => goWorkspace(MASTER)}
+            >
               master
             </button>
           )}
           {recent
             .filter((name) => name !== workspace)
             .map((name) => (
-              <button key={name} type="button" onClick={() => goWorkspace(name)}>
+              <button
+                key={name}
+                type="button"
+                className="btn-secondary chip"
+                onClick={() => goWorkspace(name)}
+              >
                 {name}
               </button>
             ))}
@@ -119,10 +140,10 @@ export function UrlSection({
 
       {error && <Empty tone="error">{error}</Empty>}
 
-      {FLAGS.filter((flag) => flag.kind === 'toggle').map((flag) => {
+      {visible.filter((flag) => flag.kind === 'toggle').map((flag) => {
         const isOn = flags[flag.key] !== undefined;
         return (
-          <label className="toggle" key={flag.key}>
+          <label className="toggle" key={flag.key} title={flagTitle(flag)}>
             <input
               type="checkbox"
               checked={isOn}
@@ -133,8 +154,8 @@ export function UrlSection({
         );
       })}
 
-      {FLAGS.filter((flag) => flag.kind === 'value').map((flag) => (
-        <label className="field" key={flag.key}>
+      {visible.filter((flag) => flag.kind === 'value').map((flag) => (
+        <label className="field" key={flag.key} title={flagTitle(flag)}>
           <span>{flag.label}</span>
           <input
             type="text"
@@ -160,6 +181,7 @@ export function UrlSection({
         </button>
         <button
           type="button"
+          className="btn-secondary"
           disabled={!hasFlags}
           onClick={() => {
             const url = clearFlags(context.url);
@@ -173,12 +195,21 @@ export function UrlSection({
       <Empty>
         Ligar uma flag navega na hora e preserva o resto da query. Campo vazio
         remove a flag.
+        {!isIo && ' As flags do render-runtime só aparecem em loja VTEX IO.'}
       </Empty>
 
       <details className="advanced">
         <summary>O que cada flag faz</summary>
-        {FLAGS.map((flag) => (
-          <Row key={flag.key} label={flag.label} value={flag.hint} />
+        {visible.map((flag) => (
+          <Row
+            key={flag.key}
+            label={flag.label}
+            value={
+              <>
+                <code>{flag.key}</code> — {flag.hint}
+              </>
+            }
+          />
         ))}
       </details>
     </section>

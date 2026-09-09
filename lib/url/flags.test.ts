@@ -60,7 +60,7 @@ describe('setFlag', () => {
 describe('clearFlags', () => {
   it('tira só as flags conhecidas', () => {
     const next = clearFlags(
-      `${STORE}?utm_source=news&workspace=dev&__siteEditor=true&sc=2`,
+      `${STORE}?utm_source=news&workspace=dev&__siteEditor=true&__disablePixels=true&sc=2`,
     );
 
     expect(next).toBe(`${STORE}?utm_source=news`);
@@ -78,9 +78,25 @@ describe('URL_FLAGS', () => {
       '__siteEditor',
       '__disableSSR',
       '__disableRuntimeSSR',
+      '__disablePixels',
       '__bindingAddress',
       'sc',
     ]);
+  });
+
+  it('marca quem só o render-runtime do IO lê', () => {
+    const io = URL_FLAGS.filter((flag) => flag.io).map((flag) => flag.key);
+
+    expect(io).toEqual([
+      '__siteEditor',
+      '__disableSSR',
+      '__disableRuntimeSSR',
+      '__disablePixels',
+      '__bindingAddress',
+    ]);
+    // `sc` e `workspace` valem fora do IO, então ficam de fora da marca.
+    expect(io).not.toContain('sc');
+    expect(io).not.toContain('workspace');
   });
 
   it('toda flag de liga-desliga sabe o valor que grava', () => {

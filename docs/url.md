@@ -25,15 +25,25 @@ Nome inválido devolve `null` em vez de navegar: `dev workspace` e `dev--acme`
 gerariam um host que não existe, e o erro apareceria como página quebrada em vez
 de mensagem.
 
-Os recentes ficam em `sync:recentWorkspaces` — preferência, não estado de sessão:
-quem usa dois workspaces volta a eles amanhã.
+Os recentes ficam em `local:recentWorkspaces` — preferência, não estado de
+sessão: quem usa dois workspaces volta a eles amanhã. `local` e não `sync`
+porque nome de workspace costuma ser nome de cliente, e o sync do navegador
+levaria a lista para a conta do usuário.
 
 ## Flags
 
 `URL_FLAGS` descreve o que a interface oferece; `lib/url/flags.ts` só liga,
 troca e desliga. As de liga-desliga (`__siteEditor`, `__disableSSR`,
-`__disableRuntimeSSR`) gravam `true`; as de valor (`__bindingAddress`, `sc`) vão
-por campo de texto.
+`__disableRuntimeSSR`, `__disablePixels`) gravam `true`; as de valor
+(`__bindingAddress`, `sc`) vão por campo de texto.
+
+Quem lê a flag decide onde ela aparece. As marcadas com `io` são do
+render-runtime: numa loja FastStore, headless ou no portal legacy elas não fazem
+nada, então a seção não as oferece — um botão que não muda a página é pior do
+que botão nenhum. `sc` e `workspace` ficam de fora da marca porque valem além do
+IO. O nome do parâmetro está no `title` de cada controle, e por extenso no
+`details` da seção: o rótulo é para quem já sabe, o parâmetro é para quem vai
+procurar depois.
 
 A regra que não pode ser quebrada: **o resto da query fica como estava**. A URL
 de uma loja carrega termo de busca, paginação, `map` e utm, e perder isso ao
@@ -48,3 +58,10 @@ controle próprio na interface mas continua sendo uma flag para efeito de limpez
 `browser.tabs.update` não pede permissão de host: a extensão já pode navegar a
 aba que o usuário abriu. Nada aqui lê a página — a decisão inteira é sobre a URL,
 que a extensão já tem.
+
+O que ela pede é paciência: `tabs.update` resolve quando o pedido é aceito, não
+quando a página nova carregou. Reler a detecção ali devolve o estado anterior, e
+o sintoma é o workspace na tela continuar o antigo até alguém reabrir o painel.
+`lib/browser/navigate.ts` espera o `status: 'complete'` da aba antes de devolver,
+com um teto de quatro segundos — loja lenta não pode prender o painel em "Lendo
+a página…".

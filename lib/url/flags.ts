@@ -17,6 +17,11 @@ export interface FlagSpec {
   on?: string;
   placeholder?: string;
   hint: string;
+  /**
+   * Só o render-runtime do VTEX IO lê esta flag. Numa loja FastStore ou headless
+   * ela não faz nada, e oferecê-la ali seria um botão que mente.
+   */
+  io?: boolean;
 }
 
 export const URL_FLAGS: FlagSpec[] = [
@@ -33,6 +38,7 @@ export const URL_FLAGS: FlagSpec[] = [
     kind: 'toggle',
     on: 'true',
     hint: 'Abre a loja com o editor de conteúdo do IO.',
+    io: true,
   },
   {
     key: '__disableSSR',
@@ -40,6 +46,7 @@ export const URL_FLAGS: FlagSpec[] = [
     kind: 'toggle',
     on: 'true',
     hint: 'A página vem sem render no servidor — mostra o que é do cliente.',
+    io: true,
   },
   {
     key: '__disableRuntimeSSR',
@@ -47,6 +54,15 @@ export const URL_FLAGS: FlagSpec[] = [
     kind: 'toggle',
     on: 'true',
     hint: 'Desliga só o render do render-runtime, não o da rota.',
+    io: true,
+  },
+  {
+    key: '__disablePixels',
+    label: 'Sem pixels',
+    kind: 'toggle',
+    on: 'true',
+    hint: 'Não carrega os apps de pixel — analytics, remarketing, monitoramento.',
+    io: true,
   },
   {
     key: '__bindingAddress',
@@ -54,6 +70,7 @@ export const URL_FLAGS: FlagSpec[] = [
     kind: 'value',
     placeholder: 'www.acme.com.br/br',
     hint: 'Força o binding, para lojas com mais de um domínio ou locale.',
+    io: true,
   },
   {
     key: 'sc',
