@@ -56,23 +56,12 @@ Em ordem de valor por esforço, na minha leitura.
 
 ## Pendências da listagem
 
-Mudanças de texto já escritas em `docs/publicacao.md` e ainda não enviadas.
-Viajam junto do próximo release: alterar a listagem publicada custa uma revisão
-nova, e não vale gastar uma só com isso.
-
-- **Linha "Página do projeto" na descrição** — a URL da página inicial do item
-  não vira link nenhum na página da loja, que mostra o site do publisher. A
-  descrição é o único caminho da vitrine para a landing.
-- **Cortar o primeiro parágrafo da descrição longa** (só Chrome) — ele repete a
-  descrição curta, que a loja imprime logo acima. Na AMO isso já está resolvido:
-  a listagem saiu com o parágrafo no campo Resumo e a descrição começando no
-  segundo, que é o que se quer nas duas.
-- **Seção NAVEGAÇÃO e bullet do segmento na descrição** — o trocador de
-  workspace, as flags de URL e a edição do `vtex_segment` são recursos da 1.2.0 e
-  a descrição não menciona nenhum. O texto já está em `publicacao.md`.
-- **Seção "NO ANDROID" na descrição** — a extensão é oferecida no Firefox para
-  Android e a descrição promete painel do DevTools e preview no localhost, que
-  não existem lá. O texto já está em `publicacao.md`.
+Nada pendente de escrita: os quatro textos que faltavam — a linha "Página do
+projeto", o corte do primeiro parágrafo na Chrome, a seção NAVEGAÇÃO com o
+bullet do segmento e a seção NO ANDROID — estão colados nos dois consoles,
+esperando o envio da 1.2.0 para entrar em revisão junto do pacote. O que vale
+como fonte continua sendo `docs/publicacao.md`: console é rascunho até a versão
+subir.
 
 ## Dívidas encontradas pelo caminho
 
