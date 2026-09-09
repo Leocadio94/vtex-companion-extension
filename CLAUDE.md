@@ -218,9 +218,13 @@ things follow from being live:
   Credentials come from `wxt submit init` into `.env.submit`, which stays out of
   git; the same nine values live in the repository secrets.
 - **A `v*.*.*` tag is a publish trigger.** `.github/workflows/release.yml` runs
-  on tag push and stops at the `stores` environment for human approval, so a tag
-  pushed by mistake does not reach the stores on its own — but it does queue a
-  button someone could press. Never push a version tag to try something out.
+  on tag push, cuts the GitHub release from the top section of `CHANGELOG.md`
+  with the packages attached, and stops at the `stores` environment for human
+  approval, so a tag pushed by mistake does not reach the stores on its own — but
+  it does queue a button someone could press, and it does publish a release.
+  Never push a version tag to try something out. The tag also has to match both
+  `package.json` and the first heading in `CHANGELOG.md`, or the run fails before
+  packaging.
 - **`storeLinks` in the sibling repo decides what the landing shows.** It is the
   only place in that code that knows whether the extension is live; `null` keeps
   a button on "Em breve". Both links are filled since the AMO approval, and the

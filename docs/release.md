@@ -101,11 +101,17 @@ git push origin --delete <branch>
 ```
 
 O release no GitHub sai da seção que já está no `CHANGELOG.md`, com os pacotes
-anexados — é onde alguém consegue baixar exatamente o que foi enviado às lojas:
+anexados — é onde alguém consegue baixar exatamente o que foi enviado às lojas.
+**A Action faz isso sozinha** no push da tag, e recusa a tag cujo `CHANGELOG.md`
+não começa pela seção daquela versão: publicar a nota da versão anterior é pior
+do que não publicar nota nenhuma. Reexecutar não duplica — atualiza a nota e
+troca os pacotes.
+
+À mão, quando a Action estiver fora do ar, é o mesmo texto:
 
 ```bash
 awk '/^## /{ n++ } n == 1' CHANGELOG.md | tail -n +2 > /tmp/notes.md
-gh release create v<versão> --title "v<versão> — <resumo>" \
+gh release create v<versão> --title "v<versão>" \
   --notes-file /tmp/notes.md .output/*.zip
 ```
 
