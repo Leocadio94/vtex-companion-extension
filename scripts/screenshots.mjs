@@ -93,11 +93,15 @@ const SHOTS = [
     scroll: 400,
     tab: 'Loja',
     async prepare(popup) {
+      // Mira o Segmento, não a Sessão: a aba ganhou URL e Segmento acima dela,
+      // e é o par novo que a captura precisa mostrar. `scrollIntoView` com
+      // `start`, e não `scrollIntoViewIfNeeded`, porque este rola o mínimo e
+      // deixa a seção encostada na borda de baixo, cortada.
       await popup
-        .locator('section')
-        .filter({ hasText: 'Sessão' })
-        .first()
-        .scrollIntoViewIfNeeded();
+        .getByRole('heading', { name: 'Segmento' })
+        .evaluate((heading) =>
+          heading.closest('section')?.scrollIntoView({ block: 'start' }),
+        );
     },
   },
 ];

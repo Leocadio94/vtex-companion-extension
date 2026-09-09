@@ -409,7 +409,7 @@ enviada, e a primeira é a que quase todo mundo vê.
 2. Painel do DevTools — requisição e resposta formatada lado a lado
 3. Admin do CMS — botão Localhost e o Localhost URL no painel de dev mode
 4. Aba Página — achados de SEO e scripts de terceiros
-5. Aba Loja — tecnologia, account, workspace e o bloco de sessão
+5. Aba Loja — tecnologia, account, workspace, o segmento editável e a sessão
 
 O critério da ordem: começa pelo que qualquer pessoa que trabalha com VTEX
 reconhece de imediato, depois a ferramenta com mais espaço de tela, depois o
