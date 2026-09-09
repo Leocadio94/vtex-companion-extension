@@ -1,0 +1,124 @@
+# Envia o pacote às duas lojas quando uma tag de versão é publicada.
+#
+# O envio não é a mesma coisa que a listagem: descrição, capturas e privacidade
+# continuam sendo campos de console — ver docs/publicacao.md.
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+  # Permite repetir o envio de uma tag já criada, sem recriá-la: é o caminho
+  # para quando a loja devolve erro de rede no meio.
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Só conferir autenticação, sem enviar'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Portão e artefatos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # A tag manda no que é enviado, mas quem escreve a versão do manifesto é o
+      # package.json. Divergir aqui publica um número que não corresponde à tag,
+      # e a loja não aceita reenviar o número certo depois.
+      - name: Tag e package.json falam a mesma versão
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::tag $GITHUB_REF_NAME não corresponde a package.json $pkg"
+            exit 1
+          fi
+
+      - run: pnpm compile
+      - run: pnpm test
+
+      - run: pnpm build
+      - run: pnpm build:firefox
+
+      # A AMO recusa pacote com erro de lint. Os dois avisos de
+      # UNSAFE_VAR_ASSIGNMENT vêm do bundle do React e não são acionáveis.
+      - name: Lint da AMO
+        run: pnpm dlx web-ext lint --source-dir .output/firefox-mv3
+
+      - run: pnpm zip
+      - run: pnpm zip:firefox
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: packages
+          path: .output/*.zip
+          if-no-files-found: error
+          retention-days: 30
+
+  submit:
+    name: Envio às lojas
+    needs: package
+    runs-on: ubuntu-latest
+    # O ambiente é a trava: com um revisor exigido em Settings > Environments,
+    # o envio espera aprovação humana em vez de sair no push da tag.
+    environment: stores
+    # Os mesmos nomes do `.env.submit`, agora vindos dos secrets do repositório.
+    env:
+      CHROME_API_VERSION: ${{ secrets.CHROME_API_VERSION }}
+      CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+      CHROME_PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
+      CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL }}
+      CHROME_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.CHROME_SERVICE_ACCOUNT_PRIVATE_KEY }}
+      FIREFOX_CHANNEL: ${{ secrets.FIREFOX_CHANNEL }}
+      FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
+      FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+      FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: packages
+          path: .output
+
+      - name: Nomes dos pacotes
+        id: zips
+        run: |
+          for kind in chrome firefox sources; do
+            path="$(ls .output/*-$kind.zip)"
+            echo "$kind=$path" >> "$GITHUB_OUTPUT"
+          done
+
+      # Confere a autenticação das duas lojas antes de subir qualquer byte.
+      - name: Dry run
+        run: |
+          pnpm dlx publish-browser-extension --dry-run \
+            --chrome-zip "${{ steps.zips.outputs.chrome }}" \
+            --firefox-zip "${{ steps.zips.outputs.firefox }}" \
+            --firefox-sources-zip "${{ steps.zips.outputs.sources }}"
+
+      - name: Enviar
+        if: inputs.dry_run != true
+        run: |
+          pnpm dlx publish-browser-extension \
+            --chrome-zip "${{ steps.zips.outputs.chrome }}" \
+            --firefox-zip "${{ steps.zips.outputs.firefox }}" \
+            --firefox-sources-zip "${{ steps.zips.outputs.sources }}"
+
+      # Um 502 da Chrome Web Store pode chegar depois do envio já aceito, então
+      # o estado real vem daqui, não do código de saída acima.
+      - name: Status nas lojas
+        if: always() && inputs.dry_run != true
+        run: pnpm dlx publish-browser-extension status

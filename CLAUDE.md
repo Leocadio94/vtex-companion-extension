@@ -212,7 +212,12 @@ things follow from being live:
   the ones waiting are listed under "Pendências da listagem" in the roadmap.
 - **Uploading by hand was a first-time cost.** Both items exist now, so packages
   go up with `wxt submit`, which takes the Firefox sources zip as a flag.
-  Credentials come from `wxt submit init` into a `.env` that stays out of git.
+  Credentials come from `wxt submit init` into `.env.submit`, which stays out of
+  git; the same nine values live in the repository secrets.
+- **A `v*.*.*` tag is a publish trigger.** `.github/workflows/release.yml` runs
+  on tag push and stops at the `stores` environment for human approval, so a tag
+  pushed by mistake does not reach the stores on its own — but it does queue a
+  button someone could press. Never push a version tag to try something out.
 - **`storeLinks` in the sibling repo decides what the landing shows.** It is the
   only place in that code that knows whether the extension is live; `null` keeps
   a button on "Em breve". Both links are filled since the AMO approval, and the

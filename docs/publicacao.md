@@ -572,6 +572,22 @@ raiz, o walkthrough morre sem perguntar nada. Duas saídas:
 O arquivo é lido do diretório onde o comando roda, não da raiz do repositório —
 rodar de dentro de uma subpasta é o outro jeito de ver o mesmo erro.
 
+### Pela Action, e o que ela não faz
+
+`.github/workflows/release.yml` faz o mesmo envio a partir do push da tag, com os
+nove valores do `.env.submit` guardados nos secrets do repositório, com os mesmos
+nomes. Dois cuidados que estão no próprio arquivo: o job confere que a tag e o
+`package.json` dizem a mesma versão antes de empacotar, e o envio mora num
+ambiente `stores` — configurar um revisor obrigatório em _Settings > Environments_
+é o que transforma o push da tag em "esperando aprovação" em vez de "publicado".
+
+`workflow_dispatch` repete o envio de uma tag existente sem recriá-la, com
+`dry_run` ligado por padrão.
+
+O que a Action **não** faz é a listagem: descrição, capturas, imagens
+promocionais, categoria e privacidade continuam sendo campos de console, e é
+sempre a parte que reprova.
+
 ### Estado
 
 As credenciais das duas lojas estão no `.env.submit` desta máquina, e o

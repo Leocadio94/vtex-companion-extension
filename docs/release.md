@@ -84,6 +84,11 @@ coisas seria o mesmo raciocínio em dois lugares.
 
 ## 3. Merge, tag e limpeza
 
+**A tag é o gatilho do envio.** `.github/workflows/release.yml` roda no push de
+uma tag `v*.*.*`: refaz o portão, gera os zips e para no ambiente `stores`, que
+espera aprovação humana antes de falar com as lojas. Tag empurrada por engano
+não publica sozinha — mas fica esperando um clique que ninguém deveria dar.
+
 Nesta ordem, e só depois do merge:
 
 ```bash
@@ -103,9 +108,11 @@ pnpm zip           # .output/vtex-companion-extension-<versão>-chrome.zip
 pnpm zip:firefox   # o mesmo, mais -firefox.zip e -sources.zip
 ```
 
-Daqui em diante o roteiro é o de [`publicacao.md`](./publicacao.md). O upload
-manual pelos dois consoles foi o custo da primeira vez: os itens já existem nas
-duas lojas, então da 1.2.0 em diante o envio dos pacotes é
+Daqui em diante o roteiro é o de [`publicacao.md`](./publicacao.md). Com a Action
+no ar, este passo é o que ela faz sozinha depois da tag; o que segue é o mesmo
+envio pela máquina, para quando se quer olhar de perto ou a Action está fora do
+ar. O upload manual pelos dois consoles foi o custo da primeira vez: os itens já
+existem nas duas lojas, então da 1.2.0 em diante o envio dos pacotes é
 
 ```bash
 pnpm dlx wxt submit \
