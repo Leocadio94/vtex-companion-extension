@@ -195,8 +195,11 @@ shifts the whole layout down; keep those titles static.
 
 `docs/release.md` is the order of operations, and the order is the point: the
 version bump happens on the branch, the tag only after the merge. `docs/roadmap.md`
-holds what was decided against doing yet, with the reason. Neither file is a
-changelog — release notes come from the commit messages.
+holds what was decided against doing yet, with the reason, and neither of those
+two is a changelog: `CHANGELOG.md` is, with one section per published version,
+written on the branch next to the bump and reused verbatim as the GitHub release
+body. Write it from the commit messages, which are already prose about the
+decision — the file is the source and the release page quotes it.
 
 1.1.0 is published on both stores: the Chrome Web Store as
 `bolibelfgalkiclnpnfdgbdljikflfba`, and AMO as the slug `vtex-companion`. Four
@@ -215,9 +218,13 @@ things follow from being live:
   Credentials come from `wxt submit init` into `.env.submit`, which stays out of
   git; the same nine values live in the repository secrets.
 - **A `v*.*.*` tag is a publish trigger.** `.github/workflows/release.yml` runs
-  on tag push and stops at the `stores` environment for human approval, so a tag
-  pushed by mistake does not reach the stores on its own — but it does queue a
-  button someone could press. Never push a version tag to try something out.
+  on tag push, cuts the GitHub release from the top section of `CHANGELOG.md`
+  with the packages attached, and stops at the `stores` environment for human
+  approval, so a tag pushed by mistake does not reach the stores on its own — but
+  it does queue a button someone could press, and it does publish a release.
+  Never push a version tag to try something out. The tag also has to match both
+  `package.json` and the first heading in `CHANGELOG.md`, or the run fails before
+  packaging.
 - **`storeLinks` in the sibling repo decides what the landing shows.** It is the
   only place in that code that knows whether the extension is live; `null` keeps
   a button on "Em breve". Both links are filled since the AMO approval, and the

@@ -62,6 +62,11 @@ Chrome Web Store (128×128 exatos, gerado do SVG), `brand/icon-512.png` serve à
 AMO, e `pnpm promo` refaz o bloco promocional 440×280. Só mudam quando a marca
 muda; estão listados aqui para não serem procurados no meio do envio.
 
+**Changelog** — a seção da versão entra em [`CHANGELOG.md`](../CHANGELOG.md)
+aqui, na branch, junto do bump. Ela é escrita a partir das mensagens de commit,
+que já são prosa explicando a decisão, e vira o texto do release no GitHub sem
+ser reescrita — o arquivo é a fonte, a página cita.
+
 **Versão** — subir em `package.json`, que é de onde o WXT tira a do manifesto:
 
 - **minor** quando muda o que o usuário vê: recurso novo, comportamento
@@ -78,9 +83,7 @@ gh pr create --base main --title "…" --body-file -
 ```
 
 O corpo é a leitura de quem vai revisar: o que mudou e por quê, não a lista de
-arquivos. **Não existe `CHANGELOG.md` neste projeto** — as notas do release saem
-das mensagens de commit, que já são prosa explicando a decisão. Manter as duas
-coisas seria o mesmo raciocínio em dois lugares.
+arquivos.
 
 ## 3. Merge, tag e limpeza
 
@@ -95,6 +98,21 @@ Nesta ordem, e só depois do merge:
 git checkout main && git pull
 git tag v<versão> && git push --tags
 git push origin --delete <branch>
+```
+
+O release no GitHub sai da seção que já está no `CHANGELOG.md`, com os pacotes
+anexados — é onde alguém consegue baixar exatamente o que foi enviado às lojas.
+**A Action faz isso sozinha** no push da tag, e recusa a tag cujo `CHANGELOG.md`
+não começa pela seção daquela versão: publicar a nota da versão anterior é pior
+do que não publicar nota nenhuma. Reexecutar não duplica — atualiza a nota e
+troca os pacotes.
+
+À mão, quando a Action estiver fora do ar, é o mesmo texto:
+
+```bash
+awk '/^## /{ n++ } n == 1' CHANGELOG.md | tail -n +2 > /tmp/notes.md
+gh release create v<versão> --title "v<versão>" \
+  --notes-file /tmp/notes.md .output/*.zip
 ```
 
 **A tag vem depois do merge, nunca antes.** O `sources.zip` que a AMO recebe

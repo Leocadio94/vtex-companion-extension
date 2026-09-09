@@ -69,6 +69,54 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  github_release:
+    name: Release no GitHub
+    needs: package
+    # Só a tag descreve uma versão; o disparo manual repete um envio, não cria
+    # release.
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: packages
+          path: .output
+
+      # A seção do topo do CHANGELOG tem de ser a da tag. Publicar a nota da
+      # versão anterior é pior do que não publicar nota nenhuma.
+      - name: Nota da versão
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          heading="$(grep -m1 '^## ' CHANGELOG.md)"
+          case "$heading" in
+            "## $version"*) ;;
+            *)
+              echo "::error::CHANGELOG.md começa em '$heading', esperado '## $version'"
+              exit 1
+              ;;
+          esac
+          awk '/^## /{ n++ } n == 1' CHANGELOG.md | tail -n +2 > notes.md
+
+      # Reexecução não pode falhar por já existir: atualiza a nota e substitui
+      # os pacotes.
+      - name: Publicar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" --notes-file notes.md
+            gh release upload "$GITHUB_REF_NAME" .output/*.zip --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --title "$GITHUB_REF_NAME" \
+              --notes-file notes.md \
+              .output/*.zip
+          fi
+
   submit:
     name: Envio às lojas
     needs: package
