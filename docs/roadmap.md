@@ -70,13 +70,6 @@ nova, e não vale gastar uma só com isso.
 - **Seção NAVEGAÇÃO e bullet do segmento na descrição** — o trocador de
   workspace, as flags de URL e a edição do `vtex_segment` são recursos da 1.2.0 e
   a descrição não menciona nenhum. O texto já está em `publicacao.md`.
-- **Linha dos workspaces recentes na política de privacidade** — o trocador
-  guarda a lista, e a política enumera o que é salvo. `publicacao.md` já tem a
-  linha; falta a fonte da verdade em `src/data/products/vtex-companion.ts` do
-  repositório irmão (o refactor de dados de lá já entrou na `main`), nos dois
-  idiomas, com `privacyUpdatedAt` novo. Vai junto do envio da 1.2.0, não antes:
-  a política publicada descreve a versão que está nas lojas, e hoje ela não
-  guarda workspace nenhum.
 - **Seção "NO ANDROID" na descrição** — a extensão é oferecida no Firefox para
   Android e a descrição promete painel do DevTools e preview no localhost, que
   não existem lá. O texto já está em `publicacao.md`.
