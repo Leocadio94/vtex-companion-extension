@@ -29,11 +29,6 @@ O que sobrou do levantamento de layout depois da rodada 1.1.0.
 
 Em ordem de valor por esforço, na minha leitura.
 
-- **Flags de URL em um clique** (M) — `workspace=`, `__siteEditor=true`,
-  `__disableSSR`, `__disableRuntimeSSR`, `__bindingAddress`, `sc=`. Mesmo
-  formato de `rewritePreviewUrl`: função pura sobre a URL, com testes.
-- **Trocador de workspace** (M) — abrir o mesmo path em outro workspace, com
-  lista dos recentes. Depende da mesma função de URL do item acima.
 - **Inspector de app e handle** (G) — no IO as classes seguem
   `vtex-{app}-{major}-x-{handle}`: clicar num elemento e saber qual app o
   renderiza. No FastStore, o equivalente com `data-fs-*` e as sections do
@@ -61,22 +56,12 @@ Em ordem de valor por esforço, na minha leitura.
 
 ## Pendências da listagem
 
-Mudanças de texto já escritas em `docs/publicacao.md` e ainda não enviadas.
-Viajam junto do próximo release: alterar a listagem publicada custa uma revisão
-nova, e não vale gastar uma só com isso.
-
-- **Linha "Página do projeto" na descrição** — a URL da página inicial do item
-  não vira link nenhum na página da loja, que mostra o site do publisher. A
-  descrição é o único caminho da vitrine para a landing.
-- **Cortar o primeiro parágrafo da descrição longa** (só Chrome) — ele repete a
-  descrição curta, que a loja imprime logo acima. Na AMO isso já está resolvido:
-  a listagem saiu com o parágrafo no campo Resumo e a descrição começando no
-  segundo, que é o que se quer nas duas.
-- **Bullet do segmento na descrição** — a edição do `vtex_segment` é recurso da
-  1.2.0 e a descrição não menciona. O texto já está em `publicacao.md`.
-- **Seção "NO ANDROID" na descrição** — a extensão é oferecida no Firefox para
-  Android e a descrição promete painel do DevTools e preview no localhost, que
-  não existem lá. O texto já está em `publicacao.md`.
+Nada pendente de escrita: os quatro textos que faltavam — a linha "Página do
+projeto", o corte do primeiro parágrafo na Chrome, a seção NAVEGAÇÃO com o
+bullet do segmento e a seção NO ANDROID — estão colados nos dois consoles,
+esperando o envio da 1.2.0 para entrar em revisão junto do pacote. O que vale
+como fonte continua sendo `docs/publicacao.md`: console é rascunho até a versão
+subir.
 
 ## Dívidas encontradas pelo caminho
 

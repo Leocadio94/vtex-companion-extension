@@ -57,6 +57,10 @@ SCRIPTS DE TERCEIROS
 • Quais tags de analytics, publicidade, remarketing e monitoramento a página carrega, com o id da conta quando ele está exposto no próprio script
 • Origens de terceiros que a extensão não reconhece, agrupadas por volume de requisições
 
+NAVEGAÇÃO
+• Abrir a mesma rota em outro workspace, com os recentes e a volta ao master
+• Flags de URL em um clique: Site Editor, sem SSR, binding address e sales channel
+
 FETCH RUNNER
 • Chame as APIs da loja de dentro da própria aba, com a sessão que ela já tem
 • Presets prontos para as APIs de sessão, checkout, catálogo, busca, pedidos e master data da loja
@@ -277,6 +281,7 @@ Apenas preferências e estado de trabalho, no armazenamento local do navegador:
 - Aba do painel em que você estava
 - Última URL de preview capturada, por aba
 - Formulário e histórico do fetch runner, durante a sessão do navegador
+- Workspaces abertos recentemente pelo trocador, para oferecê-los de novo
 Nada disso contém credenciais, e nada disso é enviado para fora do navegador.
 
 PERMISSÕES
@@ -404,7 +409,7 @@ enviada, e a primeira é a que quase todo mundo vê.
 2. Painel do DevTools — requisição e resposta formatada lado a lado
 3. Admin do CMS — botão Localhost e o Localhost URL no painel de dev mode
 4. Aba Página — achados de SEO e scripts de terceiros
-5. Aba Loja — tecnologia, account, workspace e o bloco de sessão
+5. Aba Loja — tecnologia, account, workspace, o segmento editável e a sessão
 
 O critério da ordem: começa pelo que qualquer pessoa que trabalha com VTEX
 reconhece de imediato, depois a ferramenta com mais espaço de tela, depois o
@@ -494,12 +499,85 @@ pnpm dlx wxt submit \
   --firefox-sources-zip .output/*-sources.zip
 ```
 
-`wxt submit init` faz o passo a passo das credenciais e grava um `.env` — que
-**não entra no git**. São duas contas distintas: a Chrome quer service account
-(ou o par client id/secret e refresh token, na API v1.1 já depreciada) mais o
-item id; a AMO quer issuer e secret do JWT. O `--firefox-sources-zip` é o que
-dispensa lembrar do zip de fontes toda vez, que é justamente o passo que se
-esquece.
+O `--firefox-sources-zip` é o que dispensa lembrar do zip de fontes toda vez,
+que é justamente o passo que se esquece.
+
+### Credenciais: `.env.submit`
+
+`pnpm dlx wxt submit init` é um roteiro interativo que pergunta cada valor e
+grava tudo num **`.env.submit` na raiz** — o arquivo que o `publish-extension`
+procura sozinho na hora do envio. O `.gitignore` cobre `.env.*`; conferir com
+`git check-ignore -v .env.submit` antes de rodar o init, porque o que ele grava
+é credencial de publicação.
+
+Todo valor do arquivo também pode ir por flag: a env var é o nome da flag em
+UPPER_SNAKE_CASE (`--chrome-extension-id` é `CHROME_EXTENSION_ID`).
+
+**Chrome — API v2, service account.** A v1.1 (client id, client secret e refresh
+token) **para de funcionar em 15/10/2026**, e o fluxo dela ainda usa o redirect
+`urn:ietf:wg:oauth:2.0:oob`, que o Google bloqueia para cliente OAuth novo. No
+init, escolher `v2`:
+
+| Variável | De onde vem |
+| -------- | ----------- |
+| `CHROME_API_VERSION` | `v2` |
+| `CHROME_EXTENSION_ID` | `bolibelfgalkiclnpnfdgbdljikflfba` |
+| `CHROME_PUBLISHER_ID` | URL do dashboard: `chrome.google.com/webstore/devconsole/<publisher-id>` |
+| `CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL` | campo `client_email` do JSON da service account |
+| `CHROME_SERVICE_ACCOUNT_PRIVATE_KEY` | campo `private_key` do mesmo JSON |
+
+A service account sai do guia oficial —
+<https://developer.chrome.com/docs/webstore/service-accounts> —, parando depois
+de baixar o JSON: em "Obtain access tokens", seguir "Use a JSON Web Token" e não
+continuar. No init, a `private_key` é colada sem as aspas de fora e **com os
+`\n` como estão**; ele mesmo converte.
+
+**Firefox — JWT da AMO.** Três valores:
+
+| Variável | De onde vem |
+| -------- | ----------- |
+| `FIREFOX_EXTENSION_ID` | `vtex-companion` — o que aparece em `addons.mozilla.org/developers/addon/<id>/edit`. O GUID do manifesto (`vtex-companion@gabrielleocadio.dev`) também serve |
+| `FIREFOX_JWT_ISSUER` | <https://addons.mozilla.org/developers/addon/api/key/> |
+| `FIREFOX_JWT_SECRET` | a mesma página, e o segredo só aparece uma vez |
+
+O init ainda pergunta o canal (`listed`, que é o nosso) e se envia para revisão
+depois de subir. A compatibilidade com Android não precisa de flag: sai do
+`gecko_android` do manifesto.
+
+### `CHROME_API_VERSION` decide o resto
+
+Sem essa linha o schema do Chrome é o **v1.1**, e a validação passa a cobrar
+`chrome.clientId`, `chrome.clientSecret` e `chrome.refreshToken` — mesmo que o
+arquivo tenha os campos da v2. O erro típico de arquivo pela metade:
+
+```
+× Error: Invalid config:
+  - chrome.clientId: Expected a string, but received: undefined
+```
+
+E ele aparece **também no `wxt submit init`**, que resolve e valida o config
+existente antes de abrir o menu de lojas: com um `.env.submit` incompleto na
+raiz, o walkthrough morre sem perguntar nada. Duas saídas:
+
+- completar o arquivo à mão, que é o caminho curto — são cinco linhas por loja;
+- ou rodar o init com placeholders na frente, só para passar da validação. Os
+  valores são descartados pelo próprio walkthrough:
+
+  ```bash
+  CHROME_API_VERSION=v2 CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL=x \
+  CHROME_SERVICE_ACCOUNT_PRIVATE_KEY=x FIREFOX_JWT_ISSUER=x FIREFOX_JWT_SECRET=x \
+  pnpm exec wxt submit init
+  ```
+
+O arquivo é lido do diretório onde o comando roda, não da raiz do repositório —
+rodar de dentro de uma subpasta é o outro jeito de ver o mesmo erro.
+
+### Estado
+
+As credenciais das duas lojas estão no `.env.submit` desta máquina, e o
+`--dry-run` passou nas duas em 08/09/2026 — Chrome pela API v2 com service
+account, AMO pelo JWT. Isso valida autenticação e nada mais: quem recusa versão
+repetida, metadado ou permissão nova é o envio de verdade.
 
 `--dry-run` confere a autenticação sem enviar nada, e é o que se roda primeiro
 depois de mexer nas credenciais. Nada disso pula revisão: automatiza o envio, não

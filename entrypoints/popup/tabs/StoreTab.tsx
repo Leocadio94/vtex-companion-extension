@@ -2,6 +2,7 @@ import type { DetectionResult } from '@/lib/detect/signals';
 import type { TabContext } from '@/lib/collect';
 import { Empty, Row } from '@/ui/components/Row';
 import { SegmentSection } from '@/ui/components/SegmentSection';
+import { UrlSection } from '@/ui/components/UrlSection';
 import { SessionSection } from '@/ui/components/SessionSection';
 import { PLATFORM_FULL } from '@/ui/labels';
 
@@ -16,11 +17,13 @@ export function StoreTab({
   result,
   onGrantPermission,
   onSessionChanged,
+  onNavigate,
 }: {
   context: TabContext | null;
   result: DetectionResult | null;
   onGrantPermission: () => void;
   onSessionChanged: () => void;
+  onNavigate: (url: string) => void;
 }) {
   if (!context) {
     return (
@@ -75,6 +78,14 @@ export function StoreTab({
             <Row label="Sinais" value={result.reasons.join(' · ')} />
           )}
         </section>
+      )}
+
+      {result && (
+        <UrlSection
+          context={context}
+          result={result}
+          onNavigate={onNavigate}
+        />
       )}
 
       {result && (

@@ -24,6 +24,7 @@ import type { PixelReport } from '@/lib/pixels/signals';
 import { classifyPixels } from '@/lib/pixels/vendors';
 import { collectSeoSignals } from '@/lib/seo/probe';
 import type { SeoSignals } from '@/lib/seo/signals';
+import { navigateTab, reloadTab } from '@/lib/browser/navigate';
 import { activeTab, previewPort, previews, redirectPreview } from '@/lib/settings';
 import { ApiIcon, PageIcon, PreviewIcon, StoreIcon } from './components/icons';
 import { identityLine, PLATFORM_SHORT } from '@/ui/labels';
@@ -176,7 +177,7 @@ export default function App() {
   const toggleDevMode = async () => {
     if (!context) return;
     setFrames(await writeDevMode(context.tabId, !isDevModeOn(frames)));
-    await browser.tabs.reload(context.tabId);
+    await reloadTab(context.tabId);
   };
 
   const localPreviewUrl = previewUrl
@@ -226,8 +227,12 @@ export default function App() {
             result={result}
             onGrantPermission={grantPermission}
             onSessionChanged={() => {
-              if (context) void browser.tabs.reload(context.tabId);
-              void load();
+              if (!context) return;
+              void reloadTab(context.tabId).then(load);
+            }}
+            onNavigate={(url) => {
+              if (!context) return;
+              void navigateTab(context.tabId, url).then(load);
             }}
           />
         ) : tab === 'page' ? (

@@ -31,10 +31,22 @@ Tudo o que segue acontece na branch do release, nunca na `main`.
 dívidas que a rodada criou. O que foi feito vive no histórico do git; o roadmap
 guarda só o que ainda não existe.
 
-**Documentação** — `README.md` descreve o escopo da versão, então muda sempre
-que um recurso entra ou muda de comportamento. `CLAUDE.md` só muda quando muda
-um invariante ou uma armadilha: ele não é changelog. `publicacao.md` muda quando
-as permissões mudam — ver a regra abaixo.
+**Documentação** — nenhum release sai com documentação atrasada. A varredura é
+sempre a mesma, arquivo por arquivo:
+
+- `README.md` descreve o escopo da versão, então muda sempre que um recurso
+  entra ou muda de comportamento;
+- `CLAUDE.md` muda quando muda um invariante, uma armadilha ou um contrato que
+  um agente quebraria em silêncio — não é changelog, e recurso que não mexe em
+  nenhum dos três não entra ali;
+- `docs/*.md` — o arquivo do assunto acompanha o código dele: `segment.md`,
+  `url.md` e os que vierem depois. Recurso novo com raciocínio próprio ganha o
+  seu, e o `CLAUDE.md` só aponta;
+- `publicacao.md` muda quando as permissões mudam — ver a regra abaixo;
+- `PRIVACY.md` e a política publicada, quando muda o que a extensão lê ou grava.
+
+O que muda em cada um é a razão, não o texto repetido: um assunto tem uma fonte
+só, e os outros arquivos apontam para ela.
 
 **Site** — se o comportamento visível mudou, a landing precisa acompanhar. Ver
 [o repositório irmão](#o-repositório-irmão).
@@ -119,6 +131,18 @@ continuam sendo campos de console.
   extensões de todo mundo que instalar.
 
 ## Regras que não mudam
+
+**Documentação atrasada segura o release.** A varredura do passo 1 é condição
+para abrir o PR, não item de faxina posterior: quem revisa lê o texto junto do
+diff, e documentação que só chega depois do merge descreve uma versão que já
+está nas lojas. Se um arquivo não precisou mudar, isso é uma resposta válida —
+o que não vale é não ter olhado.
+
+**Sem bump não há release.** `package.json` é de onde o WXT tira a versão do
+manifesto, e é o único lugar onde ela é escrita. Pacote que muda e não sobe o
+número não chega às lojas: elas recusam o reenvio de um número publicado, e o
+que sobe sem bump é o pacote anterior com outro nome. O bump acontece na branch,
+antes do PR, pelo critério minor/patch do passo 1.
 
 **Versão já usada não volta.** Nenhuma das duas lojas aceita reenviar um número
 já publicado — por isso o número sobe na branch, e não depois de aprovado.

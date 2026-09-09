@@ -84,6 +84,12 @@ Firefox com `background.scripts`, ambos em MV3.
   clonagem da sessão de `{account}.myvtex.com` para o domínio da loja sem
   passar pela área de transferência, entrada por token colado, e limpeza que
   confere o resultado relendo os cookies.
+- 🔀 **Workspace e flags de URL** — abrir a mesma rota noutro workspace, com os
+  recentes e a volta ao master, e ligar `__siteEditor`, `__disableSSR`,
+  `__disableRuntimeSSR`, `__disablePixels`, `__bindingAddress` e `sc` num clique,
+  sem perder o resto da query. As flags do render-runtime só aparecem em loja
+  VTEX IO, que é quem as lê. As duas formas de dizer o workspace estão em
+  [`docs/url.md`](./docs/url.md).
 - 🎯 **Segmento** — o `vtex_segment` da origem decodificado, com sales channel,
   culture info, moeda e region id em campos editáveis e o JSON inteiro para o
   resto (`priceTables`, `campaigns`, `utm_*`). Gravar recarrega a aba; o formato
@@ -291,6 +297,7 @@ Entregue:
 | ✅ | Scripts de terceiros com id da conta por vendor |
 | ✅ | Sessão: clonar, colar token e limpar, sem persistir credencial |
 | ✅ | Segmento: `vtex_segment` decodificado e editável, com JSON cru |
+| ✅ | Trocador de workspace e flags de URL, preservando a query |
 | ✅ | Fetch runner com presets, confirmação de método inseguro e histórico |
 | ✅ | Análise de SEO com regras por tipo de página |
 | ✅ | Painel no DevTools compartilhando estado e componentes com o popup |
@@ -305,8 +312,6 @@ Levantado e ainda não feito — o motivo de cada um está em
 
 | Status | Item | Tam. |
 | ------ | ---- | ---- |
-| ⏳ | Flags de URL em um clique (`workspace=`, `__siteEditor`, `sc=`, …) | M |
-| ⏳ | Trocador de workspace, com lista dos recentes | M |
 | ⏳ | Runner: preencher `{slug}`/`{productId}`/`{skuId}`, presets salvos, copiar como cURL | M |
 | ⏳ | `orderForm` — itens, totais, `marketingData`, limpar carrinho | M |
 | ⏳ | Tema explícito (claro/escuro/sistema) e página de opções | M |
