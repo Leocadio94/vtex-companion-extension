@@ -1,6 +1,7 @@
 import type { DetectionResult } from '@/lib/detect/signals';
 import type { TabContext } from '@/lib/collect';
 import { Empty, Row } from '@/ui/components/Row';
+import { SegmentSection } from '@/ui/components/SegmentSection';
 import { SessionSection } from '@/ui/components/SessionSection';
 import { PLATFORM_FULL } from '@/ui/labels';
 
@@ -74,6 +75,14 @@ export function StoreTab({
             <Row label="Sinais" value={result.reasons.join(' · ')} />
           )}
         </section>
+      )}
+
+      {result && (
+        <SegmentSection
+          context={context}
+          result={result}
+          onChanged={onSessionChanged}
+        />
       )}
 
       {result && (

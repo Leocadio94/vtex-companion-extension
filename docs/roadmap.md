@@ -29,10 +29,6 @@ O que sobrou do levantamento de layout depois da rodada 1.1.0.
 
 Em ordem de valor por esforço, na minha leitura.
 
-- **Decodificar e editar o `vtex_segment`** (M) — o cookie é base64 de um JSON
-  com `channel`, `cultureInfo`, `currencyCode`, `regionId`, `priceTables` e
-  `campaigns`. Ler é uma função pura com teste; escrever de volta troca sales
-  channel e região sem abrir o DevTools. É o atrito mais frequente do dia a dia.
 - **Flags de URL em um clique** (M) — `workspace=`, `__siteEditor=true`,
   `__disableSSR`, `__disableRuntimeSSR`, `__bindingAddress`, `sc=`. Mesmo
   formato de `rewritePreviewUrl`: função pura sobre a URL, com testes.
@@ -76,6 +72,8 @@ nova, e não vale gastar uma só com isso.
   descrição curta, que a loja imprime logo acima. Na AMO isso já está resolvido:
   a listagem saiu com o parágrafo no campo Resumo e a descrição começando no
   segundo, que é o que se quer nas duas.
+- **Bullet do segmento na descrição** — a edição do `vtex_segment` é recurso da
+  1.2.0 e a descrição não menciona. O texto já está em `publicacao.md`.
 - **Seção "NO ANDROID" na descrição** — a extensão é oferecida no Firefox para
   Android e a descrição promete painel do DevTools e preview no localhost, que
   não existem lá. O texto já está em `publicacao.md`.

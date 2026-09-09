@@ -69,6 +69,7 @@ SESSÃO
 • Clonar a sessão de {account}.myvtex.com para o domínio da loja, sem o token passar pela área de transferência
 • Entrar numa origem colando um token, e limpar todos os cookies de sessão de uma vez
 • O token nunca é gravado pela extensão nem sai da máquina, e os controles só aparecem em domínio reconhecido como VTEX
+• Segmento da loja (vtex_segment) decodificado e editável: sales channel, culture info, moeda, region id e o JSON inteiro
 
 PREVIEW DO FASTSTORE NO LOCALHOST
 O botão Pré-visualização do CMS do FastStore — o Headless CMS (legacy) e o Storefront > Content — abre a loja publicada. A extensão injeta um botão Localhost ao lado dele que abre a mesma URL no seu dev server, com a query inteira preservada, nas duas versões do CMS e sem depender do cmsDevMode. Também há redirecionamento automático da aba de preview, a última URL capturada com copiar/abrir, e o liga/desliga do cmsDevMode com status por frame.
