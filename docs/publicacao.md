@@ -579,6 +579,25 @@ As credenciais das duas lojas estão no `.env.submit` desta máquina, e o
 account, AMO pelo JWT. Isso valida autenticação e nada mais: quem recusa versão
 repetida, metadado ou permissão nova é o envio de verdade.
 
+A 1.2.0 foi a primeira enviada por linha de comando, em 09/09/2026, com os
+textos da listagem já colados nos dois consoles.
+
+### 502 do Chrome não quer dizer envio perdido
+
+O envio da 1.2.0 terminou com `Fetch request failed with code 502 Bad Gateway` e
+uma página de erro do Google no lugar da resposta. O pacote tinha subido assim
+mesmo: `pnpm exec wxt submit status`, logo depois, respondia
+
+```
+Published item status: PUBLISHED
+Submitted item status: PENDING_REVIEW
+```
+
+Antes de reenviar por causa de erro de rede, rodar o `status`. Reenviar por cima
+de uma revisão pendente não conserta nada: ou volta com erro de versão já usada,
+ou — se `CHROME_CANCEL_PENDING` estiver ligado — cancela a revisão que já estava
+na fila e recomeça a espera do zero.
+
 `--dry-run` confere a autenticação sem enviar nada, e é o que se roda primeiro
 depois de mexer nas credenciais. Nada disso pula revisão: automatiza o envio, não
 a fila.
