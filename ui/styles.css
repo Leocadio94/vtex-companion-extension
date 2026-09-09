@@ -344,6 +344,9 @@ button:disabled {
 
 .chips {
   align-items: center;
+  /* Os atalhos fecham o bloco do workspace: sem respiro embaixo, o primeiro
+     toggle das flags parece fazer parte deles. */
+  margin-bottom: 14px;
 }
 
 .chip {
