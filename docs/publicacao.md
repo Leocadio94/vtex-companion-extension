@@ -572,6 +572,13 @@ raiz, o walkthrough morre sem perguntar nada. Duas saídas:
 O arquivo é lido do diretório onde o comando roda, não da raiz do repositório —
 rodar de dentro de uma subpasta é o outro jeito de ver o mesmo erro.
 
+### Estado
+
+As credenciais das duas lojas estão no `.env.submit` desta máquina, e o
+`--dry-run` passou nas duas em 08/09/2026 — Chrome pela API v2 com service
+account, AMO pelo JWT. Isso valida autenticação e nada mais: quem recusa versão
+repetida, metadado ou permissão nova é o envio de verdade.
+
 `--dry-run` confere a autenticação sem enviar nada, e é o que se roda primeiro
 depois de mexer nas credenciais. Nada disso pula revisão: automatiza o envio, não
 a fila.
