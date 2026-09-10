@@ -201,8 +201,9 @@ written on the branch next to the bump and reused verbatim as the GitHub release
 body. Write it from the commit messages, which are already prose about the
 decision — the file is the source and the release page quotes it.
 
-1.1.0 is published on both stores: the Chrome Web Store as
-`bolibelfgalkiclnpnfdgbdljikflfba`, and AMO as the slug `vtex-companion`. Four
+1.2.0 is published on both stores: the Chrome Web Store as
+`bolibelfgalkiclnpnfdgbdljikflfba`, and AMO as the slug `vtex-companion`. It was
+the first version uploaded from the command line rather than by hand. Five
 things follow from being live:
 
 - **Store copy is not written here.** Every listing field — descriptions, the
