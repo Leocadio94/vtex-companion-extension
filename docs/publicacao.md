@@ -596,7 +596,9 @@ account, AMO pelo JWT. Isso valida autenticação e nada mais: quem recusa vers�
 repetida, metadado ou permissão nova é o envio de verdade.
 
 A 1.2.0 foi a primeira enviada por linha de comando, em 09/09/2026, com os
-textos da listagem já colados nos dois consoles.
+textos da listagem já colados nos dois consoles. A AMO publicou no mesmo dia; a
+Chrome aprovou em 10/09/2026, e os textos que estavam pendentes entraram junto do
+pacote, como previsto.
 
 ### 502 do Chrome não quer dizer envio perdido
 
