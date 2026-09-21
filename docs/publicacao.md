@@ -293,7 +293,7 @@ Dúvidas ou problemas: abra uma issue em https://github.com/Leocadio94/vtex-comp
 
 ## Antes de enviar
 
-- [x] `pnpm test`, `pnpm compile` e `pnpm dlx web-ext lint --source-dir .output/firefox-mv3` sem erros
+- [x] `pnpm test`, `pnpm compile` e `pnpm web-ext lint --source-dir .output/firefox-mv3` sem erros
 - [x] Testar num perfil limpo do navegador, sem outras extensões
 - [x] Conferir que a versão em `package.json` subiu
 - [x] Conferir que <https://leocadio.dev/vtex-companion/privacy/> responde 200 e
@@ -322,7 +322,7 @@ também vale para a Chrome.
 pnpm test && pnpm compile
 pnpm zip           # .output/vtex-companion-extension-<versão>-chrome.zip
 pnpm zip:firefox   # o mesmo, sufixos -firefox.zip e -sources.zip
-pnpm dlx web-ext lint --source-dir .output/firefox-mv3
+pnpm web-ext lint --source-dir .output/firefox-mv3
 ```
 
 Nenhuma das duas lojas aceita reenviar um número de versão já publicado. Isso
@@ -493,7 +493,7 @@ O upload manual serve para a primeira vez. Depois disso o WXT já traz
 ```bash
 pnpm test && pnpm compile
 pnpm zip && pnpm zip:firefox
-pnpm dlx wxt submit \
+pnpm wxt submit \
   --chrome-zip .output/*-chrome.zip \
   --firefox-zip .output/*-firefox.zip \
   --firefox-sources-zip .output/*-sources.zip
@@ -504,7 +504,7 @@ que é justamente o passo que se esquece.
 
 ### Credenciais: `.env.submit`
 
-`pnpm dlx wxt submit init` é um roteiro interativo que pergunta cada valor e
+`pnpm wxt submit init` é um roteiro interativo que pergunta cada valor e
 grava tudo num **`.env.submit` na raiz** — o arquivo que o `publish-extension`
 procura sozinho na hora do envio. O `.gitignore` cobre `.env.*`; conferir com
 `git check-ignore -v .env.submit` antes de rodar o init, porque o que ele grava

@@ -17,7 +17,7 @@ Nada começa antes disto passar:
 pnpm compile
 pnpm test
 pnpm build && pnpm build:firefox
-pnpm dlx web-ext lint --source-dir .output/firefox-mv3
+pnpm web-ext lint --source-dir .output/firefox-mv3
 ```
 
 O lint da AMO tem que ficar em **zero erros**. Os dois avisos de
@@ -92,6 +92,11 @@ uma tag `v*.*.*`: refaz o portão, gera os zips e para no ambiente `stores`, que
 espera aprovação humana antes de falar com as lojas. Tag empurrada por engano
 não publica sozinha — mas fica esperando um clique que ninguém deveria dar.
 
+O `stores` só aceita tags `v*`, e as credenciais das lojas moram nele, não no
+repositório. Repetir um envio que falhou no meio é disparar a Action na própria
+tag — `gh workflow run release.yml --ref v<versão> -f dry_run=false` —, e o
+padrão `dry_run=true` só confere a autenticação.
+
 Nesta ordem, e só depois do merge:
 
 ```bash
@@ -133,7 +138,7 @@ ar. O upload manual pelos dois consoles foi o custo da primeira vez: os itens j�
 existem nas duas lojas, então da 1.2.0 em diante o envio dos pacotes é
 
 ```bash
-pnpm dlx wxt submit \
+pnpm wxt submit \
   --chrome-zip .output/*-chrome.zip \
   --firefox-zip .output/*-firefox.zip \
   --firefox-sources-zip .output/*-sources.zip
