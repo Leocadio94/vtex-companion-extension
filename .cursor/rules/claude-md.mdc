@@ -1,0 +1,9 @@
+---
+description: Repository guidance for coding agents, kept in CLAUDE.md
+alwaysApply: true
+---
+
+The guidance for this repository lives in `CLAUDE.md` at the root, included
+below. Read it before making changes, and edit that file, never this one.
+
+@CLAUDE.md

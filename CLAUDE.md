@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+It is the single source for every coding agent. `AGENTS.md` (Codex, Cursor,
+OpenCode, Copilot), `GEMINI.md` (Gemini CLI, which imports this file whole) and
+`.cursor/rules/claude-md.mdc` only point here: change the guidance in this file,
+never in them.
+
 ## Commands
 
 ```bash
