@@ -36,7 +36,8 @@ Em ordem de valor por esforço, na minha leitura.
   desenho, porque envolve seleção de elemento na página.
 - **Runner: preencher o que a detecção já sabe** (M) — `{slug}`, `{productId}`,
   `{skuId}` e `{entidade}` são editados à mão hoje. Junto: presets salvos pelo
-  usuário em `sync:` e "copiar como cURL".
+  usuário em `local:` — nunca `sync:`, que a política de privacidade não cobre —
+  e "copiar como cURL".
 - **orderForm** (M) — itens, totais, `marketingData`, e limpar o carrinho com
   confirmação. O padrão de confirmação de método inseguro já existe no runner.
 - **Copiar relatório da aba** (P) — detecção, template, catálogo, SEO e scripts
@@ -56,12 +57,9 @@ Em ordem de valor por esforço, na minha leitura.
 
 ## Pendências da listagem
 
-Nada pendente de escrita: os quatro textos que faltavam — a linha "Página do
-projeto", o corte do primeiro parágrafo na Chrome, a seção NAVEGAÇÃO com o
-bullet do segmento e a seção NO ANDROID — estão colados nos dois consoles,
-esperando o envio da 1.2.0 para entrar em revisão junto do pacote. O que vale
-como fonte continua sendo `docs/publicacao.md`: console é rascunho até a versão
-subir.
+Nenhuma. Os textos que esperavam subiram junto da 1.2.0 nas duas lojas. Mudança
+de texto que aparecer daqui em diante entra aqui e viaja com a próxima versão —
+alterar a listagem publicada sozinha custa uma revisão.
 
 ## Dívidas encontradas pelo caminho
 
