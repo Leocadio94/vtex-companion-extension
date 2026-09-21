@@ -24,8 +24,8 @@ pnpm promo               # brand/promo-440x280.png (bloco promocional da Chrome)
 pnpm vitest run lib/preview/rewrite.test.ts       # one file
 pnpm vitest run -t "não gerar loop"               # one test by name
 
-pnpm dlx web-ext lint --source-dir .output/firefox-mv3   # AMO check, must stay at 0 errors
-pnpm dlx wxt submit --dry-run                            # store credentials check, uploads nothing
+pnpm web-ext lint --source-dir .output/firefox-mv3   # AMO check, must stay at 0 errors
+pnpm wxt submit --dry-run                            # store credentials check, uploads nothing
 ```
 
 Two lint warnings are expected and not actionable: `UNSAFE_VAR_ASSIGNMENT` from

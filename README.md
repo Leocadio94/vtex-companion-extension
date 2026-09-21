@@ -279,7 +279,7 @@ pnpm promo            # bloco promocional da Chrome Web Store
 Lint da AMO antes de publicar — tem de sair com 0 erros:
 
 ```bash
-pnpm build:firefox && pnpm dlx web-ext lint --source-dir .output/firefox-mv3
+pnpm build:firefox && pnpm web-ext lint --source-dir .output/firefox-mv3
 ```
 
 Comentários de código em português; identificadores e mensagens de commit em
