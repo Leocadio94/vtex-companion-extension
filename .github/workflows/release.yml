@@ -63,10 +63,13 @@ jobs:
       - run: pnpm zip
       - run: pnpm zip:firefox
 
+      # `.output` começa com ponto, e o upload-artifact ignora diretório oculto
+      # por padrão: sem a flag, os zips existem e ele responde que não achou.
       - uses: actions/upload-artifact@v7
         with:
           name: packages
           path: .output/*.zip
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
 
