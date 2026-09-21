@@ -8,7 +8,8 @@ on:
   push:
     tags: ['v*.*.*']
   # Permite repetir o envio de uma tag já criada, sem recriá-la: é o caminho
-  # para quando a loja devolve erro de rede no meio.
+  # para quando a loja devolve erro de rede no meio. Rodar com `--ref v<versão>`:
+  # o ambiente `stores` só aceita tags, e disparo numa branch trava no `submit`.
   workflow_dispatch:
     inputs:
       dry_run:
@@ -57,7 +58,7 @@ jobs:
       # A AMO recusa pacote com erro de lint. Os dois avisos de
       # UNSAFE_VAR_ASSIGNMENT vêm do bundle do React e não são acionáveis.
       - name: Lint da AMO
-        run: pnpm dlx web-ext lint --source-dir .output/firefox-mv3
+        run: pnpm web-ext lint --source-dir .output/firefox-mv3
 
       - run: pnpm zip
       - run: pnpm zip:firefox
@@ -72,9 +73,9 @@ jobs:
   github_release:
     name: Release no GitHub
     needs: package
-    # Só a tag descreve uma versão; o disparo manual repete um envio, não cria
-    # release.
-    if: startsWith(github.ref, 'refs/tags/')
+    # Só o push da tag descreve uma versão. O disparo manual também roda numa
+    # tag, mas repete um envio: não recorta a release nem troca os pacotes dela.
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -124,7 +125,8 @@ jobs:
     # O ambiente é a trava: com um revisor exigido em Settings > Environments,
     # o envio espera aprovação humana em vez de sair no push da tag.
     environment: stores
-    # Os mesmos nomes do `.env.submit`, agora vindos dos secrets do repositório.
+    # Os mesmos nomes do `.env.submit`, vindos dos secrets do ambiente `stores`:
+    # só um job que passou pela aprovação consegue lê-los.
     env:
       CHROME_API_VERSION: ${{ secrets.CHROME_API_VERSION }}
       CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
@@ -136,6 +138,19 @@ jobs:
       FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
       FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
     steps:
+      # O runner não traz pnpm, e o `wxt submit` lê o `wxt.config.ts`. Instalar
+      # prende o publicador ao lockfile — a mesma versão do envio local.
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
       - uses: actions/download-artifact@v8
         with:
           name: packages
@@ -152,7 +167,7 @@ jobs:
       # Confere a autenticação das duas lojas antes de subir qualquer byte.
       - name: Dry run
         run: |
-          pnpm dlx publish-browser-extension --dry-run \
+          pnpm wxt submit --dry-run \
             --chrome-zip "${{ steps.zips.outputs.chrome }}" \
             --firefox-zip "${{ steps.zips.outputs.firefox }}" \
             --firefox-sources-zip "${{ steps.zips.outputs.sources }}"
@@ -160,7 +175,7 @@ jobs:
       - name: Enviar
         if: inputs.dry_run != true
         run: |
-          pnpm dlx publish-browser-extension \
+          pnpm wxt submit \
             --chrome-zip "${{ steps.zips.outputs.chrome }}" \
             --firefox-zip "${{ steps.zips.outputs.firefox }}" \
             --firefox-sources-zip "${{ steps.zips.outputs.sources }}"
@@ -169,4 +184,4 @@ jobs:
       # o estado real vem daqui, não do código de saída acima.
       - name: Status nas lojas
         if: always() && inputs.dry_run != true
-        run: pnpm dlx publish-browser-extension status
+        run: pnpm wxt submit status
