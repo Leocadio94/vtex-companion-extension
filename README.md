@@ -276,6 +276,11 @@ pnpm screenshots      # regera as capturas da listagem
 pnpm promo            # bloco promocional da Chrome Web Store
 ```
 
+No WSL, o `pnpm dev` abre o Chrome ou o Firefox instalado no Windows, num perfil
+de desenvolvimento próprio que guarda os logins entre uma sessão e outra; Ctrl+C
+fecha junto. Como funciona e como voltar ao carregamento manual:
+[`docs/dev-windows.md`](./docs/dev-windows.md).
+
 Lint da AMO antes de publicar — tem de sair com 0 erros:
 
 ```bash

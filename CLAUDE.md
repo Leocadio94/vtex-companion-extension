@@ -10,7 +10,7 @@ never in them.
 ## Commands
 
 ```bash
-pnpm dev                 # Chrome, build + watch (no browser is launched)
+pnpm dev                 # Chrome, build + watch, opens Windows Chrome from WSL
 pnpm dev:firefox         # Firefox, build + watch
 pnpm build               # .output/chrome-mv3
 pnpm build:firefox       # .output/firefox-mv3
@@ -33,12 +33,27 @@ React's minified bundle.
 
 ### Loading the build
 
-Development happens in WSL with the browsers on Windows, so `webExt.disabled` is
-set and nothing is launched automatically. Load unpacked from
+Development happens in WSL with the browsers on Windows. WXT refuses to open a
+browser under WSL whatever `webExt` says, so `modules/windows-browser` replaces
+its runner: `pnpm dev` runs `web-ext` on the Windows side through `cmd.exe /c
+npx` and opens Chrome or Firefox in a persistent profile under
+`%LOCALAPPDATA%\vtex-companion-dev-*`. Three things break silently there
+(`docs/dev-windows.md`):
+
+- `--load-extension` is dead in branded Chrome (tested on 153, feature flag
+  included), and `web-ext` loads over `--remote-debugging-pipe`, which the WSL
+  interop does not forward — so `web-ext` must run on Windows, not in WSL.
+- Ctrl+C does not cross the interop. The module closes the browser through
+  PowerShell on SIGINT; without that the profile stays locked for the next run.
+- The PowerShell lookup matches command lines that mention the profile, and its
+  own command line does too — excluding `$PID` is what keeps it from killing
+  itself.
+
+`disabled: true` in a local `web-ext.config.ts` goes back to loading by hand from
 `\\wsl.localhost\Arch\home\gabriel\Development\vtex-companion-extension\.output\chrome-mv3`,
-or copy to `/mnt/c/...` if Chrome refuses the network path — **that copy must be
-redone after every build**, and a stale copy has already cost one debugging
-session where working code looked broken.
+or from a copy in `/mnt/c/...` if Chrome refuses the network path — **that copy
+must be redone after every build**, and a stale copy has already cost one
+debugging session where working code looked broken.
 
 The WXT dev server is pinned to 3010 so it never competes with a FastStore dev
 server on 3000.

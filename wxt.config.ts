@@ -20,10 +20,8 @@ const forScreenshots = process.env.WXT_SCREENSHOTS === '1';
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
-  // O projeto é desenvolvido no WSL, com os navegadores no Windows: não há
-  // binário de browser para o WXT abrir. `pnpm dev` só compila e observa; a
-  // extensão é carregada à mão.
-  webExt: { disabled: true },
+  // No WSL o WXT não abre navegador; `modules/windows-browser` abre o do
+  // Windows. `disabled: true` num `web-ext.config.ts` local volta ao manual.
   // 3000 é a porta do dev server do FastStore. O WXT escolheria a próxima
   // livre sozinho, mas fixar deixa o endereço de HMR previsível.
   dev: { server: { port: 3010 } },
