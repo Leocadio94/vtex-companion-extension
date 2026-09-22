@@ -231,6 +231,16 @@ things follow from being live:
   Never push a version tag to try something out. The tag also has to match both
   `package.json` and the first heading in `CHANGELOG.md`, or the run fails before
   packaging.
+- **The workflow has traps a cleanup would reintroduce** (`docs/release.md`, "A
+  Action por dentro"). The runner has no pnpm, so every job that calls it sets
+  it up, and the submit job also checks out and installs because `wxt submit`
+  reads `wxt.config.ts`. `upload-artifact` skips the hidden `.output` without
+  `include-hidden-files: true`. `pnpm dlx` fetches the latest release instead of
+  the lockfile's. The store secrets live in the `stores` environment, which only
+  accepts `v*` tags: a manual re-send runs on the tag and uses the workflow as it
+  was at that tag, and testing a workflow change on a branch needs a temporary
+  branch rule on the environment. Until the first tag after 1.2.0, the workflow
+  has only ever run as a dry run.
 - **`storeLinks` in the sibling repo decides what the landing shows.** It is the
   only place in that code that knows whether the extension is live; `null` keeps
   a button on "Em breve". Both links are filled since the AMO approval, and the
