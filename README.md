@@ -333,8 +333,13 @@ registrada com o motivo, para não precisar ser redescoberta.
 
 ## 🚢 Publicação
 
-A 1.1.0 está publicada nas duas lojas — Chrome Web Store
+A 1.2.0 está publicada nas duas lojas — Chrome Web Store
 (`bolibelfgalkiclnpnfdgbdljikflfba`) e AMO (slug `vtex-companion`).
+
+O envio dos pacotes é da Action: uma tag `v*.*.*` depois do merge refaz o
+portão, publica o release no GitHub e para no ambiente `stores` até alguém
+aprovar. As armadilhas do workflow — e como testá-lo sem publicar — estão em
+[`docs/release.md`](./docs/release.md#a-action-por-dentro).
 
 Textos de listagem, justificativa de cada permissão e checklist de envio em
 [`docs/publicacao.md`](./docs/publicacao.md) — inclusive a descrição pronta para

@@ -160,6 +160,54 @@ continuam sendo campos de console.
   `homepage_url` do manifesto, e um link quebrado ali aparece no gerenciador de
   extensões de todo mundo que instalar.
 
+## A Action por dentro
+
+A 1.2.0 subiu da máquina, com `wxt submit`: o `release.yml` entrou dez minutos
+depois da tag e nunca tinha rodado. O primeiro dry run achou dois defeitos que
+teriam derrubado o primeiro envio real, e os dois quebram em silêncio se alguém
+"simplificar" o workflow:
+
+- **O runner não traz pnpm.** O `ubuntu-latest` vem com npm e yarn. Todo job que
+  chama `pnpm` precisa de `pnpm/action-setup` — e o que roda `wxt submit`
+  precisa também de checkout e `pnpm install`, porque o WXT lê o
+  `wxt.config.ts` antes de repassar o comando ao publicador.
+- **`.output` é pasta oculta.** Desde a v4.4 o `upload-artifact` ignora
+  arquivo em diretório que começa com ponto: os zips existem e ele responde
+  "No files were found". O `include-hidden-files: true` é o que faz os pacotes
+  chegarem aos outros jobs.
+
+E três escolhas que parecem arbitrárias e não são:
+
+- **Nada de `pnpm dlx`.** Ele baixa a última versão publicada a cada execução,
+  não a do lockfile. `pnpm wxt submit` e `pnpm web-ext lint` rodam o que o
+  projeto instalou — o mesmo publicador que o envio local já provou.
+- **As credenciais moram no ambiente `stores`, não no repositório.** Só um job
+  que declara `environment: stores` e passou pela aprovação consegue lê-las. Job
+  novo que precise delas declara o ambiente; secret no nível do repositório
+  desfaz a trava.
+- **A release no GitHub olha o evento, não o ref.** Como o `stores` só aceita
+  tags, o reenvio manual também roda numa tag; a condição
+  `github.event_name == 'push'` impede que ele recorte a release de novo.
+
+Duas consequências de o `stores` só aceitar tags `v*`:
+
+- Disparo manual roda o workflow **como ele está naquela tag**. A `v1.2.0` nem
+  tem o `release.yml`; só tags criadas depois de uma correção a carregam.
+- Testar uma mudança no workflow antes do merge exige liberar a branch no
+  ambiente durante o teste, e remover a regra depois:
+
+  ```bash
+  repo=repos/Leocadio94/vtex-companion-extension/environments/stores/deployment-branch-policies
+  id=$(gh api -X POST $repo -f name='<branch>' -f type=branch --jq .id)
+  gh workflow run release.yml --ref <branch>   # dry_run=true é o padrão
+  # aprovar, esperar ficar verde
+  gh api -X DELETE $repo/$id
+  ```
+
+Nos logs, os nomes dos pacotes aparecem como `***-extension-1.2.0-chrome.zip`.
+Não é erro: o GitHub mascara qualquer trecho igual ao valor de um secret, e
+`vtex-companion` é o valor de um deles.
+
 ## Regras que não mudam
 
 **Documentação atrasada segura o release.** A varredura do passo 1 é condição
