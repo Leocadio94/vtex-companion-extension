@@ -1,8 +1,13 @@
 /* Só o que é do formato do popup. O resto vem de `ui/styles.css`. */
 
 /* O Chrome aceita até 800x600 no popup; 540 de altura deixava a última linha de
-   cada seção encostada na barra de abas. */
+   cada seção encostada na barra de abas. Os tetos cedem à viewport porque no
+   Firefox para Android o popup abre como página inteira, menor que a medida.
+   Máximo e não media query: a viewport inicial do popup do desktop não é a
+   final (o Chrome anima a abertura). */
 main {
   width: 400px;
   height: 600px;
+  max-width: 100vw;
+  max-height: 100dvh;
 }
