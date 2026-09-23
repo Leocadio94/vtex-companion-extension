@@ -13,6 +13,15 @@ Uma fonte por assunto: a nota mora no repositório, versionada com o código que
 descreve, e a página de release cita. `docs/roadmap.md` guarda o que ainda não
 existe, e `docs/release.md`, a ordem das etapas — nenhum dos dois é changelog.
 
+## 1.2.1 — 2026-09-23
+
+Correção no popup para o Firefox para Android: a medida fixa de 400×600 de `main`
+cortava o conteúdo à direita numa tela de 360 CSS px, porque lá o popup abre
+como página inteira e não como janela de 400 px. A largura e a altura agora
+cedem à viewport por tetos (`max-width`/`max-height`), e não por media query —
+a viewport inicial do popup do desktop não é a final, e a media query valeria
+para os dois. No desktop nada muda: os tetos valem exatamente a medida fixa.
+
 ## 1.2.0 — 2026-09-09
 
 Segunda versão publicada, e a primeira enviada às lojas por linha de comando. Três recursos novos na aba Loja, todos sobre o que a aba já é: o que a loja mostra, e como mudar isso sem abrir o DevTools.
