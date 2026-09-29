@@ -170,7 +170,10 @@ which lacks `optional_host_permissions`). `data_collection_permissions` forces
 `gecko_android` is declared on purpose: the popup works on a phone, and it is
 the whole product there — Firefox for Android has no DevTools, so the panel does
 not exist, and the localhost preview assumes a dev server on the same machine.
-Store copy has to say so; `docs/publicacao.md` carries the paragraph.
+Store copy has to say so; `docs/publicacao.md` carries the paragraph. Loading a
+dev build on the device is `docs/dev-android.md`: production build, `web-ext
+run` over the Windows-side USB, or zip-by-file on Nightly/Beta — never
+`pnpm dev`, whose dev server is unreachable from the phone.
 
 ## Conventions
 
