@@ -70,16 +70,6 @@ Coisas que apareceram enquanto se mexia noutra parte, e que ninguém pediu.
   `isVtex` sai falso. O aviso para conceder acesso aparece logo acima, mas a
   sequência é estranha: a ferramenta parece menor do que é até o clique.
 - **Cookie no domínio pai sobrevive ao "Limpar sessão"** — `clearSession` relê e
-  avisa quando sobra algo, o que é honesto, mas não resolve. Remover também no
-  domínio pai exige decidir até onde subir, e subir demais desloga o usuário de
-  onde ele não pediu.
-- **O popup tem tamanho fixo e o Android não é uma janela** — `main` mede
-  400×600 em `entrypoints/popup/popup.css`, medida do popup do desktop. No
-  Firefox para Android o popup abre como página inteira, então numa tela de 360
-  CSS px os 400 cortam o conteúdo à direita. Não impede o uso: a extensão foi
-  testada no aparelho e funciona. O conserto é deixar a largura ceder à
-  viewport, e a armadilha é que a media query também vale para o popup do
-  desktop, cuja viewport inicial não é a final — precisa de teste nos dois.
 - **Duas capturas da listagem continuam manuais** — `pnpm screenshots` já gera a
   1, a 4 e a 5. A 2 (painel do DevTools) e a 3 (admin autenticado) entram por
   `brand/screenshots/manual/`, porque nenhuma das duas é alcançável sem uma
