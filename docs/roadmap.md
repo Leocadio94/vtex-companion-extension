@@ -57,9 +57,14 @@ Em ordem de valor por esforço, na minha leitura.
 
 ## Pendências da listagem
 
-Nenhuma. Os textos que esperavam subiram junto da 1.2.0 nas duas lojas. Mudança
-de texto que aparecer daqui em diante entra aqui e viaja com a próxima versão —
-alterar a listagem publicada sozinha custa uma revisão.
+Mudança de texto entra aqui e viaja com a próxima versão: alterar a listagem
+publicada sozinha custa uma revisão.
+
+- **Frase de não associação na descrição** (P) — a última frase da descrição
+  longa dizia que a extensão "não usa a identidade visual da VTEX", o que é falso:
+  o ícone é no rosa da VTEX. O texto novo, em `docs/publicacao.md`, afirma só a
+  não associação. Colar nas duas lojas junto da próxima versão enviada depois da
+  1.2.1, que já está em revisão.
 
 ## Dívidas encontradas pelo caminho
 

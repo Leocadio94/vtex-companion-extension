@@ -198,12 +198,14 @@ Store copy has to say so; `docs/publicacao.md` carries the paragraph.
 
 The landing page and the privacy policy live in `../portfolio-astro`, not here —
 the text has a single owner. Editing that repo's `vtex-companion` surfaces is
-part of this project's work and needs no separate approval: the page data
-(`src/data/vtex-companion.ts`), the pages under `src/pages/{,en/}vtex-companion/`,
-the listing screenshots in `src/assets/vtex-companion/` and the OG images in
-`public/vtex-companion/`. Commit and push there in the same task, with the same
-prose-and-no-trailer rule. Anything outside those paths is someone else's page:
-ask first.
+part of this project's work and needs no separate approval: the product data
+file (`src/data/products/vtex-companion.ts`), the listing screenshots in
+`src/assets/vtex-companion/` and the OG images in `public/vtex-companion/`. The
+routes under `src/pages/{,en/}[product]/` and the landing components are shared
+with the Fluent Sound Switcher page, so a change there changes both: ask first,
+as for anything else outside those paths. That repo works on branches with a PR
+per task and prose commits without trailers; its `CLAUDE.md` has the release
+flow.
 
 Two things that repo will bite you with. Its `<style>` blocks are scoped by
 Astro, so a standalone page — the temporary OG route, for one — needs
@@ -256,8 +258,14 @@ things follow from being live:
   was at that tag, and testing a workflow change on a branch needs a temporary
   branch rule on the environment. Until the first tag after 1.2.0, the workflow
   has only ever run as a dry run.
-- **`storeLinks` in the sibling repo decides what the landing shows.** It is the
-  only place in that code that knows whether the extension is live; `null` keeps
-  a button on "Em breve". Both links are filled since the AMO approval, and the
-  AMO one carries no locale prefix so the store answers in the visitor's
-  language — the landing is bilingual and the link is the same on both pages.
+- **`meta.channels` in the sibling repo decides what the landing shows.** Each
+  entry is a store button, and `url: null` keeps it on "Em breve". Both links are
+  filled since the AMO approval, and the AMO one carries no locale prefix so the
+  store answers in the visitor's language — the landing is bilingual and the link
+  is the same on both pages. `meta.version` beside it is the number the landing
+  and the home card print: bump it when a store approves, not when the tag goes
+  up.
+- **`pnpm screenshots` overwrites the site's full captures, not its crops.** The
+  landing shows capture 1 whole and crops of 2 to 5, made by `pnpm crop:shots` in
+  the sibling repo. Regenerating here without re-cropping there leaves the site
+  on the old crops.
