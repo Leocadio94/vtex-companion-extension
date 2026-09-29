@@ -152,9 +152,9 @@ continuam sendo campos de console.
 ## 5. Depois de aprovado
 
 - Guardar as duas URLs de listagem e colocá-las no `README.md` **e** em
-  `storeLinks` (`src/data/vtex-companion.ts` do repositório irmão), que é o único
-  ponto do código que sabe se a extensão está no ar: `null` deixa o botão em
-  "Em breve". Usar a URL canônica com slug que a loja serve, não a de id puro
+  `meta.channels` (`src/data/products/vtex-companion.ts` do repositório irmão),
+  que é o único ponto do código que sabe se a extensão está no ar: `url: null`
+  deixa o botão em "Em breve". Usar a URL canônica com slug que a loja serve, não a de id puro
   que o console mostra.
 - Conferir que `https://leocadio.dev/vtex-companion/` responde 200: é o
   `homepage_url` do manifesto, e um link quebrado ali aparece no gerenciador de
@@ -247,7 +247,11 @@ continuar respondendo 200 não quer dizer que ele ainda descreve o produto.
 
 A página de apresentação e a política de privacidade moram em
 `../portfolio-astro`, não aqui: o texto tem um dono só. O que costuma precisar
-de atualização, em `src/data/vtex-companion.ts`:
+de atualização, em `src/data/products/vtex-companion.ts`:
+
+- `meta.version` — quando uma loja aprova a versão, não quando a tag sobe: é o
+  número que a landing e o card da home mostram, e ele tem de ser o que dá para
+  instalar;
 
 - `description` e `heroSub` — quando o resumo do produto muda;
 - `features` — quando um recurso entra, sai ou muda de nome;
@@ -256,7 +260,10 @@ de atualização, em `src/data/vtex-companion.ts`:
   desenhado dentro da imagem.
 
 As capturas são as mesmas cinco, copiadas para
-`src/assets/vtex-companion/`. O script de capturas escreve nos dois lugares.
+`src/assets/vtex-companion/`. O script de capturas escreve nos dois lugares. A
+landing mostra a 1 inteira no hero, mas da 2 à 5 usa recortes: na coluna de um
+bloco de recurso a captura inteira fica ilegível. Depois de regerar, rodar
+`pnpm crop:shots` lá para refazer os recortes a partir das capturas novas.
 
 Verificação de lá, antes de commitar: `pnpm check` e `pnpm build`, e conferir
 que `dist/og/` não existe caso uma rota temporária de OG tenha sido usada.

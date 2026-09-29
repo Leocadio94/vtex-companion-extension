@@ -40,8 +40,8 @@ inteira preservada.
 Um único código-fonte gera os dois builds — Chrome com `service_worker`,
 Firefox com `background.scripts`, ambos em MV3.
 
-> ℹ️ **Não é um produto oficial da VTEX.** O ícone é original e a extensão não
-> usa a identidade visual da VTEX.
+> ℹ️ **Projeto independente, sem associação com a VTEX.** Não é um produto
+> oficial dela.
 
 ## 📸 Capturas
 

@@ -87,7 +87,7 @@ PRIVACIDADE
 Não há servidor e nenhum dado é coletado, armazenado remotamente ou transmitido. Não existe content script global: a leitura da página é injetada sob demanda quando você abre o painel, e por isso a instalação não pede "ler dados em todos os sites". O acesso fixo é só a *.myvtex.com e localhost; o domínio da loja é opcional e concedido por você, site a site.
 Política de privacidade: https://leocadio.dev/vtex-companion/privacy/
 
-Projeto independente e de código aberto. Não é um produto oficial da VTEX e não usa a identidade visual da VTEX.
+Projeto independente e de código aberto, sem associação com a VTEX. Não é um produto oficial dela.
 Página do projeto: https://leocadio.dev/vtex-companion/
 Código-fonte: https://github.com/Leocadio94/vtex-companion-extension
 ```
@@ -245,7 +245,7 @@ Três coisas que a AMO cobra e a Chrome não:
 ## Política de privacidade em texto (AMO)
 
 A AMO pede o texto, não a URL. O dono do texto continua sendo
-`src/data/vtex-companion.ts` no `../portfolio-astro`, que é o que a página do
+`src/data/products/vtex-companion.ts` no `../portfolio-astro`, que é o que a página do
 site publica; o bloco abaixo é uma **exportação** dele em texto puro, para colar
 no formulário. Mudou a política? Muda lá primeiro e reexporta aqui — nunca o
 contrário. O link da versão canônica vai no topo do próprio texto justamente
@@ -377,7 +377,7 @@ necessário quando o que muda é o código.
      descreve a extensão. "Privacidade e Segurança" atrai revisão mais dura sem
      ser verdade, e "Compras" é categoria de consumidor final.
    - **A política de privacidade é uma caixa de texto, não uma URL.** O texto sai
-     do mesmo lugar que a página do site, `src/data/vtex-companion.ts` no
+     do mesmo lugar que a página do site, `src/data/products/vtex-companion.ts` no
      `../portfolio-astro`, convertido para texto puro e com o link da versão
      canônica no topo. Não manter uma segunda cópia aqui é proposital: o texto
      tem um dono só.
@@ -625,6 +625,11 @@ promocionais e os textos de privacidade. Metadado se edita no console.
 
 ## Marca
 
-O ícone é uma lupa desenhada para este projeto. A extensão não usa o logo nem a
-identidade visual da VTEX, e não é um produto oficial da VTEX — as duas lojas
-rejeitam extensões que se apresentam como oficiais de uma marca de terceiro.
+O ícone é uma lupa desenhada para este projeto, no rosa da VTEX (`#F71963`) e sem
+o logo dela. As duas lojas rejeitam extensões que se apresentam como oficiais de
+uma marca de terceiro, e o que protege disso é o aviso de não associação (projeto
+independente, sem associação com a VTEX, não é um produto oficial dela), que vai
+na descrição, no README e no site.
+
+Decisão de 27/09/2026: a cor fica, e nenhum texto diz que a extensão "não usa a
+identidade visual da VTEX", porque ela usa a cor.
