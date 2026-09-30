@@ -8,6 +8,9 @@ const HEIGHT = 280;
 const iconSvg = await readFile('brand/icon.svg', 'utf8');
 const iconDataUri = `data:image/svg+xml;base64,${Buffer.from(iconSvg).toString('base64')}`;
 
+/** Texto curto do bloco promocional. Alinhado com a landing do site. */
+const TAGLINE = 'Lê a stack, o catálogo e o SEO da loja aberta na aba, e abre o preview do FastStore no <b>localhost</b>.';
+
 const html = `<!doctype html>
 <meta charset="utf-8">
 <style>
@@ -33,7 +36,7 @@ const html = `<!doctype html>
 <img src="${iconDataUri}" alt="">
 <div>
   <h1>VTEX Companion</h1>
-  <p>A stack, o catálogo e o SEO da loja na aba que você já está — e o preview do FastStore no <b>localhost</b>.</p>
+  <p>${TAGLINE}</p>
 </div>
 `;
 

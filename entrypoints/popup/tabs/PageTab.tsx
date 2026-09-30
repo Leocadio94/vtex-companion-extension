@@ -11,8 +11,8 @@ import { Empty, Row } from '@/ui/components/Row';
 
 const TEMPLATE_LABELS: Record<PageTemplate, string> = {
   home: 'Home',
-  pdp: 'PDP — página de produto',
-  plp: 'PLP — listagem',
+  pdp: 'PDP (página de produto)',
+  plp: 'PLP (listagem)',
   search: 'Busca',
   checkout: 'Checkout',
   'order-placed': 'Order placed',

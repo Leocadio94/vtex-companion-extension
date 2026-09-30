@@ -139,7 +139,7 @@ export function SessionSection({
           <strong>Clonar do admin</strong> copia a sessão de{' '}
           <code>{result.account}.myvtex.com</code> para esta origem, sem o token
           passar pela área de transferência. <strong>Limpar sessão</strong>{' '}
-          apaga todos os cookies acima — a sessão de admin e a da loja.
+          apaga todos os cookies acima: a sessão de admin e a da loja.
         </Empty>
       ) : (
         <Empty>
@@ -186,7 +186,7 @@ export function SessionSection({
 
         <Empty>
           O token dá acesso completo à sessão nesta origem. Ele não é guardado
-          pela extensão — some quando o painel fecha.
+          pela extensão e some quando o painel fecha.
         </Empty>
       </details>
     </section>

@@ -18,7 +18,7 @@ const FLAGS = URL_FLAGS.filter((flag) => flag.key !== 'workspace');
 /** Tooltip: o parâmetro que a flag escreve, e o que ele faz. */
 function flagTitle(flag: (typeof FLAGS)[number]): string {
   const param = flag.kind === 'toggle' ? `${flag.key}=${flag.on}` : `${flag.key}=`;
-  return `${param} — ${flag.hint}`;
+  return `${param}: ${flag.hint}`;
 }
 
 export function UrlSection({
@@ -205,7 +205,7 @@ export function UrlSection({
             label={flag.label}
             value={
               <>
-                <code>{flag.key}</code> — {flag.hint}
+                <code>{flag.key}</code>: {flag.hint}
               </>
             }
           />

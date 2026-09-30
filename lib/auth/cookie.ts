@@ -110,7 +110,7 @@ export async function clearSession(url: string): Promise<CookieResult> {
   if (left.length > 0) {
     return {
       ok: false,
-      message: `Sobrou ${left.join(', ')} — provavelmente gravado no domínio pai.`,
+      message: `Sobrou ${left.join(', ')}: provavelmente gravado no domínio pai.`,
     };
   }
 

@@ -35,7 +35,7 @@ frase serve de _Summary_.
 ```text
 VTEX Companion lê a stack, o catálogo e o SEO da loja VTEX que você já tem aberta, chama as APIs dessa loja com a sessão da própria aba e abre o preview do CMS do FastStore no seu servidor local.
 
-É uma ferramenta de diagnóstico para quem desenvolve em VTEX. Não há servidor: a extensão lê a aba sob demanda e descarta quando o painel fecha. Nada é coletado, nada é transmitido.
+É uma ferramenta de diagnóstico para quem desenvolve em VTEX. Não há servidor: a extensão lê a aba sob demanda e descarta quando o painel fecha. Nenhum dado seu sai do navegador.
 
 DETECÇÃO DA STACK
 • É VTEX? Com que confiança e por quais sinais
@@ -45,7 +45,7 @@ DETECÇÃO DA STACK
 • Tipo de página: home, PDP, listagem, busca, checkout, order placed, login
 
 CATÁLOGO DA PÁGINA
-• PDP: produto, referência, marca, categoria e a lista de SKUs com EAN, refId, seller, disponibilidade e preço — mais atalho para o admin
+• PDP: produto, referência, marca, categoria e a lista de SKUs com EAN, refId, seller, disponibilidade e preço, mais atalho para o admin
 • Listagem e busca: categoria, caminho, termo, map, ordenação e página
 
 SEO DA PÁGINA
@@ -76,9 +76,9 @@ SESSÃO
 • Segmento da loja (vtex_segment) decodificado e editável: sales channel, culture info, moeda, region id e o JSON inteiro
 
 PREVIEW DO FASTSTORE NO LOCALHOST
-O botão Pré-visualização do CMS do FastStore — o Headless CMS (legacy) e o Storefront > Content — abre a loja publicada. A extensão injeta um botão Localhost ao lado dele que abre a mesma URL no seu dev server, com a query inteira preservada, nas duas versões do CMS e sem depender do cmsDevMode. Também há redirecionamento automático da aba de preview, a última URL capturada com copiar/abrir, e o liga/desliga do cmsDevMode com status por frame.
+O botão Pré-visualização do CMS do FastStore (o Headless CMS (legacy) e o Storefront > Content) abre a loja publicada. A extensão injeta um botão Localhost ao lado dele que abre a mesma URL no seu dev server, com a query inteira preservada, nas duas versões do CMS e sem depender do cmsDevMode. Também há redirecionamento automático da aba de preview, a última URL capturada com copiar/abrir, e o liga/desliga do cmsDevMode com status por frame.
 
-Lojas em VTEX IO e no portal legacy pré-visualizam por workspace e não usam esse fluxo — a aba Preview diz isso em vez de oferecer controles inertes.
+Lojas em VTEX IO e no portal legacy pré-visualizam por workspace e não usam esse fluxo; a aba Preview diz isso quando a loja é de uma dessas plataformas, em vez de mostrar controles que não fazem nada.
 
 NO ANDROID
 A extensão também é oferecida no Firefox para Android, onde tudo passa pelo popup: detecção, catálogo, SEO, scripts, sessão e o runner. O painel do DevTools não existe lá, porque o navegador não tem DevTools no aparelho, e o preview no localhost pressupõe um servidor de desenvolvimento na mesma máquina.
@@ -105,9 +105,9 @@ os presets do runner saíram de nomes próprios para minúsculas.
 ## Propósito único (Chrome Web Store)
 
 > Ferramenta de diagnóstico para desenvolvedores que trabalham com lojas VTEX:
-> identifica qual tecnologia VTEX a página usa, mostra dados de SEO, catálogo e
-> scripts de terceiros daquela página, permite chamar as APIs da própria loja
-> com a sessão da aba, e abre o preview do CMS do FastStore no servidor de
+> identifica qual tecnologia VTEX a página usa, mostra os dados de SEO, catálogo
+> e scripts de terceiros daquela página, chama as APIs da própria loja com a
+> sessão da aba, e abre o preview do CMS do FastStore no servidor de
 > desenvolvimento local.
 
 ## Justificativa de cada permissão
@@ -252,19 +252,19 @@ contrário. O link da versão canônica vai no topo do próprio texto justamente
 para que quem leia a cópia colada saiba onde está a atual.
 
 ```text
-VTEX Companion — Política de Privacidade
+VTEX Companion: Política de Privacidade
 Última atualização: 25 de agosto de 2026
 Versão completa e sempre atual: https://leocadio.dev/vtex-companion/privacy/
 English: https://leocadio.dev/en/vtex-companion/privacy/
 
 RESUMO
-A extensão não coleta, não armazena em servidor e não transmite nenhum dado seu. Não há servidor: tudo acontece dentro do seu navegador.
+A extensão VTEX Companion não coleta, não armazena em servidor e não transmite nenhum dado seu. Tudo acontece dentro do seu navegador.
 
 O QUE A EXTENSÃO ACESSA
 Para funcionar, a extensão lê dados da aba que você está vendo:
-- Conteúdo da página — tags de SEO, dados estruturados, scripts carregados e variáveis que a loja publica, para identificar a tecnologia VTEX e o tipo de página.
-- Cookies do domínio — para informar se existe sessão de loja ou de admin. Cookies são lidos apenas do domínio da aba ativa e do domínio de admin da conta detectada.
-- APIs públicas da loja — a extensão consulta a API de catálogo e a de sessão do próprio site que você está visitando, a partir da própria página.
+- Conteúdo da página: tags de SEO, dados estruturados, scripts carregados e variáveis que a loja publica, para identificar a tecnologia VTEX e o tipo de página.
+- Cookies do domínio: para informar se existe sessão de loja ou de admin. Cookies são lidos apenas do domínio da aba ativa e do domínio de admin da conta detectada.
+- APIs públicas da loja: a extensão consulta a API de catálogo e a de sessão do próprio site que você está visitando, a partir da própria página.
 Tudo isso é lido sob demanda, quando você abre o painel, e é descartado quando o painel fecha.
 
 FETCH RUNNER

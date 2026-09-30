@@ -11,19 +11,41 @@ pura com testes mais a interface em volta, **G** precisa de desenho antes.
 
 O que sobrou do levantamento de layout depois da rodada 1.1.0.
 
-- **Tabela de SKUs, e o fim do `.frames` genérico** (P) — a classe `.frames`
-  hoje estiliza quatro listas diferentes: frames do admin, SKUs, vendors e
-  origens de terceiros. O nome mente sobre três delas. Junto, a lista de SKUs
-  não é escaneável: id, nome, estoque e preço deviam ser colunas, não uma frase
-  por linha.
 - **Tema explícito e página de opções** (M) — só existe `prefers-color-scheme`.
   Falta escolher claro/escuro/sistema, e não há onde morar a porta do dev
   server, a aba inicial, os presets do usuário e a gestão das origens já
   concedidas.
-- **`aria-live` nos status** (P) — "Copiado", o resultado da escrita do cookie e
-  o fim de uma requisição mudam a tela sem anunciar nada.
 - **Atalhos de teclado** (P) — comando para abrir o popup, `1`–`4` para trocar
   de aba, `/` para focar a URL do runner. Público de desenvolvedor, custo baixo.
+- **Terminologia do "Abrir"** (P) — o rótulo significa três coisas (workspace,
+  preview, admin). O critique de 29/09/2026 sugeriu "Abrir no admin" e
+  "Abrir preview" como desambiguação.
+
+## Acabamento da interface — rodada 1.3.0
+
+Feito no pente-fino de acabamento com o critique e o audit do impeccable
+(`.impeccable/critique/2026-09-29-*.md`, score 28/40 e 12/20):
+
+- Tabela de SKUs e fim do `.frames` genérico (aqui desta lista, entregue na
+  rodada).
+- `aria-live`/`role="status"` nos resultados (banner de risco, resposta do
+  runner, status de sessão e segmento), `role="tablist"` na nav e
+  `aria-pressed` no segmentado Formado/Raw.
+- Contraste AA no tema claro: `--accent-strong` `#e50e59` para fundo de
+  botão/badge e `--accent-text` para accent como texto (nav ativa, flag
+  "copiado"). O rosa oficial `#f71963` continua na marca e nos detalhes.
+- Alvos de toque: 44px em `pointer: coarse` (chips, histórico, segmentado,
+  linha copiável) e 24px fora do touch, mais indicador estático de "copiar"
+  no touch, onde não há hover.
+- Confirmação em dois passos no `Limpar sessão`, no padrão do runner.
+- Labels acessíveis nos campos do runner e do token, `aria-label` no replay.
+- Seção Tags encurtada: Title/Description truncados com expansão, contadores
+  atrás de `<details>`.
+- `useMemo` no pretty JSON e `memo` no JsonView (re-render a cada tecla).
+- Paletas `.pill-*` e `.json-*` em tokens; `.tone-error` com borda de 1px nos
+  quatro lados (o detector do impeccable marcava o border-left como tell de
+  callout de IA).
+- "Gravar JSON" unificado com "Aplicar" ("Aplicar JSON").
 
 ## Ferramentas novas
 

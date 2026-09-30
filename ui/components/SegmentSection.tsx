@@ -122,7 +122,7 @@ export function SegmentSection({
 
       <Empty>
         A troca vale para a próxima navegação, e a Session Manager pode
-        reescrever o cookie — se o valor voltar ao anterior, foi a loja.
+        reescrever o cookie. Se o valor voltar ao anterior, foi a loja.
       </Empty>
 
       <details className="advanced">

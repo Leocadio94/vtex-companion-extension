@@ -44,7 +44,7 @@ export function analyzeSeo(
   // Indexação primeiro: é o achado que muda o peso de todos os outros.
   const robots = `${seo.robots ?? ''} ${seo.googlebot ?? ''}`.toLowerCase();
   if (robots.includes('noindex')) {
-    add('noindex', 'error', 'Página marcada como noindex — fora do índice.');
+    add('noindex', 'error', 'Página marcada como noindex: fora do índice.');
   }
   if (robots.includes('nofollow')) {
     add('nofollow', 'warn', 'Links da página marcados como nofollow.');
@@ -53,12 +53,12 @@ export function analyzeSeo(
   if (!seo.title) {
     add('title-missing', 'error', 'Sem <title>.');
   } else if (seo.title.length < TITLE_MIN) {
-    add('title-short', 'warn', `Title com ${seo.title.length} caracteres — curto.`);
+    add('title-short', 'warn', `Title com ${seo.title.length} caracteres: curto.`);
   } else if (seo.title.length > TITLE_MAX) {
     add(
       'title-long',
       'warn',
-      `Title com ${seo.title.length} caracteres — deve ser cortado na SERP.`,
+      `Title com ${seo.title.length} caracteres: deve ser cortado na SERP.`,
     );
   }
 
@@ -68,13 +68,13 @@ export function analyzeSeo(
     add(
       'description-short',
       'info',
-      `Description com ${seo.description.length} caracteres — curta.`,
+      `Description com ${seo.description.length} caracteres: curta.`,
     );
   } else if (seo.description.length > DESCRIPTION_MAX) {
     add(
       'description-long',
       'info',
-      `Description com ${seo.description.length} caracteres — deve ser cortada.`,
+      `Description com ${seo.description.length} caracteres: deve ser cortada.`,
     );
   }
 
@@ -102,7 +102,7 @@ export function analyzeSeo(
     add(
       'og-incomplete',
       'info',
-      'Open Graph incompleto — compartilhamento fica sem título ou imagem.',
+      'Open Graph incompleto: compartilhamento fica sem título ou imagem.',
     );
   }
 

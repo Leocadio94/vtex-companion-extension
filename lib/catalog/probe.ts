@@ -119,7 +119,7 @@ async function fetchCatalog(target: CatalogTarget): Promise<CatalogSnapshot> {
         kind: 'category',
         category: { id: target.entityId, name: null, path, hasChildren: null },
         search: target.search,
-        note: 'Detalhe da categoria indisponível — mostrando o que a URL entrega.',
+        note: 'Detalhe da categoria indisponível: mostrando o que a URL entrega.',
       };
     }
   }
