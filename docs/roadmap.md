@@ -56,11 +56,7 @@ Em ordem de valor por esforço, na minha leitura.
 Mudança de texto entra aqui e viaja com a próxima versão: alterar a listagem
 publicada sozinha custa uma revisão.
 
-- **Frase de não associação na descrição** (P) — a última frase da descrição
-  longa dizia que a extensão "não usa a identidade visual da VTEX", o que é falso:
-  o ícone é no rosa da VTEX. O texto novo, em `docs/publicacao.md`, afirma só a
-  não associação. Colar nas duas lojas junto do envio da 1.3.0, com o resto dos
-  textos que a rodada de voz daquela versão revisou.
+Nenhuma no momento.
 
 ## Dívidas encontradas pelo caminho
 

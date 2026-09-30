@@ -13,7 +13,7 @@ Uma fonte por assunto: a nota mora no repositório, versionada com o código que
 descreve, e a página de release cita. `docs/roadmap.md` guarda o que ainda não
 existe, e `docs/release.md`, a ordem das etapas — nenhum dos dois é changelog.
 
-## 1.3.0 — 2026-09-29
+## 1.3.0 — 2026-09-30
 
 Rodada de acabamento guiada por duas avaliações: um critique de UX (28/40) e um
 audit técnico (12/20), ambos registrados em `.impeccable/critique/`. O que os
