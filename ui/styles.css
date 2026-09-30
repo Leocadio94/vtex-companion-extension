@@ -196,14 +196,22 @@ section {
   color: var(--muted);
 }
 
+/* `min-width: 0` porque item de grid não encolhe abaixo do próprio conteúdo:
+   um valor que não quebra alargaria a coluna além do painel. */
 .row-value {
+  min-width: 0;
   overflow-wrap: anywhere;
 }
 
-/* Account, ids e URLs existem para ser copiados. O botão herda a aparência da
-   linha; só o cursor e o realce no hover denunciam que é clicável. */
+/* Account, ids e URLs existem para ser copiados, e texto cortado existe para
+   ser aberto. O botão herda a aparência da linha; só o cursor e o realce no
+   hover denunciam que é clicável. */
 .row-copy {
   position: relative;
+}
+
+.row-copy,
+.truncated {
   padding: 0;
   border: 0;
   /* O `nowrap` do botão vale para rótulo de ação, não para valor de linha:
@@ -218,10 +226,27 @@ section {
 
 /* O realce é `--bg` porque a seção já é `--surface`: usar a mesma cor não
    marcaria nada. */
-.row-copy:hover {
+.row-copy:hover,
+.truncated:hover {
   filter: none;
   box-shadow: 0 0 0 4px var(--bg);
   background: var(--bg);
+}
+
+/* Em bloco porque o baseline de um `inline-block` é o da última linha: o
+   rótulo da linha desceria até o "mostrar tudo". */
+.truncated {
+  display: block;
+  width: 100%;
+}
+
+.truncated-more {
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.truncated:hover .truncated-more {
+  text-decoration: underline;
 }
 
 .row-copy-flag {

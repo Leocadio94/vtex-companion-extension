@@ -124,8 +124,8 @@ foi ressincronizada com o texto canônico do site.
 - **Description com marcação HTML.** CMS de loja grava `<strong>` e `<br />`
   dentro da meta description (a Pernambucanas tem 1,4 kB de markup numa linha
   só), e o painel mostrava as tags crus — além de empurrar o popup para uma
-  altura de seção impossível. A leitura tira a marcação e o painel trunca com
-  expansão.
+  altura de seção impossível. A leitura tira a marcação, e o painel corta o
+  texto em 140 caracteres com um "mostrar tudo" que informa o tamanho inteiro.
 - **Resposta perdida na mensagem ao background.** O Chrome ignora Promise
   devolvida de listener de mensagem: o handler passou a usar `sendResponse`
   com `return true` (e a devolver Promise no Firefox, onde o 3º argumento não

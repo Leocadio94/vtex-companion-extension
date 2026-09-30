@@ -33,7 +33,7 @@ function length(value: string | null): string {
   return value ? `${value.length} caracteres` : '—';
 }
 
-/** Texto longo com duas linhas à vista; o resto aparece no clique. */
+/** Texto longo cortado em 140 caracteres; o resto aparece no clique. */
 function Truncated({ text, suffix }: { text: string; suffix?: string }) {
   const [open, setOpen] = useState(false);
   if (open || text.length <= 140) {
@@ -45,12 +45,9 @@ function Truncated({ text, suffix }: { text: string; suffix?: string }) {
     );
   }
   return (
-    <button
-      type="button"
-      className="btn-ghost truncated"
-      onClick={() => setOpen(true)}
-    >
-      {text.slice(0, 140).trimEnd()}… (mostrar tudo)
+    <button type="button" className="truncated" onClick={() => setOpen(true)}>
+      {text.slice(0, 140).trimEnd()}…{' '}
+      <span className="truncated-more">mostrar tudo{suffix}</span>
     </button>
   );
 }
