@@ -269,8 +269,8 @@ things follow from being live:
   the lockfile's. The store secrets live in the `stores` environment, which only
   accepts `v*` tags: a manual re-send runs on the tag and uses the workflow as it
   was at that tag, and testing a workflow change on a branch needs a temporary
-  branch rule on the environment. Until the first tag after 1.2.0, the workflow
-  has only ever run as a dry run.
+  branch rule on the environment. v1.2.1 was the first real send through it,
+  store status step included.
 - **`meta.channels` in the sibling repo decides what the landing shows.** Each
   entry is a store button, and `url: null` keeps it on "Em breve". Both links are
   filled since the AMO approval, and the AMO one carries no locale prefix so the
