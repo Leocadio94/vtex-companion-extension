@@ -21,32 +21,6 @@ O que sobrou do levantamento de layout depois da rodada 1.1.0.
   preview, admin). O critique de 29/09/2026 sugeriu "Abrir no admin" e
   "Abrir preview" como desambiguação.
 
-## Acabamento da interface — rodada 1.3.0
-
-Feito no pente-fino de acabamento com o critique e o audit do impeccable
-(`.impeccable/critique/2026-09-29-*.md`, score 28/40 e 12/20):
-
-- Tabela de SKUs e fim do `.frames` genérico (aqui desta lista, entregue na
-  rodada).
-- `aria-live`/`role="status"` nos resultados (banner de risco, resposta do
-  runner, status de sessão e segmento), `role="tablist"` na nav e
-  `aria-pressed` no segmentado Formado/Raw.
-- Contraste AA no tema claro: `--accent-strong` `#e50e59` para fundo de
-  botão/badge e `--accent-text` para accent como texto (nav ativa, flag
-  "copiado"). O rosa oficial `#f71963` continua na marca e nos detalhes.
-- Alvos de toque: 44px em `pointer: coarse` (chips, histórico, segmentado,
-  linha copiável) e 24px fora do touch, mais indicador estático de "copiar"
-  no touch, onde não há hover.
-- Confirmação em dois passos no `Limpar sessão`, no padrão do runner.
-- Labels acessíveis nos campos do runner e do token, `aria-label` no replay.
-- Seção Tags encurtada: Title/Description truncados com expansão, contadores
-  atrás de `<details>`.
-- `useMemo` no pretty JSON e `memo` no JsonView (re-render a cada tecla).
-- Paletas `.pill-*` e `.json-*` em tokens; `.tone-error` com borda de 1px nos
-  quatro lados (o detector do impeccable marcava o border-left como tell de
-  callout de IA).
-- "Gravar JSON" unificado com "Aplicar" ("Aplicar JSON").
-
 ## Ferramentas novas
 
 Em ordem de valor por esforço, na minha leitura.
