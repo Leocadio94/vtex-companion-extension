@@ -212,13 +212,18 @@ export default function App() {
       </header>
 
       {risk.level === 'warn' && (
-        <p className="risk">
+        <p className="risk" role="status">
           <span aria-hidden="true">⚠</span>
           {risk.message}
         </p>
       )}
 
-      <div className="content">
+      <div
+        className="content"
+        role="tabpanel"
+        id={`panel-${tab}`}
+        aria-labelledby={`tab-${tab}`}
+      >
         {loading ? (
           <p className="muted">Lendo a página…</p>
         ) : tab === 'store' ? (
@@ -274,13 +279,18 @@ export default function App() {
         )}
       </div>
 
-      <nav>
+      {/* Tablist sem suporte a setas de propósito: quatro alvos, e as setas
+          do teclado já navegam a página inteira num popup focado. */}
+      <nav role="tablist" aria-label="Seções">
         {TABS.map(({ id, label, Icon }) => (
           <button
             key={id}
             type="button"
+            role="tab"
+            id={`tab-${id}`}
             className={id === tab ? 'active' : undefined}
-            aria-current={id === tab}
+            aria-selected={id === tab}
+            aria-controls={`panel-${id}`}
             onClick={() => selectTab(id)}
           >
             <Icon />

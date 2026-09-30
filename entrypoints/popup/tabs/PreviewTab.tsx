@@ -127,8 +127,7 @@ export function PreviewTab({
                 value={summarizeInjection(injection)}
               />
               {injection.length > 0 && (
-                <details className="frames">
-                  <summary>Frames ({injection.length})</summary>
+                <details className="frames">                  <summary>Frames ({injection.length})</summary>
                   <ul>
                     {injection.map((frame) => (
                       <li key={frame.frameId}>

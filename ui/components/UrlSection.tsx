@@ -197,7 +197,6 @@ export function UrlSection({
         remove a flag.
         {!isIo && ' As flags do render-runtime só aparecem em loja VTEX IO.'}
       </Empty>
-
       <details className="advanced">
         <summary>O que cada flag faz</summary>
         {visible.map((flag) => (

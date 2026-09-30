@@ -44,7 +44,7 @@ export function PixelsSection({ report }: { report: PixelReport | null }) {
       )}
 
       {others.length > 0 && (
-        <details className="frames">
+        <details className="origin-list">
           <summary>Outras origens de terceiros ({others.length})</summary>
           <ul>
             {others.map((entry) => (
