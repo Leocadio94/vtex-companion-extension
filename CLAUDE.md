@@ -89,6 +89,16 @@ reasons, all load-bearing:
   would be pure waste.
 - It keeps the popup free of store-specific request logic.
 
+Injecting into the page is not enough when the API lives on another origin.
+FastStore/headless stores serve the catalog API on `{account}.myvtex.com` —
+the store domain answers 404, and the API sends no CORS headers. `collectCatalog`
+falls back to a background fetch, which has the required `*.myvtex.com` host
+permission. The account is rebuilt and validated in the background (the
+message could come from anyone), and `runtime.onMessage` responses must use
+`sendResponse` + `return true` there: WXT's `browser` is native `chrome` on
+Chrome, which ignores Promise-returning listeners (Firefox is the opposite —
+no third argument — so the handler branches on `typeof sendResponse`).
+
 Injected functions are serialized, so they must be self-contained: no imports, no
 closure over the module. Pass everything through `args`, or declare it inside the
 function — a module-scope constant read from an injected function becomes a

@@ -152,6 +152,36 @@ describe('detect — FastStore', () => {
     expect(result.account).toBe('acme');
   });
 
+  it('desconfia do __NEXT_DATA__ quando a URL diz outra página', () => {
+    // Navegação SPA no Next.js não reescreve o __NEXT_DATA__: um home → PDP
+    // no cliente deixa `page: '/'` numa PDP.
+    const result = detect(
+      signals('https://acme.vtex.app/camiseta-preta/p', {
+        page: pageSignals({
+          nextData: { page: '/', buildId: 'abc' },
+          hasFastStoreMarkup: true,
+        }),
+      }),
+    );
+
+    expect(result.template).toBe('pdp');
+    expect(result.templateReason).toContain('desatualizado');
+  });
+
+  it('mantém o snapshot quando a URL não contradiz', () => {
+    const result = detect(
+      signals('https://acme.vtex.app/', {
+        page: pageSignals({
+          nextData: { page: '/', buildId: 'abc' },
+          hasFastStoreMarkup: true,
+        }),
+      }),
+    );
+
+    expect(result.template).toBe('home');
+    expect(result.templateReason).toBe('__NEXT_DATA__.page=/');
+  });
+
   it('usa o JSON-LD para separar coleção de landing page em /[...slug]', () => {
     const plp = detect(
       signals('https://acme.vtex.app/colecao/verao', {

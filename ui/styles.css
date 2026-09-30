@@ -41,8 +41,10 @@
     --line: #2a2e36;
     --surface: #1d2027;
     --accent: #ff3d7f;
-    --accent-strong: #ff3d7f;
-    --accent-fg: #16181d;
+    /* Mesma combinação do tema claro: o rosa vivo com texto escuro passa no
+       contraste, mas o rosa-escuro com branco lê melhor sobre fundo escuro. */
+    --accent-strong: #e50e59;
+    --accent-fg: #ffffff;
     --accent-text: #ff3d7f;
     --nav-bg: #1a1d23;
     --danger: #ff8fa9;
@@ -159,9 +161,11 @@ section {
   background: var(--surface);
 }
 
+/* Reto, não pílula: a identidade do produto é de canto reto (é o que a
+   landing usa), e pílula colorida no topo é cara de template. */
 .badge {
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: 3px;
   background: var(--accent-strong);
   color: var(--accent-fg);
   font-size: 11px;
@@ -554,7 +558,7 @@ nav button.active {
 .pill {
   display: inline-block;
   padding: 1px 7px;
-  border-radius: 999px;
+  border-radius: 3px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0;

@@ -1,4 +1,6 @@
 import type { CompanionMessage } from '@/lib/messaging';
+import { mapProductSnapshot } from '@/lib/catalog/map';
+import { catalogApiHost } from '@/lib/catalog/probe';
 import { isPreviewUrl, rewritePreviewUrl } from '@/lib/preview/rewrite';
 import { forgetTab, rememberPreview } from '@/lib/preview/store';
 import {
@@ -37,13 +39,71 @@ async function consumeOneShot(): Promise<boolean> {
   return until > Date.now();
 }
 
+/**
+ * Catálogo no domínio de API da conta. A conta vem da detecção, mas o host
+ * é reconstruído e validado aqui: a mensagem poderia vir de qualquer um, e
+ * a permissão do background vale só para `*.myvtex.com`.
+ */
+async function fetchCatalogFromAccount(
+  account: string,
+  paths: string[],
+): Promise<{ ok: boolean; snapshot?: unknown; error?: string }> {
+  const host = catalogApiHost(account);
+  if (!host || !Array.isArray(paths) || paths.length === 0) {
+    return { ok: false, error: 'conta inválida' };
+  }
+
+  for (const path of paths) {
+    if (typeof path !== 'string' || !path.startsWith('/api/catalog_system/')) {
+      continue;
+    }
+
+    try {
+      const response = await fetch(`https://${host}${path}`, {
+        headers: { accept: 'application/json' },
+      });
+      if (!response.ok) continue;
+      const json = await response.json();
+      if (!Array.isArray(json) || json.length === 0) continue;
+
+      return { ok: true, snapshot: mapProductSnapshot(json) };
+    } catch (error) {
+      return { ok: false, error: (error as Error)?.message ?? 'erro' };
+    }
+  }
+
+  return { ok: false };
+}
+
 export default defineBackground(() => {
   browser.runtime.onInstalled.addListener(() => void migrateFromSync());
 
-  browser.runtime.onMessage.addListener((message: CompanionMessage) => {
+  browser.runtime.onMessage.addListener((message: CompanionMessage, _sender, sendResponse) => {
+    // Chrome ignora Promise devolvida de listener e só entrega resposta por
+    // `sendResponse` com `return true`; Firefox é o contrário. O 3º argumento
+    // só existe no Chrome, e a presença dele decide o caminho.
+    const chromeStyle = typeof sendResponse === 'function';
+
     if (message?.type === 'preview:arm-one-shot') {
-      return oneShotUntil.setValue(Date.now() + ONE_SHOT_TTL_MS).then(() => true);
+      const done = oneShotUntil
+        .setValue(Date.now() + ONE_SHOT_TTL_MS)
+        .then(() => true);
+      if (chromeStyle) {
+        void done.then(sendResponse);
+        return true;
+      }
+      return done;
     }
+
+    if (message?.type === 'catalog:fetch') {
+      const done = fetchCatalogFromAccount(message.account, message.paths);
+      if (chromeStyle) {
+        void done.then(sendResponse);
+        return true;
+      }
+      return done;
+    }
+
     return undefined;
   });
 

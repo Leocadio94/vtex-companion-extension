@@ -19,7 +19,39 @@ Rodada de acabamento guiada por duas avaliações: um critique de UX (28/40) e u
 audit técnico (12/20), ambos registrados em `.impeccable/critique/`. O que os
 dois apontaram concentra-se em três lugares: contraste do tema claro, alvos de
 toque no Android, e a ação mais destrutiva do produto ter menos fricção que um
-POST de teste.
+POST de teste. No meio do caminho, testar em `pernambucanas.com.br` (FastStore)
+trouxe à tona duas falhas funcionais que a detecção e o catálogo carregavam
+desde o início.
+
+### Catálogo funcionando em lojas FastStore
+
+Em FastStore, a API de catálogo não vive no domínio da loja — `pernambucanas.com.br`
+responde 404 a `/api/catalog_system/...`, e o popup exibia "Catálogo não
+respondeu: HTTP 404" em qualquer PDP. A API responde em `{account}.myvtex.com`,
+que já é host permission obrigatória da extensão; de dentro da página não dá,
+porque a API de lá não manda cabeçalho de CORS. A coleta passou a ter duas
+etapas: tenta same-origin (o caminho do IO e das lojas que fazem proxy) e,
+não achando o produto, repete pelo background no domínio de API da conta, que
+tem a permissão e não sofre CORS. A conta vem da detecção, e o host é
+reconstruído e validado no background — a mensagem poderia vir de qualquer um.
+
+Junto, o path de PDP do FastStore carrega o SKU selecionado
+(`/{linkText}-{skuId}/p`), e buscar pelo path inteiro devolve lista vazia. O
+alvo do catálogo agora carrega o slug encurtado como candidato de reserva,
+tentado só depois do original falhar.
+
+Corrigido e verificado na Pernambucanas: produto, marca, categoria e os 5
+SKUs com disponibilidade e preço aparecem na PDP.
+
+### Detecção de página em navegação SPA do FastStore
+
+Navegação client-side no Next.js não reescreve `window.__NEXT_DATA__`: ele é o
+retrato da hidratação, e um home → PDP no cliente deixava `page: '/'` numa
+PDP — o popup continuava dizendo home. Mesma armadilha que o `__RUNTIME__`
+tem no IO, com a mesma saída: quando a URL contradiz o snapshot, a URL vence,
+e a linha "Por quê" diz `__NEXT_DATA__.page=... (desatualizado)`. Verificado
+em `pernambucanas.com.br`: home detecta home, PDP por navegação client-side
+detecta PDP.
 
 ### Contraste AA no tema claro
 
@@ -28,9 +60,14 @@ de 4,5:1, e é a cor de todo botão primário, badge e segmento ativo. A cor fic
 (não é só estética, é a marca, e a decisão de 27/09 registrou isso); o que
 muda é onde cada variante entra: fundos que carregam texto passam a usar
 `--accent-strong` (`#e50e59`, 4,63:1) e o accent como texto (aba ativa da
-navegação, flag "copiado") usa `--accent-text` (`#c30e4e`). No escuro nada
-muda, porque lá os pares já passam. É o mesmo tratamento que a landing do site
-recebeu no ajuste de contraste dela.
+navegação, flag "copiado") usa `--accent-text` (`#c30e4e`). No escuro, o
+rosa vivo com texto quase preto passava no contraste, mas o par incomodava o
+olho — botões e badge passam a usar o mesmo par do claro (rosa mais escuro,
+texto branco), e a página fica menos vibrante sem perder a marca.
+
+No mesmo passe, badge do cabeçalho e pills de severidade perderam o formato
+de pílula: cantos retos, como todo o resto do produto e como a landing usa.
+Pílula colorida no topo é cara de template.
 
 ### "Limpar sessão" pede confirmação
 
@@ -84,10 +121,19 @@ foi ressincronizada com o texto canônico do site.
 
 ### Correções
 
+- **Description com marcação HTML.** CMS de loja grava `<strong>` e `<br />`
+  dentro da meta description (a Pernambucanas tem 1,4 kB de markup numa linha
+  só), e o painel mostrava as tags crus — além de empurrar o popup para uma
+  altura de seção impossível. A leitura tira a marcação e o painel trunca com
+  expansão.
+- **Resposta perdida na mensagem ao background.** O Chrome ignora Promise
+  devolvida de listener de mensagem: o handler passou a usar `sendResponse`
+  com `return true` (e a devolver Promise no Firefox, onde o 3º argumento não
+  existe).
 - Botões de replay do histórico tinham `aria-label` genérico; agora nomeiam
   método e URL da requisição.
-- As capturas 1 e 4 da listagem foram regeradas (`tank-top` hoje responde
-  404; a captura 1 mostra a tabela de SKUs nova em `classic-shoes`).
+- As capturas da listagem foram regeradas com o visual novo (`tank-top` hoje
+  responde 404; a captura 1 mostra a tabela de SKUs em `classic-shoes`).
 
 ## 1.2.1 — 2026-09-23
 
