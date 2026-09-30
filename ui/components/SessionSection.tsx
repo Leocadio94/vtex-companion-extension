@@ -28,6 +28,7 @@ export function SessionSection({
   const [name, setName] = useState(AUTH_COOKIE);
   const [status, setStatus] = useState<CookieResult | null>(null);
   const [busy, setBusy] = useState(false);
+  const [confirmingClear, setConfirmingClear] = useState(false);
 
   // Escrever um cookie de sessão VTEX só faz sentido em domínio VTEX, e
   // oferecer o campo em qualquer página seria um convite a colar um token de
@@ -43,10 +44,22 @@ export function SessionSection({
     const outcome = await action();
     setStatus(outcome);
     setBusy(false);
+    setConfirmingClear(false);
     if (outcome.ok) {
       setToken('');
       onChanged();
     }
+  };
+
+  // Mesmo padrão do runner: método que destrói estado pede confirmação em
+  // dois passos, com saída. "Limpar sessão" apaga a sessão de admin e a da
+  // loja de uma vez — mais destrutivo que qualquer POST de teste.
+  const clear = () => {
+    if (!confirmingClear) {
+      setConfirmingClear(true);
+      return;
+    }
+    void run(() => clearSession(context.url));
   };
 
   return (
@@ -91,14 +104,34 @@ export function SessionSection({
           type="button"
           className="btn-danger"
           disabled={busy || cookies.length === 0}
-          onClick={() => void run(() => clearSession(context.url))}
+          onClick={clear}
         >
-          Limpar sessão
+          {confirmingClear
+            ? `Confirmar limpeza (${cookies.length})`
+            : 'Limpar sessão'}
         </button>
+        {confirmingClear && (
+          <button
+            type="button"
+            className="btn-ghost"
+            onClick={() => setConfirmingClear(false)}
+          >
+            Cancelar
+          </button>
+        )}
       </div>
 
+      {confirmingClear && (
+        <Empty tone="error">
+          <strong>Limpar sessão</strong> apaga os {cookies.length} cookie(s)
+          listados acima. Confirme para apagar.
+        </Empty>
+      )}
+
       {status && (
-        <Empty tone={status.ok ? 'hint' : 'error'}>{status.message}</Empty>
+        <Empty tone={status.ok ? 'hint' : 'error'} role="status">
+          {status.message}
+        </Empty>
       )}
 
       {result.account ? (
@@ -106,7 +139,7 @@ export function SessionSection({
           <strong>Clonar do admin</strong> copia a sessão de{' '}
           <code>{result.account}.myvtex.com</code> para esta origem, sem o token
           passar pela área de transferência. <strong>Limpar sessão</strong>{' '}
-          apaga todos os cookies acima — a sessão de admin e a da loja.
+          apaga todos os cookies acima: a sessão de admin e a da loja.
         </Empty>
       ) : (
         <Empty>
@@ -131,6 +164,7 @@ export function SessionSection({
         <textarea
           rows={3}
           spellCheck={false}
+          aria-label="Token de sessão"
           placeholder="cole aqui o VtexIdclientAutCookie"
           value={token}
           onChange={(event) => setToken(event.target.value)}
@@ -152,7 +186,7 @@ export function SessionSection({
 
         <Empty>
           O token dá acesso completo à sessão nesta origem. Ele não é guardado
-          pela extensão — some quando o painel fecha.
+          pela extensão e some quando o painel fecha.
         </Empty>
       </details>
     </section>

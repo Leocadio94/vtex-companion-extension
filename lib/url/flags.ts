@@ -45,7 +45,7 @@ export const URL_FLAGS: FlagSpec[] = [
     label: 'Sem SSR',
     kind: 'toggle',
     on: 'true',
-    hint: 'A página vem sem render no servidor — mostra o que é do cliente.',
+    hint: 'A página vem sem render no servidor, e mostra o que é do cliente.',
     io: true,
   },
   {
@@ -61,7 +61,7 @@ export const URL_FLAGS: FlagSpec[] = [
     label: 'Sem pixels',
     kind: 'toggle',
     on: 'true',
-    hint: 'Não carrega os apps de pixel — analytics, remarketing, monitoramento.',
+    hint: 'Não carrega os apps de pixel (analytics, remarketing e monitoramento).',
     io: true,
   },
   {

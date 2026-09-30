@@ -249,9 +249,12 @@ A página de apresentação e a política de privacidade moram em
 `../portfolio-astro`, não aqui: o texto tem um dono só. O que costuma precisar
 de atualização, em `src/data/products/vtex-companion.ts`:
 
-- `meta.version` — quando uma loja aprova a versão, não quando a tag sobe: é o
-  número que a landing e o card da home mostram, e ele tem de ser o que dá para
-  instalar;
+- `meta.version` — quando o envio é aprovado no ambiente `stores`, sem esperar
+  a revisão das lojas. É o número que a landing e o card da home mostram, e ele
+  fica alguns dias à frente do que dá para instalar: para uma extensão deste
+  tamanho, informação adiantada não prejudica ninguém, e esperar a aprovação
+  obrigava a uma segunda passada no repo irmão a cada release. Até a 1.2.0 a
+  regra era esperar a loja;
 
 - `description` e `heroSub` — quando o resumo do produto muda;
 - `features` — quando um recurso entra, sai ou muda de nome;

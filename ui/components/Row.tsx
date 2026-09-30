@@ -45,9 +45,16 @@ export function Row({
 export function Empty({
   children,
   tone = 'hint',
+  role,
 }: {
   children: React.ReactNode;
   tone?: Tone;
+  /** `status` anuncia mudança por leitor de tela; use em resultado de ação. */
+  role?: 'status';
 }) {
-  return <p className={`muted tone-${tone}`}>{children}</p>;
+  return (
+    <p className={`muted tone-${tone}`} role={role}>
+      {children}
+    </p>
+  );
 }

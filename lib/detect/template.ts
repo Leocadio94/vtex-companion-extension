@@ -140,11 +140,32 @@ function detectIo(signals: DetectionSignals): TemplateVerdict | null {
   return null;
 }
 
+/**
+ * A URL desmente o snapshot? Navegação SPA no Next.js não reescreve
+ * `window.__NEXT_DATA__`: ele é o retrato da hidratação, e um home → PDP no
+ * cliente deixa `page: '/'` numa PDP. Mesma armadilha do `__RUNTIME__` no IO.
+ */
 function detectFastStore(signals: DetectionSignals): TemplateVerdict | null {
   const page = signals.page?.nextData?.page;
   if (!page) return null;
 
   const mapped = FASTSTORE_PAGES[page];
+
+  // A URL vence quando contradiz o snapshot. Só os padrões inequívocos
+  // contam: `/p` terminal é PDP, raiz é home; `unknown` não desmente nada.
+  const fromUrl = detectFromUrl(signals);
+  const fromSnapshot: PageTemplate | null = mapped ?? null;
+  if (
+    fromUrl.template !== 'unknown' &&
+    fromSnapshot !== null &&
+    fromUrl.template !== fromSnapshot
+  ) {
+    return {
+      template: fromUrl.template,
+      reason: `__NEXT_DATA__.page=${page} (desatualizado)`,
+    };
+  }
+
   if (mapped) return { template: mapped, reason: `__NEXT_DATA__.page=${page}` };
 
   // `/[...slug]` cobre tanto coleção quanto landing page de CMS. O JSON-LD

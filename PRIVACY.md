@@ -5,8 +5,8 @@ A política vive numa URL pública, que é a que as lojas de extensão recebem:
 - **Português:** <https://leocadio.dev/vtex-companion/privacy/>
 - **English:** <https://leocadio.dev/en/vtex-companion/privacy/>
 
-Em uma linha: a extensão não coleta, não armazena em servidor e não transmite
-nenhum dado seu. Não há servidor — tudo acontece dentro do seu navegador.
+Em uma linha: a extensão não coleta nem transmite nenhum dado seu, e não há
+servidor de nenhum tipo. Tudo acontece dentro do seu navegador.
 
 ## Onde editar
 

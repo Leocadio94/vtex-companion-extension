@@ -115,12 +115,14 @@ export function SegmentSection({
       </div>
 
       {status && (
-        <Empty tone={status.ok ? 'hint' : 'error'}>{status.message}</Empty>
+        <Empty tone={status.ok ? 'hint' : 'error'} role="status">
+          {status.message}
+        </Empty>
       )}
 
       <Empty>
         A troca vale para a próxima navegação, e a Session Manager pode
-        reescrever o cookie — se o valor voltar ao anterior, foi a loja.
+        reescrever o cookie. Se o valor voltar ao anterior, foi a loja.
       </Empty>
 
       <details className="advanced">
@@ -134,8 +136,12 @@ export function SegmentSection({
         />
 
         <div className="actions">
-          <button type="button" disabled={busy || draft === null} onClick={applyRaw}>
-            Gravar JSON
+          <button
+            type="button"
+            disabled={busy || draft === null}
+            onClick={applyRaw}
+          >
+            Aplicar JSON
           </button>
         </div>
 

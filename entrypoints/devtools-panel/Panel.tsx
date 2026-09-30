@@ -76,7 +76,7 @@ export default function Panel() {
           </button>
           <p className="muted">
             Se o navegador recusar o pedido aqui, abra o popup da extensão nesta
-            aba e conceda por lá — depois recarregue o DevTools.
+            aba e conceda por lá, depois recarregue o DevTools.
           </p>
         </section>
       )}

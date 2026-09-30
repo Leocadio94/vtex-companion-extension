@@ -4,7 +4,7 @@
 
 # VTEX Companion
 
-**Descubra a tecnologia VTEX por trás de qualquer loja, abra o preview do FastStore no seu `localhost` e chame as APIs com a sessão da aba — sem sair do navegador.**
+**Descubra a tecnologia VTEX por trás de qualquer loja, abra o preview do FastStore no seu `localhost` e chame as APIs com a sessão da aba, sem sair do navegador.**
 
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/bolibelfgalkiclnpnfdgbdljikflfba?label=Chrome%20Web%20Store&logo=googlechrome&logoColor=white&color=4285F4)](https://chromewebstore.google.com/detail/vtex-companion/bolibelfgalkiclnpnfdgbdljikflfba)
 [![Firefox Add-ons](https://img.shields.io/amo/v/vtex-companion?label=Firefox%20Add-ons&logo=firefoxbrowser&logoColor=white&color=FF7139)](https://addons.mozilla.org/firefox/addon/vtex-companion/)
@@ -29,15 +29,15 @@
 
 </div>
 
-Extensão para quem trabalha com VTEX todo dia. Abra o popup em qualquer loja e
-ela responde o que normalmente custa três abas do DevTools e um `curl`: qual
-tecnologia renderiza aquela página, qual account e workspace, o que o catálogo
-diz do produto, que pixels estão carregando, o que o SEO da página tem de
-errado e quais cookies de sessão estão ali. E o recurso que originou o
-projeto: abrir o preview do CMS do FastStore no `localhost`, com a query
+Extensão para quem trabalha com VTEX todo dia. Abra o popup em qualquer loja
+e ela responde o que normalmente custa três abas do DevTools e um `curl`:
+qual tecnologia renderiza aquela página, qual account e workspace, o que o
+catálogo diz do produto, que pixels estão carregando, o que o SEO da página
+tem de errado e quais cookies de sessão estão ali. E o recurso que originou
+o projeto: abrir o preview do CMS do FastStore no `localhost`, com a query
 inteira preservada.
 
-Um único código-fonte gera os dois builds — Chrome com `service_worker`,
+Um único código-fonte gera os dois builds: Chrome com `service_worker`,
 Firefox com `background.scripts`, ambos em MV3.
 
 > ℹ️ **Projeto independente, sem associação com a VTEX.** Não é um produto
@@ -47,69 +47,68 @@ Firefox com `background.scripts`, ambos em MV3.
 
 <div align="center">
 
-![Aba Página numa PDP — produto, referência, marca, categoria e a lista de SKUs com EAN, seller, disponibilidade e preço](brand/screenshots/vtex-companion-extension-1.png)
+![Aba Página numa PDP: a tabela de SKUs com ID, nome, EAN, referência, estoque e preço, e o botão Abrir no admin](brand/screenshots/vtex-companion-extension-1.png)
 
 </div>
 
 <div align="center">
 
-<img src="brand/screenshots/vtex-companion-extension-5.png" width="49%" alt="Aba Loja — tecnologia, account, workspace, binding e o bloco de sessão" />
-<img src="brand/screenshots/vtex-companion-extension-4.png" width="49%" alt="Aba Página — achados de SEO e scripts de terceiros classificados por vendor" />
+<img src="brand/screenshots/vtex-companion-extension-5.png" width="49%" alt="Aba Loja: tecnologia, account, workspace, binding e o bloco de sessão" />
+<img src="brand/screenshots/vtex-companion-extension-4.png" width="49%" alt="Aba Página: achados de SEO e scripts de terceiros classificados por vendor" />
 
 </div>
 
 <div align="center">
 
-<img src="brand/screenshots/vtex-companion-extension-2.png" width="49%" alt="Painel do DevTools — requisição e resposta formatada lado a lado" />
-<img src="brand/screenshots/vtex-companion-extension-3.png" width="49%" alt="Admin do CMS — botão Localhost ao lado de Pré-visualização e o Localhost URL no painel de dev mode" />
+<img src="brand/screenshots/vtex-companion-extension-2.png" width="49%" alt="Painel do DevTools: requisição e resposta formatada lado a lado" />
+<img src="brand/screenshots/vtex-companion-extension-3.png" width="49%" alt="Admin do CMS: botão Localhost ao lado de Pré-visualização e o Localhost URL no painel de dev mode" />
 
 </div>
 
 ## ✨ Recursos
 
-- 🔍 **Detecção** — é VTEX, com que confiança e por quais sinais; a tecnologia
+- 🔍 **Detecção**: é VTEX, com que confiança e por quais sinais; a tecnologia
   (IO/Store Framework, FastStore, CMS Legacy Portal ou headless); account,
   workspace e binding; admin ou loja final; tipo de página (home, PDP, PLP,
   busca, checkout, order placed, login, custom); e se há shopper logado ou
   sessão de admin.
-- 📦 **Catálogo da página** — na PDP: produto, referência, marca, categoria e a
+- 📦 **Catálogo da página**: na PDP, produto, referência, marca, categoria e a
   lista de SKUs com EAN, refId, seller, disponibilidade e preço, mais atalho
   para o admin. Em listagem e busca: categoria, caminho, termo, `map`,
   ordenação e página.
-- 🏷️ **Scripts de terceiros** — vendors conhecidos com o id da conta quando
-  existe (GTM, GA4, Google Ads, Meta, TikTok, Clarity, Hotjar, Criteo,
-  RD Station, Linx e outros), e as origens não catalogadas agrupadas por volume
-  de requisições.
-- 🍪 **Sessão** — os cookies presentes na origem com o escopo de cada um,
+- 🏷️ **Scripts de terceiros**: vendors conhecidos com o id da conta quando
+  existe, e as origens não catalogadas agrupadas por volume de requisições.
+  A lista completa de vendors está em `lib/pixels/vendors.ts`.
+- 🍪 **Sessão**: os cookies presentes na origem com o escopo de cada um,
   clonagem da sessão de `{account}.myvtex.com` para o domínio da loja sem
   passar pela área de transferência, entrada por token colado, e limpeza que
   confere o resultado relendo os cookies.
-- 🔀 **Workspace e flags de URL** — abrir a mesma rota noutro workspace, com os
+- 🔀 **Workspace e flags de URL**: abrir a mesma rota noutro workspace, com os
   recentes e a volta ao master, e ligar `__siteEditor`, `__disableSSR`,
   `__disableRuntimeSSR`, `__disablePixels`, `__bindingAddress` e `sc` num clique,
   sem perder o resto da query. As flags do render-runtime só aparecem em loja
   VTEX IO, que é quem as lê. As duas formas de dizer o workspace estão em
   [`docs/url.md`](./docs/url.md).
-- 🎯 **Segmento** — o `vtex_segment` da origem decodificado, com sales channel,
+- 🎯 **Segmento**: o `vtex_segment` da origem decodificado, com sales channel,
   culture info, moeda e region id em campos editáveis e o JSON inteiro para o
   resto (`priceTables`, `campaigns`, `utm_*`). Gravar recarrega a aba; o formato
   e o que a Session Manager faz depois estão em
   [`docs/segment.md`](./docs/segment.md).
-- ⚡ **Fetch runner** — todos os métodos, com o cookie da aba atual. Presets de
+- ⚡ **Fetch runner**: todos os métodos, com o cookie da aba atual. Presets de
   Sessão, Checkout, Catálogo, Intelligent Search, OMS e Master Data;
   confirmação explícita antes de qualquer método que altera dados; histórico da
   sessão; resposta formatada ou crua; cópia como JSON ou CSV.
-- 🧭 **SEO da página** — indexação (`robots`, `googlebot`), title, description,
+- 🧭 **SEO da página**: indexação (`robots`, `googlebot`), title, description,
   canonical, lang, Open Graph, Twitter, hreflang, JSON-LD, headings e imagens
   sem alt, com regras por tipo de página (PDP sem `Product`, listagem sem
   `ItemList`).
-- 🖥️ **Preview no `localhost`** — quatro caminhos, nenhum dependente do
+- 🖥️ **Preview no `localhost`**: quatro caminhos, nenhum dependente do
   `cmsDevMode`. Vale para as duas versões do CMS do FastStore.
-- 🧰 **Painel no DevTools** — o runner com a janela inteira, mesmo estado e
+- 🧰 **Painel no DevTools**: o runner com a janela inteira, mesmo estado e
   mesmos componentes do popup.
-- 📱 **Firefox para Android** — o popup inteiro funciona no aparelho.
-- 🔒 **Nada sai da máquina** — sem conta, sem servidor, sem telemetria. O token
-  de sessão nunca é gravado em `storage`.
+- 📱 **Firefox para Android**: o popup inteiro funciona no aparelho.
+- 🔒 **Nada sai da máquina**: o app não tem conta, servidor nem telemetria, e o
+  token de sessão nunca é gravado em `storage`.
 
 ## 📦 Instalação
 
@@ -152,7 +151,7 @@ Companion** do DevTools:
 
 O build do Firefox é oferecido no Android, e lá tudo passa pelo popup:
 detecção, catálogo, SEO, scripts, sessão e o runner. Duas coisas não existem no
-aparelho — o painel do DevTools, porque o Firefox para Android não tem
+aparelho: o painel do DevTools, porque o Firefox para Android não tem
 DevTools, e o preview no `localhost`, que pressupõe um dev server na mesma
 máquina.
 
@@ -160,7 +159,7 @@ máquina.
 
 O recurso é do CMS do FastStore, nas duas versões: o Headless CMS (legacy) e o
 Storefront > Content. VTEX IO e o portal legacy têm pré-visualização própria,
-por workspace, e não passam por aqui — a aba Preview diz isso quando a loja
+por workspace, e não passam por aqui; a aba Preview diz isso quando a loja
 aberta é de uma dessas plataformas, em vez de oferecer controles inertes.
 
 São quatro caminhos, nenhum deles dependente de `cmsDevMode`:
@@ -171,7 +170,7 @@ São quatro caminhos, nenhum deles dependente de `cmsDevMode`:
 4. Liga/desliga do `cmsDevMode`, com status por frame
 
 Com o `cmsDevMode` ligado, o painel Development Mode também ganha um
-**Localhost URL** clicável ao lado do "API URL" do próprio CMS — o
+**Localhost URL** clicável ao lado do "API URL" do próprio CMS, o
 comportamento do userscript que originou o projeto.
 
 <details>
@@ -190,7 +189,7 @@ loja. O formato muda entre as versões:
 duas versões sem conhecer os parâmetros do CMS novo, que não são documentados.
 
 O botão injetado no admin **não lê a URL do DOM**. Ele arma um redirecionamento
-de uso único no background e clica no botão original — a URL real passa pelo
+de uso único no background e clica no botão original, e a URL real passa pelo
 `webNavigation` e é reescrita lá. É o que dispensa o `cmsDevMode`.
 
 </details>
@@ -209,8 +208,8 @@ injetada sob demanda pelo popup, com `scripting.executeScript`. Isso evita o
 aviso de "ler dados em todos os sites" na instalação.
 
 Sobre a sessão: o token nunca é gravado pela extensão nem sai da máquina, o
-cookie é escrito `httpOnly` e `SameSite=Lax` — espelhando o real em vez de
-afrouxá-lo — e os controles só aparecem em domínio reconhecido como VTEX.
+cookie é escrito `httpOnly` e `SameSite=Lax` (espelhando o real em vez de
+afrouxá-lo) e os controles só aparecem em domínio reconhecido como VTEX.
 Política completa em [`PRIVACY.md`](./PRIVACY.md).
 
 ## 🛠️ Stack
@@ -221,7 +220,7 @@ Política completa em [`PRIVACY.md`](./PRIVACY.md).
 | Interface | React 19 + TypeScript |
 | Testes | Vitest |
 | Capturas | Playwright + sharp (`pnpm screenshots`) |
-| Estado | `browser.storage` — `sync:` para preferências, `session:` para o resto |
+| Estado | `browser.storage` (`local:` para preferências, `session:` para o resto) |
 
 A arquitetura tem uma regra só, e ela explica o resto: **decidir é separado de
 fazer**. Detecção, reescrita de URL, análise de SEO, classificação de pixels e
@@ -254,7 +253,7 @@ lib/
 
 No admin, o CMS do FastStore roda dentro de um iframe. `cms-admin.content.ts`
 usa `all_frames: true`, e o `cmsDevMode` é lido e escrito com `allFrames: true`
-porque `localStorage` pertence ao origin do frame — o do iframe, não o do topo.
+porque `localStorage` pertence ao origin do frame (o do iframe, não o do topo).
 Frames com sandbox sem `allow-same-origin` são reportados como indisponíveis em
 vez de derrubar a leitura.
 
@@ -281,7 +280,7 @@ de desenvolvimento próprio que guarda os logins entre uma sessão e outra; Ctrl
 fecha junto. Como funciona e como voltar ao carregamento manual:
 [`docs/dev-windows.md`](./docs/dev-windows.md).
 
-Lint da AMO antes de publicar — tem de sair com 0 erros:
+Lint da AMO antes de publicar, tem de sair com 0 erros:
 
 ```bash
 pnpm build:firefox && pnpm web-ext lint --source-dir .output/firefox-mv3
@@ -298,7 +297,7 @@ Entregue:
 | ------ | ---- |
 | ✅ | Detecção em três camadas (URL/cookies, globais da página, Session Manager) |
 | ✅ | Preview no `localhost` pelos quatro caminhos, sem depender do `cmsDevMode` |
-| ✅ | Catálogo da página — PDP, listagem e busca |
+| ✅ | Catálogo da página (PDP, listagem e busca) |
 | ✅ | Scripts de terceiros com id da conta por vendor |
 | ✅ | Sessão: clonar, colar token e limpar, sem persistir credencial |
 | ✅ | Segmento: `vtex_segment` decodificado e editável, com JSON cru |
@@ -309,6 +308,8 @@ Entregue:
 | ✅ | Build único para Chrome e Firefox, ambos MV3 |
 | ✅ | Publicação nas duas lojas + Firefox para Android |
 | ✅ | Capturas da listagem geradas por script (Playwright) |
+| ✅ | Tabela de SKUs escaneável e classes de lista com nome próprio |
+| ✅ | Contraste AA nos dois temas e alvos de toque no Android |
 
 Levantado e ainda não feito — o motivo de cada um está em
 [`docs/roadmap.md`](./docs/roadmap.md), com o tamanho estimado
@@ -318,31 +319,31 @@ Levantado e ainda não feito — o motivo de cada um está em
 | Status | Item | Tam. |
 | ------ | ---- | ---- |
 | ⏳ | Runner: preencher `{slug}`/`{productId}`/`{skuId}`, presets salvos, copiar como cURL | M |
-| ⏳ | `orderForm` — itens, totais, `marketingData`, limpar carrinho | M |
+| ⏳ | `orderForm`: itens, totais, `marketingData`, limpar carrinho | M |
 | ⏳ | Tema explícito (claro/escuro/sistema) e página de opções | M |
-| ⏳ | i18n pt/en — interface e listagem têm de sair juntas | M |
-| ⏳ | Tabela de SKUs escaneável, e o fim do `.frames` genérico | P |
+| ⏳ | i18n pt/en (interface e listagem têm de sair juntas) | M |
 | ⏳ | Copiar relatório da aba em markdown | P |
 | ⏳ | Mais regras de SEO (canonical divergente, `noindex` em produção, H1 duplicado) | P |
 | ⏳ | Atalhos de admin por template, além de produto | P |
-| ⏳ | `aria-live` nos status e atalhos de teclado | P |
-| 🔮 | Inspector de app e handle — `vtex-{app}-{major}-x-{handle}` no IO, `data-fs-*` no FastStore | G |
+| ⏳ | Atalhos de teclado | P |
+| ⏳ | Terminologia do "Abrir" (workspace, preview, admin) | P |
+| 🔮 | Inspector de app e handle: `vtex-{app}-{major}-x-{handle}` no IO, `data-fs-*` no FastStore | G |
 
 Não é compromisso de entrega nem ordem de execução: é o lugar onde a ideia fica
 registrada com o motivo, para não precisar ser redescoberta.
 
 ## 🚢 Publicação
 
-A 1.2.0 está publicada nas duas lojas — Chrome Web Store
+A 1.2.0 está publicada nas duas lojas: Chrome Web Store
 (`bolibelfgalkiclnpnfdgbdljikflfba`) e AMO (slug `vtex-companion`).
 
 O envio dos pacotes é da Action: uma tag `v*.*.*` depois do merge refaz o
 portão, publica o release no GitHub e para no ambiente `stores` até alguém
-aprovar. As armadilhas do workflow — e como testá-lo sem publicar — estão em
+aprovar. As armadilhas do workflow, e como testá-lo sem publicar, estão em
 [`docs/release.md`](./docs/release.md#a-action-por-dentro).
 
 Textos de listagem, justificativa de cada permissão e checklist de envio em
-[`docs/publicacao.md`](./docs/publicacao.md) — inclusive a descrição pronta para
+[`docs/publicacao.md`](./docs/publicacao.md), inclusive a descrição pronta para
 colar, que não se reescreve na hora do envio. A ordem das etapas de um release
 está em [`docs/release.md`](./docs/release.md).
 
@@ -351,7 +352,7 @@ está em [`docs/release.md`](./docs/release.md).
 > fila ficam sob "Pendências da listagem" no roadmap.
 
 A página de apresentação e a política de privacidade moram no repositório do
-site (`portfolio-astro`), não aqui — o texto tem um dono só.
+site (`portfolio-astro`), não aqui; o texto tem um dono só.
 
 ## 📄 Licença
 

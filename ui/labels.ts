@@ -34,10 +34,10 @@ export function identityLine(
 
 /** Nome por extenso, para quando há espaço de linha inteira. */
 export const PLATFORM_FULL: Record<DetectionResult['platform'], string> = {
-  io: 'VTEX IO — Store Framework',
+  io: 'VTEX IO (Store Framework)',
   faststore: 'FastStore',
   'cms-legacy': 'CMS Legacy Portal',
-  headless: 'Headless — VTEX sem storefront conhecido',
+  headless: 'Headless (VTEX sem storefront conhecido)',
   'not-vtex': 'Não é VTEX',
   unknown: 'Indeterminado',
 };

@@ -64,35 +64,57 @@ export function CatalogSection({
         />
 
         {product.skus.length > 0 && (
-          <details className="frames">
+          <details className="sku-table">
             <summary>SKUs ({product.skus.length})</summary>
-            <ul>
-              {product.skus.map((sku) => (
-                <li key={sku.id}>
-                  <code>
-                    {sku.id} · {sku.name}
-                  </code>
-                  <span>
-                    {sku.available
-                      ? `disponível${sku.quantity != null ? ` (${sku.quantity})` : ''}`
-                      : 'indisponível'}
-                    {' · '}
-                    {money(sku.price)}
-                    {sku.listPrice != null && sku.listPrice !== sku.price
-                      ? ` de ${money(sku.listPrice)}`
-                      : ''}
-                    {sku.sellerName ? ` · ${sku.sellerName}` : ''}
-                  </span>
-                  {(sku.ean || sku.refId) && (
-                    <span>
-                      {sku.ean ? `EAN ${sku.ean}` : ''}
-                      {sku.ean && sku.refId ? ' · ' : ''}
-                      {sku.refId ? `ref ${sku.refId}` : ''}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">SKU</th>
+                  <th scope="col">Estoque</th>
+                  <th scope="col">Preço</th>
+                </tr>
+              </thead>
+              <tbody>
+                {product.skus.map((sku) => (
+                  <tr key={sku.id}>
+                    <td>
+                      <code>{sku.id}</code>
+                    </td>
+                    <td title={sku.sellerName ?? undefined}>
+                      {sku.name}
+                      {(sku.ean || sku.refId) && (
+                        <span className="sku-meta">
+                          {sku.ean ? `EAN ${sku.ean}` : ''}
+                          {sku.ean && sku.refId ? ' · ' : ''}
+                          {sku.refId ? `ref ${sku.refId}` : ''}
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      {sku.available ? (
+                        <span
+                          className="sku-stock sku-stock-ok"
+                          title={
+                            sku.quantity != null ? `${sku.quantity} un.` : undefined
+                          }
+                        >
+                          disponível
+                        </span>
+                      ) : (
+                        <span className="sku-stock">indisponível</span>
+                      )}
+                    </td>
+                    <td className="sku-price">
+                      {money(sku.price)}
+                      {sku.listPrice != null && sku.listPrice !== sku.price && (
+                        <span className="sku-meta">de {money(sku.listPrice)}</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </details>
         )}
 

@@ -9,10 +9,19 @@
 import type { SeoSignals } from './signals';
 
 export function readSeo(): SeoSignals {
-  const meta = (name: string) =>
-    document
+  const meta = (name: string) => {
+    const content = document
       .querySelector<HTMLMetaElement>(`meta[name="${name}" i]`)
-      ?.content?.trim() || null;
+      ?.content?.trim();
+    if (!content) return null;
+    // CMS de loja deixa marcação na description (`<strong>`, `<br />`): é
+    // conteúdo da tag, mas o painel avalia texto, não o markup dela.
+    const plain = content
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return plain || null;
+  };
 
   const prefixed = (attribute: string, prefix: string) => {
     const found: Record<string, string> = {};

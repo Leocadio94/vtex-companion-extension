@@ -4,6 +4,7 @@ import {
   productSlugFromPath,
   resolveCatalogTarget,
   searchStateFromUrl,
+  slugCandidates,
 } from './target';
 
 describe('productSlugFromPath', () => {
@@ -52,13 +53,37 @@ describe('resolveCatalogTarget', () => {
         urlSignals('https://acme.com.br/camiseta-preta/p'),
         'pdp',
       ),
-    ).toEqual({ kind: 'product', slug: 'camiseta-preta', entityId: undefined });
+    ).toEqual({
+      kind: 'product',
+      slug: 'camiseta-preta',
+      slugFallbacks: [],
+      entityId: undefined,
+    });
+  });
+
+  it('carrega os candidatos de slug do FastStore', () => {
+    expect(
+      resolveCatalogTarget(
+        urlSignals('https://www.acme.com.br/-calca-yeapp-622629-1346884/p'),
+        'pdp',
+      ),
+    ).toEqual({
+      kind: 'product',
+      slug: '-calca-yeapp-622629-1346884',
+      slugFallbacks: ['-calca-yeapp-622629'],
+      entityId: undefined,
+    });
   });
 
   it('usa o id quando a URL não entrega o slug', () => {
     expect(
       resolveCatalogTarget(urlSignals('https://acme.com.br/produto'), 'pdp', '42'),
-    ).toEqual({ kind: 'product', slug: undefined, entityId: '42' });
+    ).toEqual({
+      kind: 'product',
+      slug: undefined,
+      slugFallbacks: undefined,
+      entityId: '42',
+    });
   });
 
   it('desiste quando não há slug nem id', () => {
@@ -88,5 +113,18 @@ describe('resolveCatalogTarget', () => {
         resolveCatalogTarget(urlSignals('https://acme.com.br/'), template).kind,
       ).toBe('none');
     }
+  });
+});
+
+describe('slugCandidates', () => {
+  it('encurta o sufixo de SKU do FastStore', () => {
+    expect(slugCandidates('-calca-yeapp-622629-1346884')).toEqual([
+      '-calca-yeapp-622629-1346884',
+      '-calca-yeapp-622629',
+    ]);
+  });
+
+  it('mantém slug sem sufixo numérico como candidato único', () => {
+    expect(slugCandidates('camiseta-preta')).toEqual(['camiseta-preta']);
   });
 });

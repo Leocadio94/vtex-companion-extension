@@ -4,14 +4,15 @@ import type { CatalogSnapshot } from '@/lib/catalog/signals';
 import type { PixelReport } from '@/lib/pixels/signals';
 import { analyzeSeo, worstSeverity } from '@/lib/seo/analyze';
 import type { SeoSignals } from '@/lib/seo/signals';
+import { useState } from 'react';
 import { CatalogSection } from '../components/CatalogSection';
 import { PixelsSection } from '../components/PixelsSection';
 import { Empty, Row } from '@/ui/components/Row';
 
 const TEMPLATE_LABELS: Record<PageTemplate, string> = {
   home: 'Home',
-  pdp: 'PDP — página de produto',
-  plp: 'PLP — listagem',
+  pdp: 'PDP (página de produto)',
+  plp: 'PLP (listagem)',
   search: 'Busca',
   checkout: 'Checkout',
   'order-placed': 'Order placed',
@@ -30,6 +31,25 @@ const SEVERITY_LABELS = {
 
 function length(value: string | null): string {
   return value ? `${value.length} caracteres` : '—';
+}
+
+/** Texto longo cortado em 140 caracteres; o resto aparece no clique. */
+function Truncated({ text, suffix }: { text: string; suffix?: string }) {
+  const [open, setOpen] = useState(false);
+  if (open || text.length <= 140) {
+    return (
+      <>
+        {text}
+        {suffix}
+      </>
+    );
+  }
+  return (
+    <button type="button" className="truncated" onClick={() => setOpen(true)}>
+      {text.slice(0, 140).trimEnd()}…{' '}
+      <span className="truncated-more">mostrar tudo{suffix}</span>
+    </button>
+  );
 }
 
 export function PageTab({
@@ -112,18 +132,28 @@ export function PageTab({
 
               <section>
                 <h2>Tags</h2>
-                <Row
-                  label="Title"
-                  value={seo.title ? `${seo.title} (${length(seo.title)})` : '—'}
-                />
-                <Row
-                  label="Description"
-                  value={
-                    seo.description
-                      ? `${seo.description} (${length(seo.description)})`
-                      : '—'
-                  }
-                />
+                {seo.title && (
+                  <Row
+                    label="Title"
+                    value={
+                      <Truncated
+                        text={seo.title}
+                        suffix={` (${length(seo.title)})`}
+                      />
+                    }
+                  />
+                )}
+                {seo.description && (
+                  <Row
+                    label="Description"
+                    value={
+                      <Truncated
+                        text={seo.description}
+                        suffix={` (${length(seo.description)})`}
+                      />
+                    }
+                  />
+                )}
                 <Row
                   label="Canonical"
                   value={seo.canonical ? <code>{seo.canonical}</code> : '—'}
@@ -142,36 +172,39 @@ export function PageTab({
                       : 'nenhum'
                   }
                 />
-                <Row
-                  label="Headings"
-                  value={`${seo.headings.h1.length} H1 · ${seo.headings.h2} H2 · ${seo.headings.h3} H3`}
-                />
-                <Row
-                  label="Imagens"
-                  value={`${seo.images.total} (${seo.images.withoutAlt} sem alt)`}
-                />
-                <Row
-                  label="JSON-LD"
-                  value={
-                    seo.jsonLdTypes.length > 0
-                      ? seo.jsonLdTypes.join(', ')
-                      : 'nenhum'
-                  }
-                />
-                <Row
-                  label="Open Graph"
-                  value={
-                    Object.keys(seo.openGraph).length > 0
-                      ? Object.keys(seo.openGraph).join(', ')
-                      : 'nenhum'
-                  }
-                />
-                {seo.hreflang.length > 0 && (
+                <details className="tag-counters">
+                  <summary>Demais tags e contadores (5)</summary>
                   <Row
-                    label="hreflang"
-                    value={seo.hreflang.map((entry) => entry.lang).join(', ')}
+                    label="Headings"
+                    value={`${seo.headings.h1.length} H1 · ${seo.headings.h2} H2 · ${seo.headings.h3} H3`}
                   />
-                )}
+                  <Row
+                    label="Imagens"
+                    value={`${seo.images.total} (${seo.images.withoutAlt} sem alt)`}
+                  />
+                  <Row
+                    label="JSON-LD"
+                    value={
+                      seo.jsonLdTypes.length > 0
+                        ? seo.jsonLdTypes.join(', ')
+                        : 'nenhum'
+                    }
+                  />
+                  <Row
+                    label="Open Graph"
+                    value={
+                      Object.keys(seo.openGraph).length > 0
+                        ? Object.keys(seo.openGraph).join(', ')
+                        : 'nenhum'
+                    }
+                  />
+                  {seo.hreflang.length > 0 && (
+                    <Row
+                      label="hreflang"
+                      value={seo.hreflang.map((entry) => entry.lang).join(', ')}
+                    />
+                  )}
+                </details>
               </section>
             </>
           )}

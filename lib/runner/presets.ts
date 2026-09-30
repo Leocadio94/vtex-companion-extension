@@ -134,7 +134,7 @@ export const PRESETS: Preset[] = [
   ),
 
   preset('oms-orders', 'OMS', 'Últimos pedidos', 'GET', '/api/oms/pvt/orders?per_page=5', {
-    note: 'Precisa de sessão de admin — use numa aba do myvtex.com.',
+    note: 'Precisa de sessão de admin: use numa aba do myvtex.com.',
   }),
   preset('oms-order', 'OMS', 'Pedido por id', 'GET', '/api/oms/pvt/orders/{orderId}'),
 

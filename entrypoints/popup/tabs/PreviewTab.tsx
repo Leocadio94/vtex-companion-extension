@@ -48,7 +48,7 @@ export function PreviewTab({
       {fit === 'other-platform' && result ? (
         <Empty tone="error">
           Esta loja é {PLATFORM_SHORT[result.platform]}, e a pré-visualização
-          dela é por workspace. Nada nesta aba se aplica aqui — os campos
+          dela é por workspace. Nada nesta aba se aplica aqui; os campos
           continuam valendo para quando você abrir o admin de uma loja em
           FastStore.
         </Empty>
@@ -127,8 +127,7 @@ export function PreviewTab({
                 value={summarizeInjection(injection)}
               />
               {injection.length > 0 && (
-                <details className="frames">
-                  <summary>Frames ({injection.length})</summary>
+                <details className="frames">                  <summary>Frames ({injection.length})</summary>
                   <ul>
                     {injection.map((frame) => (
                       <li key={frame.frameId}>

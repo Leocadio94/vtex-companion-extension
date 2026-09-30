@@ -6,141 +6,238 @@
  * o mapeamento acontece antes do retorno. A resposta de
  * `catalog_system/pub/products/search` chega com centenas de KB por produto;
  * serializar isso de volta para o popup seria desperdício puro.
+ *
+ * Exceção: lojas FastStore e headless não servem a API de catálogo no domínio
+ * próprio. A API responde em `{account}.myvtex.com`, que é host permission
+ * obrigatória da extensão — mas de fora da página, porque a API de lá não
+ * manda cabeçalho de CORS. Nesse caso a coleta repete pelo background, que
+ * tem a permissão e devolve o snapshot já mapeado.
  */
 
-import type { CatalogTarget } from './target';
 import type { CatalogSnapshot } from './signals';
+import type { CatalogTarget } from './target';
 
-async function fetchCatalog(target: CatalogTarget): Promise<CatalogSnapshot> {
-  const json = async (path: string) => {
-    const response = await fetch(path, {
-      headers: { accept: 'application/json' },
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return response.json();
-  };
+/** Caminhos da API de catálogo para um alvo, em ordem de tentativa. */
+export function catalogPaths(target: CatalogTarget): string[] {
+  if (target.kind !== 'product') return [];
 
+  const paths: string[] = [];
+  for (const slug of [target.slug, ...(target.slugFallbacks ?? [])]) {
+    if (!slug) continue;
+    paths.push(
+      `/api/catalog_system/pub/products/search/${encodeURIComponent(slug)}/p`,
+    );
+  }
+
+  if (target.entityId) {
+    paths.push(
+      `/api/catalog_system/pub/products/search?fq=productId:${encodeURIComponent(target.entityId)}`,
+    );
+  }
+
+  return paths;
+}
+
+/**
+ * Host da API de catálogo para uma conta. `account` vem da detecção, nunca
+ * da página, e a checagem vale também no background: só `*.myvtex.com` é
+ * host permission da extensão.
+ */
+export function catalogApiHost(account: string): string | null {
+  return /^[a-z0-9][a-z0-9-]*$/i.test(account)
+    ? `${account.toLowerCase()}.myvtex.com`
+    : null;
+}
+
+/**
+ * Roda dentro da página. Função injetada: autocontida, sem import, sem
+ * closure — inclusive o mapeamento do produto, que espelha
+ * `lib/catalog/map.ts` (ver a armadilha em CLAUDE.md).
+ */
+async function readCatalogInPage(
+  paths: string[],
+  categoryPath: string | null,
+): Promise<{ product: CatalogSnapshot | null; category: CatalogSnapshot | null }> {
   const number = (value: unknown): number | null =>
     typeof value === 'number' && Number.isFinite(value) ? value : null;
 
-  if (target.kind === 'product') {
+  let product: CatalogSnapshot | null = null;
+
+  for (const path of paths) {
     try {
-      let list: any[] = [];
-
-      if (target.slug) {
-        list = await json(
-          `/api/catalog_system/pub/products/search/${encodeURIComponent(target.slug)}/p`,
-        );
-      }
-
-      // O slug da URL nem sempre é o `linkText` do catálogo — binding com
-      // outro idioma, redirect antigo. O id resolve quando a página o expõe.
-      if ((!list || list.length === 0) && target.entityId) {
-        list = await json(
-          `/api/catalog_system/pub/products/search?fq=productId:${encodeURIComponent(target.entityId)}`,
-        );
-      }
-
-      const product = Array.isArray(list) ? list[0] : null;
-      if (!product) {
-        return { kind: 'product', product: null, note: 'Produto não encontrado no catálogo.' };
-      }
-
-      return {
+      const response = await fetch(path, {
+        headers: { accept: 'application/json' },
+      });
+      if (!response.ok) continue;
+      const json = await response.json();
+      if (!Array.isArray(json) || json.length === 0) continue;
+      const p = json[0] as Record<string, any>;
+      product = {
         kind: 'product',
         product: {
-          productId: String(product.productId ?? ''),
-          productName: String(product.productName ?? ''),
-          linkText: product.linkText ?? null,
-          productReference: product.productReference ?? null,
-          brand: product.brand ?? null,
-          brandId: product.brandId != null ? String(product.brandId) : null,
-          categoryId: product.categoryId != null ? String(product.categoryId) : null,
-          categories: Array.isArray(product.categories) ? product.categories : [],
-          skus: (Array.isArray(product.items) ? product.items : []).map(
-            (item: any) => {
-              const seller = item.sellers?.[0];
-              const offer = seller?.commertialOffer;
-              return {
-                id: String(item.itemId ?? ''),
-                name: String(item.name ?? ''),
-                ean: item.ean || null,
-                refId: item.referenceId?.[0]?.Value ?? null,
-                sellerId: seller?.sellerId ?? null,
-                sellerName: seller?.sellerName ?? null,
-                available: Boolean(offer?.IsAvailable),
-                quantity: number(offer?.AvailableQuantity),
-                price: number(offer?.Price),
-                listPrice: number(offer?.ListPrice),
-                images: Array.isArray(item.images) ? item.images.length : 0,
-              };
-            },
-          ),
+          productId: String(p.productId ?? ''),
+          productName: String(p.productName ?? ''),
+          linkText: p.linkText ?? null,
+          productReference: p.productReference ?? null,
+          brand: p.brand ?? null,
+          brandId: p.brandId != null ? String(p.brandId) : null,
+          categoryId: p.categoryId != null ? String(p.categoryId) : null,
+          categories: Array.isArray(p.categories) ? p.categories : [],
+          skus: (Array.isArray(p.items) ? p.items : []).map((item: any) => {
+            const seller = item.sellers?.[0];
+            const offer = seller?.commertialOffer;
+            return {
+              id: String(item.itemId ?? ''),
+              name: String(item.name ?? ''),
+              ean: item.ean || null,
+              refId: item.referenceId?.[0]?.Value ?? null,
+              sellerId: seller?.sellerId ?? null,
+              sellerName: seller?.sellerName ?? null,
+              available: Boolean(offer?.IsAvailable),
+              quantity: number(offer?.AvailableQuantity),
+              price: number(offer?.Price),
+              listPrice: number(offer?.ListPrice),
+              images: Array.isArray(item.images) ? item.images.length : 0,
+            };
+          }),
         },
       };
-    } catch (error) {
-      return {
-        kind: 'product',
-        product: null,
-        note: `Catálogo não respondeu: ${(error as Error)?.message ?? 'erro'}`,
-      };
-    }
-  }
-
-  if (target.kind === 'category') {
-    const path = target.search?.segments ?? [];
-
-    if (!target.entityId) {
-      // Sem id, o caminho da URL ainda descreve a navegação.
-      return {
-        kind: 'category',
-        category: { id: null, name: null, path, hasChildren: null },
-        search: target.search,
-      };
-    }
-
-    try {
-      const category = await json(
-        `/api/catalog_system/pub/category/${encodeURIComponent(target.entityId)}`,
-      );
-      return {
-        kind: 'category',
-        category: {
-          id: category?.id != null ? String(category.id) : target.entityId,
-          name: category?.name ?? category?.Title ?? null,
-          path,
-          hasChildren:
-            typeof category?.hasChildren === 'boolean' ? category.hasChildren : null,
-        },
-        search: target.search,
-      };
+      break;
     } catch {
-      return {
+      // CORS, offline ou bloqueio da loja: o fallback pelo background decide.
+      break;
+    }
+  }
+
+  let category: CatalogSnapshot | null = null;
+
+  if (categoryPath) {
+    try {
+      const response = await fetch(categoryPath, {
+        headers: { accept: 'application/json' },
+      });
+      if (response.ok) {
+        const categoryJson = await response.json();
+        category = {
+          kind: 'category',
+          category: {
+            id:
+              categoryJson?.id != null
+                ? String(categoryJson.id)
+                : String(categoryPath.split('/').at(-1)),
+            name: categoryJson?.name ?? categoryJson?.Title ?? null,
+            path: [],
+            hasChildren:
+              typeof categoryJson?.hasChildren === 'boolean'
+                ? categoryJson.hasChildren
+                : null,
+          },
+        };
+      } else {
+        category = {
+          kind: 'category',
+          category: null,
+          note: 'Detalhe da categoria indisponível: mostrando o que a URL entrega.',
+        };
+      }
+    } catch {
+      category = {
         kind: 'category',
-        category: { id: target.entityId, name: null, path, hasChildren: null },
-        search: target.search,
-        note: 'Detalhe da categoria indisponível — mostrando o que a URL entrega.',
+        category: null,
+        note: 'Detalhe da categoria indisponível: mostrando o que a URL entrega.',
       };
     }
   }
 
-  return { kind: 'none' };
+  return { product, category };
+}
+
+/** Pede ao background o produto no domínio de API da conta. */
+async function fetchViaBackground(
+  account: string,
+  paths: string[],
+): Promise<CatalogSnapshot | null> {
+  try {
+    const response = await browser.runtime.sendMessage({
+      type: 'catalog:fetch',
+      account,
+      paths,
+    });
+    return response?.ok ? (response.snapshot as CatalogSnapshot) : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function collectCatalog(
   tabId: number,
   target: CatalogTarget,
+  account?: string | null,
 ): Promise<CatalogSnapshot | null> {
   if (target.kind === 'none') return null;
 
-  try {
-    const [result] = await browser.scripting.executeScript({
-      target: { tabId },
-      func: fetchCatalog,
-      args: [target],
-    });
-    return (result?.result as CatalogSnapshot | undefined) ?? null;
-  } catch {
+  const paths = catalogPaths(target);
+  const categoryPath =
+    target.kind === 'category' && target.entityId
+      ? `/api/catalog_system/pub/category/${encodeURIComponent(target.entityId)}`
+      : null;
+
+  if (paths.length === 0 && !categoryPath) {
+    // Sem id, o caminho da URL ainda descreve a navegação.
+    if (target.kind === 'category') {
+      return {
+        kind: 'category',
+        category: { id: null, name: null, path: target.search?.segments ?? [], hasChildren: null },
+        search: target.search,
+      };
+    }
     return null;
   }
+
+  let result: { product: CatalogSnapshot | null; category: CatalogSnapshot | null };
+
+  try {
+    const [inPage] = await browser.scripting.executeScript({
+      target: { tabId },
+      func: readCatalogInPage,
+      args: [paths, categoryPath],
+    });
+    result =
+      (inPage?.result as typeof result | undefined) ??
+      { product: null, category: null };
+  } catch {
+    result = { product: null, category: null };
+  }
+
+  // FastStore/headless: a API não vive no domínio da loja. O background tem
+  // permissão para o domínio de API da conta e não sofre CORS.
+  if (result.product === null && account && paths.length > 0) {
+    const fromBackground = await fetchViaBackground(account, paths);
+    if (fromBackground) result.product = fromBackground;
+  }
+
+  if (target.kind === 'product' && result.product) return result.product;
+  if (target.kind === 'product' && !result.product) {
+    return {
+      kind: 'product',
+      product: null,
+      note: 'Produto não encontrado no catálogo.',
+    };
+  }
+
+  if (target.kind === 'category') {
+    return {
+      ...result.category,
+      kind: 'category',
+      category: result.category?.category ?? {
+        id: target.entityId ? String(target.entityId) : null,
+        name: null,
+        path: target.search?.segments ?? [],
+        hasChildren: null,
+      },
+      search: target.search,
+    };
+  }
+
+  return null;
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { TabContext } from '@/lib/collect';
 import { toCsv } from '@/lib/runner/csv';
 import { prettyJson } from '@/lib/runner/format';
@@ -62,8 +62,12 @@ export function ApiPanel({
   const built = buildRequest(input, context.origin);
   const unsafe = isUnsafeMethod(input.method);
   // `null` quando a resposta não é JSON: aí só existe o cru, e o alternador
-  // some em vez de oferecer uma leitura que não pode entregar.
-  const pretty = response?.body ? prettyJson(response.body) : null;
+  // some em vez de oferecer uma leitura que não pode entregar. Memoizado
+  // porque o painel re-renderiza a cada tecla do formulário.
+  const pretty = useMemo(
+    () => (response?.body ? prettyJson(response.body) : null),
+    [response?.body],
+  );
 
   const patch = (part: Partial<RunnerInput>) => {
     onChange({ ...input, ...part });
@@ -132,6 +136,7 @@ export function ApiPanel({
 
         <div className="request-line">
           <select
+            aria-label="Método HTTP"
             value={input.method}
             onChange={(event) => patch({ method: event.target.value })}
           >
@@ -145,16 +150,18 @@ export function ApiPanel({
             type="text"
             value={input.url}
             spellCheck={false}
+            aria-label="Caminho ou URL da requisição"
             placeholder="/api/sessions?items=*"
             onChange={(event) => patch({ url: event.target.value })}
           />
         </div>
 
-        <details className="frames">
+        <details className="headers-editor">
           <summary>Cabeçalhos</summary>
           <textarea
             rows={3}
             spellCheck={false}
+            aria-label="Cabeçalhos da requisição"
             placeholder="REST-Range: resources=0-9"
             value={input.headers}
             onChange={(event) => patch({ headers: event.target.value })}
@@ -165,6 +172,7 @@ export function ApiPanel({
           <textarea
             rows={4}
             spellCheck={false}
+            aria-label="Corpo da requisição"
             placeholder="corpo da requisição"
             value={input.body}
             onChange={(event) => patch({ body: event.target.value })}
@@ -219,7 +227,10 @@ export function ApiPanel({
         <section className="panel-response">
           <h2>
             Resposta{' '}
-            <span className={`pill pill-${statusTone(response)}`}>
+            <span
+              className={`pill pill-${statusTone(response)}`}
+              aria-live="polite"
+            >
               {response.error ? 'falhou' : `${response.status}`}
             </span>
           </h2>
@@ -237,6 +248,7 @@ export function ApiPanel({
                 <div className="segmented">
                   <button
                     type="button"
+                    aria-pressed={!raw}
                     className={raw ? undefined : 'active'}
                     onClick={() => setRaw(false)}
                   >
@@ -244,6 +256,7 @@ export function ApiPanel({
                   </button>
                   <button
                     type="button"
+                    aria-pressed={raw}
                     className={raw ? 'active' : undefined}
                     onClick={() => setRaw(true)}
                   >
@@ -287,7 +300,11 @@ export function ApiPanel({
           <ul className="history">
             {history.map((entry) => (
               <li key={`${entry.at}-${entry.input.url}`}>
-                <button type="button" onClick={() => onReplay(entry)}>
+                <button
+                  type="button"
+                  aria-label={`Preencher o formulário com ${entry.input.method} ${entry.input.url}`}
+                  onClick={() => onReplay(entry)}
+                >
                   {entry.input.method}
                 </button>
                 <code>{entry.input.url}</code>

@@ -11,19 +11,15 @@ pura com testes mais a interface em volta, **G** precisa de desenho antes.
 
 O que sobrou do levantamento de layout depois da rodada 1.1.0.
 
-- **Tabela de SKUs, e o fim do `.frames` genérico** (P) — a classe `.frames`
-  hoje estiliza quatro listas diferentes: frames do admin, SKUs, vendors e
-  origens de terceiros. O nome mente sobre três delas. Junto, a lista de SKUs
-  não é escaneável: id, nome, estoque e preço deviam ser colunas, não uma frase
-  por linha.
 - **Tema explícito e página de opções** (M) — só existe `prefers-color-scheme`.
   Falta escolher claro/escuro/sistema, e não há onde morar a porta do dev
   server, a aba inicial, os presets do usuário e a gestão das origens já
   concedidas.
-- **`aria-live` nos status** (P) — "Copiado", o resultado da escrita do cookie e
-  o fim de uma requisição mudam a tela sem anunciar nada.
 - **Atalhos de teclado** (P) — comando para abrir o popup, `1`–`4` para trocar
   de aba, `/` para focar a URL do runner. Público de desenvolvedor, custo baixo.
+- **Terminologia do "Abrir"** (P) — o rótulo significa três coisas (workspace,
+  preview, admin). O critique de 29/09/2026 sugeriu "Abrir no admin" e
+  "Abrir preview" como desambiguação.
 
 ## Ferramentas novas
 
@@ -60,11 +56,7 @@ Em ordem de valor por esforço, na minha leitura.
 Mudança de texto entra aqui e viaja com a próxima versão: alterar a listagem
 publicada sozinha custa uma revisão.
 
-- **Frase de não associação na descrição** (P) — a última frase da descrição
-  longa dizia que a extensão "não usa a identidade visual da VTEX", o que é falso:
-  o ícone é no rosa da VTEX. O texto novo, em `docs/publicacao.md`, afirma só a
-  não associação. Colar nas duas lojas junto da próxima versão enviada depois da
-  1.2.1, que já está em revisão.
+Nenhuma no momento.
 
 ## Dívidas encontradas pelo caminho
 

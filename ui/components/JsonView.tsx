@@ -1,6 +1,11 @@
+import { memo } from 'react';
 import { tokenizeJson } from '@/lib/runner/format';
 
-export function JsonView({ text }: { text: string }) {
+/**
+ * Realce do corpo JSON. Memoizado: a tokenização devolve milhares de spans e
+ * o painel re-renderiza a cada tecla do formulário do runner.
+ */
+export const JsonView = memo(function JsonView({ text }: { text: string }) {
   return (
     <pre className="response">
       {tokenizeJson(text).map((token, index) =>
@@ -15,4 +20,4 @@ export function JsonView({ text }: { text: string }) {
       )}
     </pre>
   );
-}
+});

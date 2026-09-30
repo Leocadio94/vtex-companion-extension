@@ -59,16 +59,15 @@ const name = (n) => `vtex-companion-extension-${n}.png`;
 const SHOTS = [
   {
     n: 1,
-    store: 'https://storetheme.vtex.com/tank-top/p',
+    store: 'https://storetheme.vtex.com/classic-shoes/p',
     tab: 'Página',
     async prepare(popup) {
-      const skus = popup.getByRole('group').filter({ hasText: 'SKUs' }).first();
-      await skus.click();
-      // A lista inteira precisa caber: seção cortada pela borda sugere
+      const skus = popup.locator('details.sku-table').first();
+      await skus.locator('summary').click();
+      // A tabela inteira precisa caber: seção cortada pela borda sugere
       // interface truncada, que é o que `docs/publicacao.md` manda evitar. O
-      // alvo é o último SKU, não o último `li` do painel — este último mora em
-      // "Outras origens de terceiros", lá no fim da aba.
-      await skus.locator('li').last().scrollIntoViewIfNeeded();
+      // alvo é a última linha da tabela, não o último `li` do painel.
+      await skus.locator('tbody tr').last().scrollIntoViewIfNeeded();
     },
   },
   {
@@ -229,7 +228,9 @@ async function capture(context, id, shot, theme) {
   await waitProbes(popup);
 
   await popup.bringToFront();
-  await popup.getByRole('button', { name: shot.tab, exact: true }).click();
+  // `role="tab"` e o nome acessível continuam casando: o botão da nav tem
+  // ícone + rótulo, e o `exact: true` depende só do texto do rótulo.
+  await popup.getByRole('tab', { name: shot.tab, exact: true }).click();
   await waitProbes(popup);
   if (shot.prepare) await shot.prepare(popup);
 

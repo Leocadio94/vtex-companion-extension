@@ -89,6 +89,16 @@ reasons, all load-bearing:
   would be pure waste.
 - It keeps the popup free of store-specific request logic.
 
+Injecting into the page is not enough when the API lives on another origin.
+FastStore/headless stores serve the catalog API on `{account}.myvtex.com` —
+the store domain answers 404, and the API sends no CORS headers. `collectCatalog`
+falls back to a background fetch, which has the required `*.myvtex.com` host
+permission. The account is rebuilt and validated in the background (the
+message could come from anyone), and `runtime.onMessage` responses must use
+`sendResponse` + `return true` there: WXT's `browser` is native `chrome` on
+Chrome, which ignores Promise-returning listeners (Firefox is the opposite —
+no third argument — so the handler branches on `typeof sendResponse`).
+
 Injected functions are serialized, so they must be self-contained: no imports, no
 closure over the module. Pass everything through `args`, or declare it inside the
 function — a module-scope constant read from an injected function becomes a
@@ -259,15 +269,16 @@ things follow from being live:
   the lockfile's. The store secrets live in the `stores` environment, which only
   accepts `v*` tags: a manual re-send runs on the tag and uses the workflow as it
   was at that tag, and testing a workflow change on a branch needs a temporary
-  branch rule on the environment. Until the first tag after 1.2.0, the workflow
-  has only ever run as a dry run.
+  branch rule on the environment. v1.2.1 was the first real send through it,
+  store status step included.
 - **`meta.channels` in the sibling repo decides what the landing shows.** Each
   entry is a store button, and `url: null` keeps it on "Em breve". Both links are
   filled since the AMO approval, and the AMO one carries no locale prefix so the
   store answers in the visitor's language — the landing is bilingual and the link
   is the same on both pages. `meta.version` beside it is the number the landing
-  and the home card print: bump it when a store approves, not when the tag goes
-  up.
+  and the home card print: bump it once the `stores` environment approves the
+  send, without waiting for the store reviews. A site a few days ahead of the
+  stores was judged harmless for an extension this size (`docs/release.md`).
 - **`pnpm screenshots` overwrites the site's full captures, not its crops.** The
   landing shows capture 1 whole and crops of 2 to 5, made by `pnpm crop:shots` in
   the sibling repo. Regenerating here without re-cropping there leaves the site
