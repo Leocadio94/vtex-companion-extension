@@ -59,8 +59,8 @@ publicada sozinha custa uma revisão.
 - **Frase de não associação na descrição** (P) — a última frase da descrição
   longa dizia que a extensão "não usa a identidade visual da VTEX", o que é falso:
   o ícone é no rosa da VTEX. O texto novo, em `docs/publicacao.md`, afirma só a
-  não associação. Colar nas duas lojas junto da próxima versão enviada depois da
-  1.2.1, que já está em revisão.
+  não associação. Colar nas duas lojas junto do envio da 1.3.0, com o resto dos
+  textos que a rodada de voz daquela versão revisou.
 
 ## Dívidas encontradas pelo caminho
 

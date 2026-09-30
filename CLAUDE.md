@@ -276,8 +276,9 @@ things follow from being live:
   filled since the AMO approval, and the AMO one carries no locale prefix so the
   store answers in the visitor's language — the landing is bilingual and the link
   is the same on both pages. `meta.version` beside it is the number the landing
-  and the home card print: bump it when a store approves, not when the tag goes
-  up.
+  and the home card print: bump it once the `stores` environment approves the
+  send, without waiting for the store reviews. A site a few days ahead of the
+  stores was judged harmless for an extension this size (`docs/release.md`).
 - **`pnpm screenshots` overwrites the site's full captures, not its crops.** The
   landing shows capture 1 whole and crops of 2 to 5, made by `pnpm crop:shots` in
   the sibling repo. Regenerating here without re-cropping there leaves the site

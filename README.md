@@ -47,7 +47,7 @@ Firefox com `background.scripts`, ambos em MV3.
 
 <div align="center">
 
-![Aba Página numa PDP: produto, referência, marca, categoria e a lista de SKUs com EAN, seller, disponibilidade e preço](brand/screenshots/vtex-companion-extension-1.png)
+![Aba Página numa PDP: a tabela de SKUs com ID, nome, EAN, referência, estoque e preço, e o botão Abrir no admin](brand/screenshots/vtex-companion-extension-1.png)
 
 </div>
 
